@@ -1,0 +1,197 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Demand And Supply — Simultaneous Shifts</title><style>
+/* ECON WIDGET DESIGN SYSTEM v2 — shared across all four standalone files. */
+:root{--accent:#4169e1;--ink:#1f2937;--muted:#6b7280;--border:#e5e7eb;--panel:#f3f4f6;--blue:#2563eb;--green:#16a34a;--red:#dc2626;--radius:8px}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:#fff;max-width:1240px;margin:0 auto;padding:20px 16px;line-height:1.5}
+.widget-header{margin:0 0 16px;border-left:4px solid var(--accent);padding-left:12px}
+.widget-header h1{font-size:20px;line-height:1.3;margin:0;font-weight:700}
+.widget-header p{font-size:13px;color:var(--muted);margin:4px 0 0}
+.layout{display:grid;grid-template-columns:minmax(0,2fr) minmax(270px,1fr);gap:20px;align-items:start}
+.main-content{min-width:0;position:relative}
+.sidebar{min-width:0;background:#f9fafb;padding:16px;border-radius:var(--radius);border:1px solid var(--border)}
+.controls{display:flex;flex-direction:column;gap:12px;margin-bottom:12px;background:var(--panel);padding:12px 16px;border-radius:var(--radius)}
+.control-row,.control-group,.policy-selector,.slider-card{display:flex;gap:8px;align-items:center;min-width:0;flex-wrap:wrap}
+.control-row,.policy-selector,.slider-card{width:100%}
+.control-group{flex:1;width:100%}
+.control-group>label:not(.toggle-label):not(.checkbox-label),.policy-selector>label{font-size:13px;font-weight:600}
+.policy-selector select{flex:1}
+.checkbox-group,.option-row,.toggle-grid{display:flex;flex-wrap:wrap;gap:2px 16px;align-items:center;width:100%;border:0;padding:0;background:transparent}
+.checkbox-group>strong{display:none}
+.checkbox-label,.toggle-label{font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;min-height:36px;user-select:none;line-height:1.35}
+input[type=checkbox]{accent-color:var(--accent);width:17px;height:17px;flex-shrink:0;cursor:pointer;margin:0}
+input[type=range]{accent-color:var(--accent);flex:1;min-width:70px;width:100px;height:36px;cursor:pointer;margin:0}
+.scale-label{font-size:12px;font-weight:500;color:var(--muted)}
+select,button{font:600 13px/1.4 system-ui,sans-serif;min-height:40px;border:1px solid #d1d5db;border-radius:6px;background:#fff;color:var(--ink);padding:8px 10px;cursor:pointer;max-width:100%;min-width:0}
+select{width:auto;text-overflow:ellipsis}
+button:hover{border-color:var(--accent);background:#f0f4ff}
+:focus-visible{outline:3px solid #819bea;outline-offset:3px}
+.export-format{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600}.toolbar{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding-top:8px;border-top:1px solid #dcdfe5}
+.toolbar .hint{flex:1;font-size:12px;color:var(--muted);min-width:140px}
+.reset-button{color:#4169e1;border-color:#b6c6f5}
+.diagram-frame{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);background:#fff}
+svg#diagram{width:100%;height:auto;display:block;background:#fff;overflow:hidden}
+.diagram-frame.zoomed svg{min-width:720px}
+.diagram-help{font-size:12px;color:var(--muted);margin:6px 2px 0}
+.axis{stroke:#374151;stroke-width:2}
+.line-mpb{stroke:var(--blue);stroke-width:2.5}
+.line-mpc{stroke:var(--green);stroke-width:2.5}
+.line-msb,.line-msc{stroke:var(--red);stroke-width:2.5}
+.line-policy,.line-tax,.line-quota,.line-qpoll,.line-rd,.line-edu{stroke:var(--accent);stroke-width:2.5;stroke-dasharray:6,4}
+.guide-line{stroke:#9ca3af;stroke-width:1.2;stroke-dasharray:4,4}
+.dwl-poly{fill:rgba(220,38,38,.25);stroke:var(--red);stroke-width:1.5;cursor:pointer}
+.tax-poly,.subsidy-rect{fill:rgba(65,105,225,.18);stroke:var(--accent);stroke-width:1.5;stroke-dasharray:4,4;cursor:pointer}
+.policy-arrow{stroke:var(--accent);stroke-width:2}
+.under-arrow,.over-arrow{stroke:var(--red);stroke-width:2}
+.meb-arrow,.mec-arrow{stroke:var(--blue);stroke-width:2}
+text{font-size:13px;font-family:system-ui,sans-serif}
+text[font-size="11"]{font-size:11px}
+text[font-size="12"]{font-size:12px}
+tspan[baseline-shift="sub"]{font-size:9px}
+.has-tooltip,.touch-target,[data-tooltip-target]{cursor:pointer}
+.touch-target{fill:transparent}
+svg circle.has-tooltip{stroke:transparent;stroke-width:16;pointer-events:all}
+svg text{paint-order:stroke;stroke:#fff;stroke-width:2px;stroke-linejoin:round}
+svg text tspan{stroke-width:1px}
+#label-dwl-text,#label-subsidy-cost-text{stroke-width:0;pointer-events:none}
+.tooltip{position:fixed;background:#1f2937;color:#fff;padding:12px 38px 12px 14px;border-radius:6px;font-size:13px;line-height:1.5;display:none;z-index:100;max-width:min(320px,calc(100vw - 24px));box-shadow:0 8px 22px #0003;border:1px solid #374151;pointer-events:auto}
+.tooltip strong{color:#fb923c}
+.tooltip-close{position:absolute;right:3px;top:3px;background:transparent;color:#fff;border:0;padding:3px 7px;min-height:30px;font-size:20px}
+.tooltip-close:hover{background:#374151}
+.glossary-title{margin:0 0 12px;font-size:16px;font-weight:700;color:#111827;border-bottom:2px solid var(--border);padding-bottom:6px}
+details{margin-bottom:8px;background:#fff;border:1px solid var(--border);border-radius:6px;padding:0 12px}
+details:last-child{margin-bottom:0}
+details[open]{border-color:var(--accent)}
+summary{font-weight:600;font-size:13px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:44px;padding:8px 0}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"▸";font-size:13px;color:#9ca3af;flex-shrink:0}
+details[open] summary::after{transform:rotate(90deg);color:var(--accent)}
+details p{margin:0 0 12px;font-size:13px;color:#4b5563;line-height:1.55}
+@media(hover:hover){.dwl-poly:hover{fill:rgba(220,38,38,.4)}.tax-poly:hover,.subsidy-rect:hover{fill:rgba(65,105,225,.3)}}
+@media(max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}.sidebar{padding:14px}.main-content{position:relative}.tooltip{position:relative;left:0!important;top:0!important;width:100%;max-width:100%;margin-top:10px}.controls{padding:12px}.control-group:has(input[type=range])>label{flex-basis:100%}}
+@media(max-width:480px){body{padding:12px 8px}.widget-header h1{font-size:18px}.controls{gap:8px}.control-group:has(select)>label,.policy-selector>label{flex-basis:100%}select{width:100%}.checkbox-label,.toggle-label{min-height:40px}.toolbar .hint{flex-basis:100%}.layout{gap:14px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+.policy-note{font-size:13px;line-height:1.5;color:#4b5563;background:#f0f4ff;border:1px solid #cbd7fa;border-radius:8px;padding:12px;margin:10px 0}.policy-note p{margin:4px 0}.policy-note h2{font-size:15px;margin:0 0 6px;color:#4169e1}
+.policy-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0}.policy-metrics>div{background:white;border:1px solid #e5e7eb;border-radius:6px;padding:10px}.policy-metrics span{display:block;font-size:12px;color:#6b7280}.policy-metrics strong{font-size:18px;color:#1f2937}
+.ban-legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:12px;margin:8px 0}.ban-legend i{display:inline-block;width:14px;height:10px;margin-right:5px;border:1px solid;vertical-align:middle}.ban-free-area{fill:rgba(217,119,6,.18);stroke:#b45309;stroke-width:1.4;stroke-dasharray:4,3;cursor:pointer}.metric-value{font-weight:700;color:#4169e1;font-variant-numeric:tabular-nums}
+@media(max-width:480px){.policy-metrics{grid-template-columns:1fr}.policy-metrics>div{display:flex;align-items:center;justify-content:space-between;gap:8px}.policy-metrics strong{font-size:16px}}
+strong,b{color:#dc2626!important;font-weight:700}
+.tooltip{background:#fff;color:var(--ink);border-color:#b6c6f5}
+.tooltip-close{color:var(--ink)}
+.tooltip-close:hover{background:#f0f4ff}
+.area-key{display:flex;gap:8px 16px;flex-wrap:wrap;align-items:center;font-size:12px;margin:8px 2px}.area-key[hidden],.ban-legend[hidden]{display:none}.key-heading{font-weight:600;color:#4b5563}.key-item{display:inline-flex;align-items:center;gap:6px}.key-item i{display:inline-block;width:16px;height:12px;border:1px solid #777;flex-shrink:0}.key-colour{opacity:.65}.key-pattern.social{background:repeating-linear-gradient(135deg,#fff 0 4px,#777 4px 5px)}.key-pattern.other{background:repeating-linear-gradient(0deg,#fff 0 4px,#777 4px 5px)}.key-pattern.policy{background:repeating-linear-gradient(45deg,transparent 0 4px,#777 4px 5px),repeating-linear-gradient(135deg,#fff 0 4px,#777 4px 5px)}.related-widget{margin:12px 2px}.related-widget a{display:inline-block;color:#4169e1;font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:3px;padding:8px 0;max-width:100%}
+
+.summary-wrap{margin-top:16px;overflow-x:auto;border:1px solid var(--border);border-radius:8px}.summary-table{width:100%;border-collapse:collapse;font-size:13px;background:white}.summary-table caption{text-align:left;font-size:16px;font-weight:700;padding:12px}.summary-table th,.summary-table td{text-align:left;padding:10px 12px;border-top:1px solid var(--border)}.summary-table th{background:#f9fafb}.mechanism{font-size:13px;margin:12px 0 0;padding:12px;background:#f0f4ff;border:1px solid #cbd7fa;border-radius:8px}.shift-output{font-size:12px;color:var(--muted);min-width:70px;text-align:right}.slider-card>label{font-size:13px;font-weight:600;min-width:95px}.tooltip[hidden]{display:none!important}.diagram-help{min-height:18px}.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:8px 0}.legend span{display:flex;align-items:center;gap:6px}.legend i{width:22px;height:0;border-top:2px solid}.summary-table td:last-child{font-weight:600}@media(max-width:480px){.summary-table{font-size:12px;table-layout:fixed}.summary-table th,.summary-table td{padding:9px 6px;overflow-wrap:anywhere}.shift-output{flex-basis:100%;text-align:left}}
+
+.shift-choice{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.shift-choice button[aria-pressed="true"]{background:#4169e1;color:white;border-color:#4169e1}.welfare-area{stroke-width:1;cursor:pointer}.welfare-label{font-weight:700;pointer-events:none}.surplus-key{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:8px 0}.surplus-key[hidden],.surplus-key [hidden]{display:none}.surplus-key span{display:flex;align-items:center;gap:6px}.surplus-key i{width:18px;height:12px;border:1px solid #999}.surplus-key .cs{background:repeating-linear-gradient(135deg,#dbeafe 0 4px,#7ca0ce 4px 5px)}.surplus-key .ps{background:repeating-linear-gradient(0deg,#dcfce7 0 4px,#7aa888 4px 5px)}
+.tooltip strong{color:var(--accent)!important;font-weight:700}
+
+.tooltip[data-surplus="cs"] strong{color:#2563eb!important}.tooltip[data-surplus="ps"] strong{color:#16a34a!important}
+.slider-track{flex:1;min-width:70px;position:relative;padding-bottom:18px}.slider-track input[type=range]{width:100%;display:block}.slider-zero{position:absolute;left:50%;bottom:0;transform:translateX(-50%);font-size:12px;line-height:14px;font-weight:600;color:var(--muted);pointer-events:none}.slider-zero::before{content:"";display:block;width:1px;height:6px;background:#6b7280;margin:0 auto 2px}
+.mechanism h2{font-size:15px;margin:0 0 8px;color:var(--accent)}.mechanism ol{margin:0;padding-left:22px}.mechanism li{margin:0 0 7px}.mechanism li:last-child{margin-bottom:0}
+.cs-area-note strong{color:#2563eb!important}.ps-area-note strong{color:#16a34a!important}
+</style></head><body>
+ <header class="widget-header"><h1>Demand And Supply: Simultaneous Shifts</h1><p>A-Level Economics · Interactive diagrams</p></header>
+ <div class="layout"><main class="main-content"><div class="controls"><div class="slider-card"><label for="d-shift"><strong>Demand:</strong></label><span class="scale-label">Decrease</span><div class="slider-track"><input id="d-shift" type="range" min="-45" max="45" step="1" value="0" aria-label="Demand shift" aria-describedby="d-zero-marker"><span class="slider-zero" id="d-zero-marker">0</span></div><span class="scale-label">Increase</span><output id="d-output" class="shift-output" for="d-shift">No shift</output></div><div class="slider-card"><label for="s-shift"><strong>Supply:</strong></label><span class="scale-label">Decrease</span><div class="slider-track"><input id="s-shift" type="range" min="-45" max="45" step="1" value="0" aria-label="Supply shift" aria-describedby="s-zero-marker"><span class="slider-zero" id="s-zero-marker">0</span></div><span class="scale-label">Increase</span><output id="s-output" class="shift-output" for="s-shift">No shift</output></div><div class="toggle-grid"><label class="toggle-label"><input id="cs-toggle" type="checkbox">Consumer surplus</label><label class="toggle-label"><input id="ps-toggle" type="checkbox">Producer surplus</label><label class="toggle-label"><input id="tooltips" type="checkbox" checked>Tooltips</label><label class="toggle-label"><input id="gap" type="checkbox" checked>Shortage / surplus</label><label class="toggle-label"><input id="adjustment" type="checkbox" >Price adjustment arrows</label></div></div>
+ <div class="diagram-frame" id="frame"><svg id="diagram" viewBox="0 0 700 500" role="img" aria-labelledby="diagram-title diagram-desc"><title id="diagram-title">Demand And Supply: Simultaneous Shifts</title><desc id="diagram-desc"></desc><defs><marker id="marker-ink" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#374151"/></marker><marker id="marker-d" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2563eb"/></marker><marker id="marker-s" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16a34a"/></marker><marker id="marker-accent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#4169e1"/></marker><marker id="marker-gap" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#dc2626"/></marker></defs><g id="drawing"></g></svg></div>
+ <div class="legend"><span><i style="border-color:#2563eb"></i>Demand</span><span><i style="border-color:#16a34a"></i>Supply</span><span>Initial curves are lighter; all curves are solid.</span></div>
+ <div class="surplus-key" id="surplus-key" hidden><span id="cs-key"><i class="cs"></i>CS: blue / diagonal hatch in grayscale</span><span id="ps-key"><i class="ps"></i>PS: green / horizontal hatch in grayscale</span></div><div class="tooltip" id="diagram-tooltip" role="note" hidden></div>
+ <div class="toolbar"><button id="zoom" type="button" aria-pressed="false">Enlarge diagram</button><button id="reset" type="button" class="reset-button"><strong>Reset Diagram</strong></button><label class="export-format" for="image-style">Image style <select id="image-style"><option value="colour">Colour</option><option value="grayscale">Grayscale (print)</option></select></label><button id="download" type="button">Download diagram</button><button id="copy" type="button">Copy diagram</button></div>
+ <p class="diagram-help">Hover, tap or focus labels and points for explanations. Shortage/surplus is measured at P<sub>0</sub> after the shifts.</p><p id="export-status" class="diagram-help" role="status"></p>
+ <div class="summary-wrap"><table class="summary-table"><caption>Equilibrium Changes</caption><thead><tr><th scope="col">Variable</th><th scope="col">Initial Equilibrium</th><th scope="col">New Equilibrium</th><th scope="col">Change</th></tr></thead><tbody id="summary-body"></tbody></table></div><p id="mechanism" class="mechanism" aria-live="polite"></p>
+ <nav class="related-widget" aria-label="Widget navigation"><a href="index.html">Back to main index</a></nav></main>
+ <aside class="sidebar"><h2 class="glossary-title">Key Glossary Terms</h2><details><summary>Demand</summary><p>Refers to the entire relationship between price and quantity demanded, as represented by the entire demand curve (or the quantity of a good or service which consumers are willing and able to buy at different price levels, over a specific time period, <em>ceteris paribus</em>).</p></details><details><summary>Quantity Demanded</summary><p>Refers to a particular quantity that the consumer is willing and able to buy at a particular price, as reflected by a given point on the demand curve.</p></details><details><summary>Supply</summary><p>Refers to the entire relationship between price and quantity supplied, as represented by the entire supply curve.</p></details><details><summary>Quantity Supplied</summary><p>Refers to a particular quantity offered for sale at a particular price, as reflected by a point on a given supply curve.</p></details><details><summary>Shortage</summary><p>A market condition where quantity demanded exceeds quantity supplied (Q<sub>dd</sub> &gt; Q<sub>ss</sub>), meaning more is demanded than producers are willing and able to supply at that price.</p></details><details><summary>Surplus</summary><p>A market condition where quantity supplied exceeds quantity demanded (Q<sub>ss</sub> &gt; Q<sub>dd</sub>), meaning more is supplied than consumers are willing and able to demand at that price.</p></details><details><summary>Market Equilibrium</summary><p>Occurs when quantity demanded equals quantity supplied (Q<sub>dd</sub> = Q<sub>ss</sub>), resulting in a situation where there is no tendency for consumers and producers to change their willingness to buy and sell.</p></details><details><summary>Consumer Surplus (CS)</summary><p>The difference between the maximum price a consumer is willing and able to pay and the price that he actually pays.</p><p class="cs-area-note"><strong>How To Find The Area:</strong> At the current equilibrium, shade the area <strong>below the current demand curve</strong> and <strong>above the equilibrium price P<sub>1</sub></strong>, from zero to Q<sub>1</sub>. This represents total consumer surplus in the market.</p></details><details><summary>Producer Surplus (PS)</summary><p>The net benefit enjoyed by a producer, represented graphically by the area above the supply curve and below the selling/equilibrium price.</p><p class="ps-area-note"><strong>How To Find The Area:</strong> At the current equilibrium, shade the area <strong>above the current supply curve</strong> and <strong>below the equilibrium price P<sub>1</sub></strong>, from zero to Q<sub>1</sub>. This represents total producer surplus in the market.</p></details></aside></div>
+ <script>
+const SIM=true, NS='http://www.w3.org/2000/svg';
+const $=id=>document.getElementById(id), svg=$('diagram'), layer=$('drawing');
+let selectedCurve='d';
+const X=q=>90+5*q,Y=p=>410-3.5*p, sub=(letter,i)=>`${letter}<tspan baseline-shift="sub" font-size="9">${i}</tspan>`;
+const colour={d:'#2563eb',s:'#16a34a',oldD:'#93b4f2',oldS:'#8fcea3',ink:'#374151',accent:'#4169e1',gap:'#dc2626'};
+function el(tag,attrs={},html=''){let n=document.createElementNS(NS,tag);for(let [k,v] of Object.entries(attrs))n.setAttribute(k,v);n.innerHTML=html;layer.append(n);return n;}
+function line(x1,y1,x2,y2,c=colour.ink,w=2,extra={}){return el('line',{x1,y1,x2,y2,stroke:c,'stroke-width':w,...extra});}
+function text(x,y,html,c=colour.ink,extra={}){return el('text',{x,y,fill:c,'text-anchor':'middle',...extra},html);}
+function tip(n,description){n.dataset.tip=description.replace(/<[^>]*>/g,'');if(description.includes('<strong>'))n.dataset.tipHtml=description;n.setAttribute('tabindex','0');n.setAttribute('role','img');n.setAttribute('aria-label',n.dataset.tip);n.classList.add('has-tooltip');return n;}
+function arrow(x1,y1,x2,y2,c,id,both=false){let len=Math.hypot(x2-x1,y2-y1);if(len<.01)return;let marker='marker-'+id;if(len<18){marker='small-'+layer.children.length;let size=Math.min(6,len/(both?4:2));el('marker',{id:marker,viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:size,markerHeight:size,markerUnits:'userSpaceOnUse',orient:'auto-start-reverse'},`<path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="${c}"/>`);}let a={'marker-end':`url(#${marker})`};if(both)a['marker-start']=`url(#${marker})`;return line(x1,y1,x2,y2,c,2.2,a);}
+
+function curve(kind,shift,label,old=false){let a=kind==='d'?75+.5*shift:25-.5*shift,b=kind==='d'?-.5:.5,c=old?colour[kind==='d'?'oldD':'oldS']:colour[kind];
+ let qEnd=100;line(X(0),Y(a),X(qEnd),Y(a+b*qEnd),c,2.5);
+ let close=Math.abs(shift)<8; let offset=close?(old? -11:11):0; if(old){let st=state();close=Math.abs(kind==='d'?st.d:st.s)<8;offset=close?-11:0;} if(offset)line(X(qEnd),Y(a+b*qEnd),X(qEnd)+10,Y(a+b*qEnd)+offset,c,1); tip(text(X(qEnd)+14,Y(a+b*qEnd)+4+offset,label,c,{'text-anchor':'start','font-weight':'600'}),`${old?'Initial':'Current'} ${kind==='d'?'demand':'supply'} curve.`);
+}
+function guides(q,p,c){line(90,Y(p),X(q),Y(p),'#9ca3af',1.2,{'stroke-dasharray':'4 4'});line(X(q),Y(p),X(q),410,'#9ca3af',1.2,{'stroke-dasharray':'4 4'});}
+function state(){let d=0,s=0;if(SIM){d=+$('d-shift').value;s=+$('s-shift').value;}else{let a=+$('magnitude').value;if(selectedCurve==='d')d=a;else s=a;}return {d,s,q:50+(d+s)/2,p:50+(d-s)/4,qd:50+d,qs:50+s};}
+function direction(v){return Math.abs(v)<1e-8?'Unchanged':v>0?'Increases':'Decreases';}
+function shiftDescription(v){return v===0?'No shift':v>0?'Increase':'Decrease';}
+function axisLabels(v0,v1,letter,isP){let same=Math.abs(v1-v0)<1e-8;
+ if(same){text(isP?78:X(v0),isP?Y(v0)+4:430,sub(letter,0)+' = '+sub(letter,1),colour.ink,isP?{'text-anchor':'end'}:{});return;}
+ if(isP){let close=Math.abs(Y(v1)-Y(v0))<20;let offset=close?11:0;let y0=Y(v0)+(v1>v0?offset:-offset),y1=Y(v1)+(v1>v0?-offset:offset);text(78,y0+4,sub(letter,0),colour.ink,{'text-anchor':'end'});text(78,y1+4,sub(letter,1),colour.accent,{'text-anchor':'end'});if(close){line(80,y0,88,Y(v0),'#9ca3af',1);line(80,y1,88,Y(v1),'#9ca3af',1);}}
+ else {let close=Math.abs(X(v1)-X(v0))<38;text(X(v0),430,sub(letter,0));text(X(v1),close?450:430,sub(letter,1),colour.accent);if(close)line(X(v1),414,X(v1),437,'#9ca3af',1);}
+}
+function render(){hideTip();let {d,s,q,p,qd,qs}=state(),changed=d!==0||s!==0,sameP=Math.abs(p-50)<1e-8,sameQ=Math.abs(q-50)<1e-8;layer.replaceChildren();
+ if(SIM){$('d-output').textContent=shiftDescription(d);$('s-output').textContent=shiftDescription(s);}else $('magnitude-output').textContent=shiftDescription(+$('magnitude').value);
+ let csDesc='<strong>Consumer surplus (CS)</strong>: for each unit up to <strong>Q₁</strong>, the <strong>demand curve</strong> shows what consumers are <strong>willing and able to pay</strong>. They actually pay <strong>P₁</strong>. The area <strong>below the current demand curve</strong> and <strong>above P₁</strong> adds up these differences.';
+ let psDesc='<strong>Producer surplus (PS)</strong>: for each unit up to <strong>Q₁</strong>, the <strong>supply curve</strong> shows the <strong>minimum price producers are willing to accept</strong>. They receive <strong>P₁</strong>. The area <strong>above the current supply curve</strong> and <strong>below P₁</strong> adds up these differences.';
+ if($('cs-toggle').checked){tip(el('polygon',{id:'cs-area',class:'welfare-area',points:`90,${Y(75+.5*d)} 90,${Y(p)} ${X(q)},${Y(p)}`,fill:'rgba(37,99,235,.18)',stroke:'#2563eb'}),csDesc);text((180+X(q))/3,(Y(75+.5*d)+2*Y(p))/3,'CS',colour.d,{class:'welfare-label',visibility:q<14?'hidden':'visible'});}
+ if($('ps-toggle').checked){tip(el('polygon',{id:'ps-area',class:'welfare-area',points:`90,${Y(25-.5*s)} 90,${Y(p)} ${X(q)},${Y(p)}`,fill:'rgba(22,163,74,.18)',stroke:'#16a34a'}),psDesc);text((180+X(q))/3,(Y(25-.5*s)+2*Y(p))/3,'PS',colour.s,{class:'welfare-label',visibility:q<14?'hidden':'visible'});}
+ $('surplus-key').hidden=!$('cs-toggle').checked&&!$('ps-toggle').checked;$('cs-key').hidden=!$('cs-toggle').checked;$('ps-key').hidden=!$('ps-toggle').checked;
+ line(90,410,610,410,colour.ink,2,{'marker-end':'url(#marker-ink)'});line(90,410,90,38,colour.ink,2,{'marker-end':'url(#marker-ink)'});text(76,32,'Price',colour.ink,{'font-weight':'600'});text(620,416,'Quantity',colour.ink,{'font-weight':'600','text-anchor':'start'});
+ guides(50,50);if(changed)guides(q,p);
+ if(d!==0)curve('d',0,sub('D',0),true);if(s!==0)curve('s',0,sub('S',0),true);
+ curve('d',d,d!==0?sub('D',1):sub('D',0)+' = '+sub('D',1));curve('s',s,s!==0?sub('S',1):sub('S',0)+' = '+sub('S',1));
+ if($('adjustment').checked&&!sameP){for(let [k,start] of [['d',qd],['s',qs]]){let dx=X(q)-X(start),dy=Y(p)-Y(50),c=colour.gap;
+ let desc=`As price ${p>50?'rises':'falls'}, quantity ${k==='d'?'demanded':'supplied'} ${q>start?'increases':'decreases'} along the current ${k==='d'?'demand':'supply'} curve towards the new equilibrium.`;
+ let g=el('g',{'data-adjustment':k});let length=Math.hypot(dx,dy),size=Math.min(12,length*.20),angle=Math.atan2(dy,dx)*180/Math.PI;for(let t of [0,.33,.66]){let head=el('polygon',{points:`${size},0 0,${-size*.42} 0,${size*.42}`,fill:c,stroke:'none',transform:`translate(${X(start)+t*dx} ${Y(50)+t*dy}) rotate(${angle})`,'data-arrowhead':k});g.append(head);}tip(g,desc);
+ }}
+ if($('gap').checked&&!sameP){let left=Math.min(qd,qs),right=Math.max(qd,qs),close=Math.abs(X(qd)-X(qs))<40;
+ line(90,Y(50),X(right),Y(50),'#9ca3af',1.2,{'stroke-dasharray':'4 4','data-gap-guide':'price'});
+ for(let [val,k,c] of [[qd,'d',colour.d],[qs,'s',colour.s]]){line(X(val),Y(50),X(val),410,'#9ca3af',1.2,{'stroke-dasharray':'4 4','data-gap-guide':k});
+
+ }
+ let n=arrow(X(left),397,X(right),397,colour.gap,'gap',true);if(n)tip(n,`${qd>qs?'Shortage':'Surplus'} at P₀: ${qd>qs?'quantity demanded exceeds quantity supplied':'quantity supplied exceeds quantity demanded'}. The arrow shows the horizontal gap between Qd and Qs.`);
+ tip(text((X(qd)+X(qs))/2,382,`${qd>qs?'Shortage':'Surplus'} at ${sub('P',0)}`,colour.gap,{'font-weight':'600'}), 'This gap is measured on the current curves at P₀. Its arrow is placed near the quantity axis for clarity.');
+ }
+ tip(el('circle',{cx:X(50),cy:Y(50),r:3.5,fill:colour.ink}), 'Initial equilibrium E₀: quantity demanded equals quantity supplied at P₀ and Q₀.');
+ if(!changed)text(X(50),Y(50)-12,sub('E',0)+' = '+sub('E',1));
+ else {text(X(50)+(q>=50?-18:18),Y(50)+(p>=50?22:-16),sub('E',0),colour.ink,{'text-anchor':q>=50?'end':'start'});tip(el('circle',{cx:X(q),cy:Y(p),r:3.5,fill:colour.accent}),'New equilibrium E₁: the current demand and supply curves intersect at P₁ and Q₁.');text(X(q)+(q>=50?18:-18),Y(p)-16,sub('E',1),colour.accent,{'text-anchor':q>=50?'start':'end'});}
+ axisLabels(50,p,'P',true);
+ let labels=[{v:50,i:'0',c:colour.ink},{v:q,i:'1',c:colour.accent}];
+ if($('gap').checked&&changed)labels.unshift({v:qd,i:'d',c:colour.d},{v:qs,i:'s',c:colour.s});
+ let groups=[];for(let item of labels){let group=groups.find(g=>Math.abs(g.v-item.v)<1e-8);if(group)group.items.push(item);else groups.push({v:item.v,items:[item]});}groups.sort((a,b)=>a.v-b.v);
+ let previous=null;for(let group of groups){let width=group.items.length*20+(group.items.length-1)*15,x=X(group.v),lane=430;if(previous&&x-previous.x<(width+previous.width)/2+8)lane=previous.lane===430?460:430;
+ let html=group.items.map(item=>`<tspan fill="${item.c}">${sub('Q',item.i)}</tspan>`).join(' = ');
+ let n=text(x,lane,html,colour.ink,{'data-quantity-label':group.items.map(i=>i.i).join('=')});tip(n,group.items.map(item=>({'d':'Quantity demanded on the current demand curve at P₀.','s':'Quantity supplied on the current supply curve at P₀.','0':'Initial equilibrium quantity Q₀.','1':'New equilibrium quantity Q₁.'})[item.i]).join(' '));
+ if(lane!==430)line(x,414,x,lane-12,'#9ca3af',1);previous={x,width,lane};}
+
+ for(let [visible,coords,kind] of [[!sameP,[55,Y(50),55,Y(p)],'price'],[!sameQ,[X(50),439,X(q),439],'quantity']]){if(visible){let a=arrow(...coords,colour.gap,'gap');if(a){a.setAttribute('stroke-width','1.2');a.dataset.axisChange=kind;}}}
+ $('summary-body').innerHTML=`<tr><th scope="row">Price</th><td>P<sub>0</sub></td><td>P<sub>1</sub></td><td>${direction(p-50)}</td></tr><tr><th scope="row">Quantity</th><td>Q<sub>0</sub></td><td>Q<sub>1</sub></td><td>${direction(q-50)}</td></tr>`;
+ let shiftPhrases=[];if(d!==0)shiftPhrases.push(`an ${d>0?'increase':'decrease'} in demand`);if(s!==0)shiftPhrases.push(`an ${s>0?'increase':'decrease'} in supply`);
+ let shiftSentence=shiftPhrases.join(' and ');shiftSentence=shiftSentence.charAt(0).toUpperCase()+shiftSentence.slice(1);
+ const outcome=v=>Math.abs(v)<1e-8?'remains unchanged':v>0?'increases':'decreases';
+ let steps=['Assuming the market is initially in equilibrium at E₀.'];
+ if(!changed){steps.push('There is no shift in demand or supply. The market remains in equilibrium: E₀ = E₁, with no shortage or surplus at P₀.');steps.push('Thus, equilibrium price and equilibrium quantity remain unchanged.');}
+ else if(sameP){steps.push(`${shiftSentence} ${shiftPhrases.length>1?'leave':'leaves'} quantity demanded equal to quantity supplied at price P₀. There is no shortage or surplus.`);steps.push('There is no upward or downward pressure on price, so no price adjustment or movement along the curves is needed.');steps.push('The current curves meet at the new equilibrium E₁, where quantity demanded equals quantity supplied.');steps.push(`Thus, equilibrium price remains unchanged and equilibrium quantity ${outcome(q-50)}.`);}
+ else{let shortage=qd>qs;steps.push(`${shiftSentence} will lead to a ${shortage?'shortage':'surplus'} at price P₀.`);steps.push(`This leads to ${shortage?'upward':'downward'} pressure on price as ${shortage?'frustrated consumers bid up the price':'producers reduce prices to clear excess stock'}.`);steps.push(`As price ${shortage?'increases':'decreases'}, quantity demanded ${shortage?'decreases':'increases'} and quantity supplied ${shortage?'increases':'decreases'}.`);steps.push('This adjustment occurs until quantity demanded and quantity supplied are equal at the new equilibrium E₁.');steps.push(`Thus, equilibrium price ${outcome(p-50)} and equilibrium quantity ${outcome(q-50)}.`);}
+ let msg=steps.join(' ');$('mechanism').innerHTML='<h2>Price Adjustment Process</h2><ol>'+steps.map(step=>'<li>'+step.replace(/\b(?:increase|decrease) in (?:demand|supply)\b|\b(?:shortage|surplus)\b|\b(?:upward|downward) pressure on price\b|\bequilibrium (?:price|quantity) (?:increases|decreases)\b/gi,phrase=>'<strong>'+phrase+'</strong>')+'</li>').join('')+'</ol>';
+ $('diagram-desc').textContent=`Demand: ${shiftDescription(d)}. Supply: ${shiftDescription(s)}. Equilibrium price ${direction(p-50).toLowerCase()}, quantity ${direction(q-50).toLowerCase()}. ${msg}`;
+ window.currentState={...state(),priceChange:direction(p-50),quantityChange:direction(q-50)};
+}
+const tooltip=$('diagram-tooltip');
+function hideTip(){tooltip.hidden=true;tooltip.style.display='none';}
+function showTip(target,e){if(!$('tooltips').checked||!target.dataset.tip)return;tooltip.dataset.surplus=target.id==='ps-area'?'ps':target.id==='cs-area'?'cs':'';tooltip.replaceChildren();let close=document.createElement('button');close.className='tooltip-close';close.type='button';close.textContent='×';close.setAttribute('aria-label','Close explanation');close.onclick=hideTip;let content=document.createElement('span');if(target.dataset.tipHtml)content.innerHTML=target.dataset.tipHtml;else content.textContent=target.dataset.tip;tooltip.append(content,close);tooltip.hidden=false;tooltip.style.display='block';if(innerWidth>900){let r=target.getBoundingClientRect(),xx=e?.clientX??r.x,yy=e?.clientY??r.y;tooltip.style.left=Math.max(12,Math.min(xx+12,innerWidth-tooltip.offsetWidth-12))+'px';tooltip.style.top=Math.max(12,Math.min(yy+12,innerHeight-tooltip.offsetHeight-12))+'px';}}
+svg.addEventListener('pointerover',e=>{let t=e.target.closest('[data-tip]');if(t)showTip(t,e);});svg.addEventListener('pointerout',e=>{if(e.pointerType==='mouse'&&!tooltip.contains(e.relatedTarget))hideTip();});svg.addEventListener('click',e=>{let t=e.target.closest('[data-tip]');if(t)showTip(t,e);});svg.addEventListener('focusin',e=>showTip(e.target));svg.addEventListener('focusout',e=>{if(!tooltip.contains(e.relatedTarget))hideTip();});svg.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();showTip(e.target);}});document.addEventListener('keydown',e=>{if(e.key==='Escape')hideTip();});
+for(let n of document.querySelectorAll('input,select:not(#image-style)'))n.addEventListener('input',render);
+if(!SIM){for(let k of ['d','s'])$(k==='d'?'choose-demand':'choose-supply').onclick=()=>{if(selectedCurve!==k)$('magnitude').value=0;selectedCurve=k;$('choose-demand').setAttribute('aria-pressed',k==='d');$('choose-supply').setAttribute('aria-pressed',k==='s');$('magnitude').setAttribute('aria-label',(k==='d'?'Demand':'Supply')+' shift magnitude');render();};}
+$('zoom').onclick=()=>{let on=$('frame').classList.toggle('zoomed');$('zoom').textContent=on?'Fit diagram':'Enlarge diagram';$('zoom').setAttribute('aria-pressed',on);};
+$('reset').onclick=()=>{if(SIM){$('d-shift').value=0;$('s-shift').value=0;}else{selectedCurve='d';$('choose-demand').setAttribute('aria-pressed','true');$('choose-supply').setAttribute('aria-pressed','false');$('magnitude').setAttribute('aria-label','Demand shift magnitude');$('magnitude').value=0;}for(let id of ['tooltips','gap'])$(id).checked=true;$('adjustment').checked=false;$('cs-toggle').checked=false;$('ps-toggle').checked=false;$('image-style').value='colour';$('frame').classList.remove('zoomed');$('zoom').textContent='Enlarge diagram';$('zoom').setAttribute('aria-pressed','false');$('export-status').textContent='';render();};
+function exportSVG(){let clone=svg.cloneNode(true),nodes=svg.querySelectorAll('*'),copies=clone.querySelectorAll('*');for(let i=0;i<nodes.length;i++){let cs=getComputedStyle(nodes[i]);for(let prop of ['fill','stroke','stroke-width','stroke-dasharray','font-family','font-size','font-weight','paint-order','stroke-linejoin'])copies[i].style.setProperty(prop,cs.getPropertyValue(prop));copies[i].removeAttribute('tabindex');copies[i].removeAttribute('data-tip');copies[i].removeAttribute('data-tip-html');}
+ clone.setAttribute('xmlns',NS);clone.setAttribute('width','1400');clone.setAttribute('height','1000');clone.setAttribute('viewBox','0 0 700 500');clone.style.width='1400px';clone.style.height='1000px';clone.style.background='#fff';let bg=document.createElementNS(NS,'rect');bg.setAttribute('width','700');bg.setAttribute('height','500');bg.setAttribute('fill','white');clone.prepend(bg);
+ if($('image-style').value==='grayscale'){for(let n of clone.querySelectorAll('*')){for(let prop of ['stroke','fill']){let val=n.style.getPropertyValue(prop)||n.getAttribute(prop);if(!val||val==='none'||val==='transparent')continue;let nums=val.match(/[\d.]+/g);let gray;if(val[0]==='#'){let h=val.slice(1);if(h.length===3)h=h.split('').map(x=>x+x).join('');gray=Math.round(.2126*parseInt(h.slice(0,2),16)+.7152*parseInt(h.slice(2,4),16)+.0722*parseInt(h.slice(4,6),16));}else if(nums?.length>=3)gray=Math.round(.2126*+nums[0]+.7152*+nums[1]+.0722*+nums[2]);else continue;n.style.setProperty(prop,`rgb(${gray},${gray},${gray})`);}}}
+ if($('image-style').value==='grayscale'){
+ let defs=clone.querySelector('defs');for(let [id,diagonal] of [['cs-hatch',true],['ps-hatch',false]]){let pattern=document.createElementNS(NS,'pattern');pattern.setAttribute('id',id);pattern.setAttribute('width','8');pattern.setAttribute('height','8');pattern.setAttribute('patternUnits','userSpaceOnUse');pattern.innerHTML='<rect width="8" height="8" fill="#f3f4f6"/><path d="'+(diagonal?'M-2,2 L2,-2 M0,8 L8,0 M6,10 L10,6':'M0,4 H8')+'" stroke="#999" stroke-width="1"/>';defs.append(pattern);}
+ for(let [area,pattern] of [['cs-area','cs-hatch'],['ps-area','ps-hatch']]){let n=clone.querySelector('#'+area);if(n)n.style.fill='url(#'+pattern+')';}}
+ return new XMLSerializer().serializeToString(clone);
+}
+async function png(){let url=URL.createObjectURL(new Blob([exportSVG()],{type:'image/svg+xml;charset=utf-8'}));try{let img=new Image();await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=url;});let c=document.createElement('canvas');c.width=1400;c.height=1000;c.getContext('2d').drawImage(img,0,0);return await new Promise((res,rej)=>c.toBlob(b=>b?res(b):rej(Error('Export failed')),'image/png'));}finally{URL.revokeObjectURL(url);}}
+$('download').onclick=async()=>{try{let b=await png(),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=(SIM?'Demand_Supply_Simultaneous_Shifts':'Demand_Supply_Single_Shifts')+($('image-style').value==='grayscale'?'_Grayscale':'')+'.png';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);$('export-status').textContent='Diagram downloaded.';}catch(e){$('export-status').textContent='Unable to export. Open the widget in its own browser tab and try again.';}};
+$('copy').onclick=async()=>{try{await navigator.clipboard.write([new ClipboardItem({'image/png':png()})]);$('export-status').textContent='Diagram copied.';}catch(e){$('export-status').textContent='Copying is unavailable in this browser or embed. Use Download diagram.';}};
+window.exportSVG=exportSVG;window.diagramPNG=png;render();
+</script></body></html>

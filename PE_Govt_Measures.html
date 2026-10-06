@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Government Corrective Measures for Positive Externalities</title>
+  <style>
+/* ECON WIDGET DESIGN SYSTEM v2 — shared across all four standalone files. */
+:root{--accent:#4169e1;--ink:#1f2937;--muted:#6b7280;--border:#e5e7eb;--panel:#f3f4f6;--blue:#2563eb;--green:#16a34a;--red:#dc2626;--radius:8px}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:#fff;max-width:1240px;margin:0 auto;padding:20px 16px;line-height:1.5}
+.widget-header{margin:0 0 16px;border-left:4px solid var(--accent);padding-left:12px}
+.widget-header h1{font-size:20px;line-height:1.3;margin:0;font-weight:700}
+.widget-header p{font-size:13px;color:var(--muted);margin:4px 0 0}
+.layout{display:grid;grid-template-columns:minmax(0,2fr) minmax(270px,1fr);gap:20px;align-items:start}
+.main-content{min-width:0;position:relative}
+.sidebar{min-width:0;background:#f9fafb;padding:16px;border-radius:var(--radius);border:1px solid var(--border)}
+.controls{display:flex;flex-direction:column;gap:12px;margin-bottom:12px;background:var(--panel);padding:12px 16px;border-radius:var(--radius)}
+.control-row,.control-group,.policy-selector,.slider-card{display:flex;gap:8px;align-items:center;min-width:0;flex-wrap:wrap}
+.control-row,.policy-selector,.slider-card{width:100%}
+.control-group{flex:1;width:100%}
+.control-group>label:not(.toggle-label):not(.checkbox-label),.policy-selector>label{font-size:13px;font-weight:600}
+.policy-selector select{flex:1}
+.checkbox-group,.option-row,.toggle-grid{display:flex;flex-wrap:wrap;gap:2px 16px;align-items:center;width:100%;border:0;padding:0;background:transparent}
+.checkbox-group>strong{display:none}
+.checkbox-label,.toggle-label{font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;min-height:36px;user-select:none;line-height:1.35}
+input[type=checkbox]{accent-color:var(--accent);width:17px;height:17px;flex-shrink:0;cursor:pointer;margin:0}
+input[type=range]{accent-color:var(--accent);flex:1;min-width:70px;width:100px;height:36px;cursor:pointer;margin:0}
+.scale-label{font-size:12px;font-weight:500;color:var(--muted)}
+select,button{font:600 13px/1.4 system-ui,sans-serif;min-height:40px;border:1px solid #d1d5db;border-radius:6px;background:#fff;color:var(--ink);padding:8px 10px;cursor:pointer;max-width:100%;min-width:0}
+select{width:auto;text-overflow:ellipsis}
+button:hover{border-color:var(--accent);background:#f0f4ff}
+:focus-visible{outline:3px solid #819bea;outline-offset:3px}
+.export-format{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600}.toolbar{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding-top:8px;border-top:1px solid #dcdfe5}
+.toolbar .hint{flex:1;font-size:12px;color:var(--muted);min-width:140px}
+.reset-button{color:#4169e1;border-color:#b6c6f5}
+.diagram-frame{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);background:#fff}
+svg#diagram{width:100%;height:auto;display:block;background:#fff;overflow:hidden}
+.diagram-frame.zoomed svg{min-width:720px}
+.diagram-help{font-size:12px;color:var(--muted);margin:6px 2px 0}
+.axis{stroke:#374151;stroke-width:2}
+.line-mpb{stroke:var(--blue);stroke-width:2.5}
+.line-mpc{stroke:var(--green);stroke-width:2.5}
+.line-msb,.line-msc{stroke:var(--red);stroke-width:2.5}
+.line-policy,.line-tax,.line-quota,.line-qpoll,.line-rd,.line-edu{stroke:var(--accent);stroke-width:2.5;stroke-dasharray:6,4}
+.guide-line{stroke:#9ca3af;stroke-width:1.2;stroke-dasharray:4,4}
+.dwl-poly{fill:rgba(220,38,38,.25);stroke:var(--red);stroke-width:1.5;cursor:pointer}
+.tax-poly,.subsidy-rect{fill:rgba(65,105,225,.18);stroke:var(--accent);stroke-width:1.5;stroke-dasharray:4,4;cursor:pointer}
+.policy-arrow{stroke:var(--accent);stroke-width:2}
+.under-arrow,.over-arrow{stroke:var(--red);stroke-width:2}
+.meb-arrow,.mec-arrow{stroke:var(--blue);stroke-width:2}
+text{font-size:13px;font-family:system-ui,sans-serif}
+text[font-size="11"]{font-size:11px}
+text[font-size="12"]{font-size:12px}
+tspan[baseline-shift="sub"]{font-size:9px}
+.has-tooltip,.touch-target,[data-tooltip-target]{cursor:pointer}
+.touch-target{fill:transparent}
+svg circle.has-tooltip{stroke:transparent;stroke-width:16;pointer-events:all}
+svg text{paint-order:stroke;stroke:#fff;stroke-width:2px;stroke-linejoin:round}
+svg text tspan{stroke-width:1px}
+#label-dwl-text,#label-subsidy-cost-text{stroke-width:0;pointer-events:none}
+.tooltip{position:fixed;background:#1f2937;color:#fff;padding:12px 38px 12px 14px;border-radius:6px;font-size:13px;line-height:1.5;display:none;z-index:100;max-width:min(320px,calc(100vw - 24px));box-shadow:0 8px 22px #0003;border:1px solid #374151;pointer-events:auto}
+.tooltip strong{color:#fb923c}
+.tooltip-close{position:absolute;right:3px;top:3px;background:transparent;color:#fff;border:0;padding:3px 7px;min-height:30px;font-size:20px}
+.tooltip-close:hover{background:#374151}
+.glossary-title{margin:0 0 12px;font-size:16px;font-weight:700;color:#111827;border-bottom:2px solid var(--border);padding-bottom:6px}
+details{margin-bottom:8px;background:#fff;border:1px solid var(--border);border-radius:6px;padding:0 12px}
+details:last-child{margin-bottom:0}
+details[open]{border-color:var(--accent)}
+summary{font-weight:600;font-size:13px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:44px;padding:8px 0}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"▸";font-size:13px;color:#9ca3af;flex-shrink:0}
+details[open] summary::after{transform:rotate(90deg);color:var(--accent)}
+details p{margin:0 0 12px;font-size:13px;color:#4b5563;line-height:1.55}
+@media(hover:hover){.dwl-poly:hover{fill:rgba(220,38,38,.4)}.tax-poly:hover,.subsidy-rect:hover{fill:rgba(65,105,225,.3)}}
+@media(max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}.sidebar{padding:14px}.main-content{position:relative}.tooltip{position:relative;left:0!important;top:0!important;width:100%;max-width:100%;margin-top:10px}.controls{padding:12px}.control-group:has(input[type=range])>label{flex-basis:100%}}
+@media(max-width:480px){body{padding:12px 8px}.widget-header h1{font-size:18px}.controls{gap:8px}.control-group:has(select)>label,.policy-selector>label{flex-basis:100%}select{width:100%}.checkbox-label,.toggle-label{min-height:40px}.toolbar .hint{flex-basis:100%}.layout{gap:14px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+.policy-note{font-size:13px;line-height:1.5;color:#4b5563;background:#f0f4ff;border:1px solid #cbd7fa;border-radius:8px;padding:12px;margin:10px 0}.policy-note p{margin:4px 0}.policy-note h2{font-size:15px;margin:0 0 6px;color:#4169e1}
+.policy-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0}.policy-metrics>div{background:white;border:1px solid #e5e7eb;border-radius:6px;padding:10px}.policy-metrics span{display:block;font-size:12px;color:#6b7280}.policy-metrics strong{font-size:18px;color:#1f2937}
+.ban-legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:12px;margin:8px 0}.ban-legend i{display:inline-block;width:14px;height:10px;margin-right:5px;border:1px solid;vertical-align:middle}.ban-free-area{fill:rgba(217,119,6,.18);stroke:#b45309;stroke-width:1.4;stroke-dasharray:4,3;cursor:pointer}.metric-value{font-weight:700;color:#4169e1;font-variant-numeric:tabular-nums}
+@media(max-width:480px){.policy-metrics{grid-template-columns:1fr}.policy-metrics>div{display:flex;align-items:center;justify-content:space-between;gap:8px}.policy-metrics strong{font-size:16px}}
+strong,b{color:#dc2626!important;font-weight:700}
+.tooltip{background:#fff;color:var(--ink);border-color:#b6c6f5}
+.tooltip-close{color:var(--ink)}
+.tooltip-close:hover{background:#f0f4ff}
+.ban-free-area{fill:rgba(217,119,6,.18);stroke:#b45309;stroke-width:1.4;stroke-dasharray:4,3;cursor:pointer}
+.area-key{display:flex;gap:8px 16px;flex-wrap:wrap;align-items:center;font-size:12px;margin:8px 2px}.area-key[hidden],.ban-legend[hidden]{display:none}.key-heading{font-weight:600;color:#4b5563}.key-item{display:inline-flex;align-items:center;gap:6px}.key-item i{display:inline-block;width:16px;height:12px;border:1px solid #777;flex-shrink:0}.key-colour{opacity:.65}.key-pattern.social{background:repeating-linear-gradient(135deg,#fff 0 4px,#777 4px 5px)}.key-pattern.other{background:repeating-linear-gradient(0deg,#fff 0 4px,#777 4px 5px)}.key-pattern.policy{background:repeating-linear-gradient(45deg,transparent 0 4px,#777 4px 5px),repeating-linear-gradient(135deg,#fff 0 4px,#777 4px 5px)}.related-widget{margin:12px 2px}.related-widget a{display:inline-block;color:#4169e1;font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:3px;padding:8px 0;max-width:100%}
+</style>
+</head>
+<body>
+<header class="widget-header"><h1>Positive externalities · Government measures</h1><p>A-level Economics · Interactive diagrams</p></header>
+
+<div class="layout">
+  <div class="main-content">
+    <div class="controls">
+      <div class="control-row">
+        <div class="control-group" style="width: 100%;">
+          <label for="policy-select"><strong>Government Policy:</strong></label>
+          <select id="policy-select" style="flex: 1;">
+            <option value="none">None (Uncorrected Market Failure)</option>
+            <option value="indirect_subsidy">Indirect Subsidy (to Producers)</option>
+            <option value="direct_subsidy">Direct Subsidy (to Consumers)</option>
+            <option value="free_provision">Free Provision (No Consumer Price)</option>
+            <option value="joint_provision">Joint Provision (Public + Private Supply)</option>
+            <option value="education">Education & Campaigns</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="control-row toggle-grid">
+        <label class="toggle-label"><input type="checkbox" id="toggle-tooltips" checked> Tooltips</label>
+        <label class="toggle-label"><input type="checkbox" id="toggle-dwl" checked> DWL Area</label>
+        <label class="toggle-label"><input type="checkbox" id="toggle-gap" checked> Under/Over-consumption</label>
+        <label class="toggle-label"><input type="checkbox" id="toggle-meb" checked> MEB Label</label>
+        <label class="toggle-label" id="toggle-subsidy-cost-label" style="display: none;"><input type="checkbox" id="toggle-subsidy-cost" checked> Total Cost of Subsidy</label>
+      </div>
+
+      <div class="control-row" id="slider-container" style="display: none;">
+        <div class="control-group" style="width: 100%;">
+          <label id="slider-label" for="policy-slider"><strong>Intervention Level:</strong></label>
+          <span class="scale-label">None</span>
+          <input type="range" id="policy-slider" min="0" max="30" value="0" step="1" style="flex: 1;">
+          <span class="scale-label" id="slider-max-label">High</span>
+        </div>
+      </div>
+    </div>
+
+    <svg id="diagram" viewBox="-40 0 710 470">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#374151" />
+        </marker>
+        <marker id="arrow-purple-start" viewBox="0 0 10 10" refX="2" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M 10 1.5 L 0 5 L 10 8.5 z" fill="#4169e1" />
+        </marker>
+        <marker id="arrow-purple-end" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#4169e1" />
+        </marker>
+        <marker id="arrow-start-blue" viewBox="0 0 10 10" refX="2" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M 10 1.5 L 0 5 L 10 8.5 z" fill="#2563eb" />
+        </marker>
+        <marker id="arrow-end-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#2563eb" />
+        </marker>
+        <marker id="arrow-start-red" viewBox="0 0 10 10" refX="2" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M 10 1.5 L 0 5 L 10 8.5 z" fill="#dc2626" />
+        </marker>
+        <marker id="arrow-end-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#dc2626" />
+        </marker>
+      </defs>
+
+      <rect id="subsidy-cost-rect" class="subsidy-rect" style="display: none;" />
+      <text id="label-subsidy-cost-text" fill="#4169e1" font-weight="bold" font-size="11" text-anchor="middle" dominant-baseline="central" style="display: none; pointer-events: none;">Total Cost of Subsidy</text>
+
+      <polygon id="dwl" class="dwl-poly" points="" />
+      <text id="label-dwl-text" fill="#7f1d1d" font-weight="bold" text-anchor="middle" dominant-baseline="central" font-size="11" style="pointer-events: none;">DWL</text>
+
+      <line x1="70" y1="380" x2="590" y2="380" class="axis" marker-end="url(#arrow)" />
+      <line x1="70" y1="380" x2="70" y2="25" class="axis" marker-end="url(#arrow)" />
+
+      <line id="line-policy-curve" class="line-policy" style="display: none;" />
+      <line id="arrow-policy" class="policy-arrow" style="display: none;" marker-start="url(#arrow-purple-start)" marker-end="url(#arrow-purple-end)" />
+      <text id="label-policy-curve" fill="#4169e1" font-weight="bold" style="display: none;"></text>
+      <text id="label-policy-arrow" fill="#4169e1" font-weight="bold" font-size="11" style="display: none;">Subsidy</text>
+
+      <text class="axis-title" x="64" y="12" text-anchor="end" font-weight="bold" style="font-size:12px"><tspan x="64">Price /</tspan><tspan x="64" dy="14">Costs /</tspan><tspan x="64" dy="14">Benefits</tspan></text>
+      <text class="axis-title" x="600" y="385" font-weight="bold">Qty</text>
+      
+
+      <line id="arrow-meb" stroke="#2563eb" stroke-width="2" marker-start="url(#arrow-start-blue)" marker-end="url(#arrow-end-blue)" style="display: none;" />
+      <text id="label-meb" fill="#2563eb" font-weight="bold" text-anchor="end" dominant-baseline="central" style="display: none;">MEB</text>
+
+      <line id="arrow-gap" stroke="#dc2626" stroke-width="2" marker-start="url(#arrow-start-red)" marker-end="url(#arrow-end-red)" style="display: none;" />
+      <text id="label-gap" fill="#dc2626" font-weight="bold" text-anchor="middle" style="display: none;"></text>
+
+      <line id="line-qe" class="guide-line" />
+      <line id="line-pe" class="guide-line" />
+      <line id="line-qs" class="guide-line" />
+      <line id="line-ps" class="guide-line" />
+      
+      <line id="line-qpol" class="guide-line" stroke="#4169e1" style="display: none;" />
+      <line id="line-ppol" class="guide-line" stroke="#4169e1" style="display: none;" />
+
+      <line id="curve-mpc" class="line-mpc" />
+      <line id="curve-mpb" class="line-mpb" />
+      <line id="curve-msb" class="line-msb" />
+
+      <text id="label-mpc" fill="#16a34a" font-weight="bold">MPC = MSC</text>
+      <text id="label-mpb" fill="#2563eb" font-weight="bold">MPB</text>
+      <text id="label-msb" fill="#dc2626" font-weight="bold">MSB = MPB + MEB</text>
+
+      <circle id="dot-ee" class="has-tooltip" r="4.5" fill="#1f2937" />
+      <circle id="dot-es" class="has-tooltip" r="4.5" fill="#dc2626" />
+      <circle id="dot-a" r="3.5" fill="#dc2626" />
+      <circle id="dot-pol" r="3.5" fill="#4169e1" style="display: none;" />
+
+      <text id="label-ee" fill="#1f2937" font-weight="bold">E<tspan baseline-shift="sub" font-size="9">e</tspan></text>
+      <text id="label-es" fill="#dc2626" font-weight="bold">E<tspan baseline-shift="sub" font-size="9">s</tspan></text>
+      <text id="label-a" fill="#dc2626" font-weight="bold">A</text>
+      <text id="label-pol" fill="#4169e1" font-weight="bold" style="display: none;">E<tspan baseline-shift="sub" font-size="9">gov</tspan></text>
+
+      <text id="label-qe" class="has-tooltip" y="400" text-anchor="middle" font-weight="bold">Qe</text>
+      <text id="label-pe" x="60" text-anchor="end" dominant-baseline="central" font-weight="bold">Pe</text>
+      <text id="label-qs" class="has-tooltip" y="400" text-anchor="middle" font-weight="bold" fill="#dc2626">Qs</text>
+      <text id="label-ps" x="60" text-anchor="end" dominant-baseline="central" font-weight="bold" fill="#dc2626">Ps</text>
+      
+      <text id="label-qpol" y="415" text-anchor="middle" font-weight="bold" fill="#4169e1" style="display: none;">Qpolicy</text>
+      <text id="label-ppol" x="60" text-anchor="end" dominant-baseline="central" font-weight="bold" fill="#4169e1" style="display: none;">Ppolicy</text>
+
+      <circle id="touch-target-ee" class="touch-target" r="22" />
+      <circle id="touch-target-es" class="touch-target" r="22" />
+      <rect id="touch-target-qe" class="touch-target" width="36" height="30" />
+      <rect id="touch-target-qs" class="touch-target" width="36" height="30" />
+    </svg>
+
+<section id="joint-results" class="policy-note" aria-live="polite" style="display:none"></section>
+    <div id="diagram-tooltip" class="tooltip"></div>
+  </div>
+
+  <div class="sidebar">
+    <h3 class="glossary-title">Key Concepts & Policies</h3>
+<details><summary>Diagram assumptions &amp; definitions</summary><p>This diagram illustrates positive externalities in consumption: MSB = MPB + MEB, with no external costs (MSC = MPC).</p><p><strong>MPB:</strong> the additional benefit to the consumer from consuming an additional unit. <strong>MPC:</strong> the additional cost to the producer of producing an additional unit.</p></details>
+
+    <details>
+      <summary>Deadweight Loss (DWL)</summary>
+      <p><b>DWL</b> is the reduction in <b>net benefit to society</b> because output is not at the <b>socially optimal level</b> where <b>MSB = MSC</b>.</p>
+    </details>
+
+    <details>
+      <summary>Market Equilibrium (Ee / Qe, Pe)</summary>
+      <p>The output level (<b>Qe</b>) and price level (<b>Pe</b>) determined purely by private market forces, where <b>MPB = MPC</b> without government intervention.</p>
+    </details>
+
+    <details>
+      <summary>Socially Optimal Equilibrium (Es / Qs, Ps)</summary>
+      <p>The ideal production and consumption level (<b>Qs</b>) where total social welfare is maximized because <b>MSB = MSC</b>, achieving <b>allocative efficiency</b>.</p>
+    </details>
+
+    <details>
+      <summary>Indirect Subsidy</summary>
+      <p>A payment made by the government to <b>producers or firms</b> when producing a good or service, which lowers their <b>marginal private cost</b> of production.</p>
+    </details>
+
+    <details>
+      <summary>Direct Subsidy</summary>
+      <p>A subsidy, grant, or voucher given directly to <b>consumers or households</b> to purchase specific goods and services, which increases their <b>marginal private benefit</b>.</p>
+    </details>
+
+    <details>
+      <summary>Free Provision</summary>
+      <p>A full producer subsidy lets consumers receive the good at <b>zero price</b>. Producers receive a reimbursement from the government. Varying MEB reveals <b>excessive, socially optimal or insufficient provision</b>. Free provision eliminates DWL only when its output coincides with Qs; it can otherwise improve or worsen welfare relative to the free market.</p>
+    </details>
+
+    <details>
+      <summary>Direct Government Provision</summary>
+      <p>Occurs when the government engages in the <b>provision of a good directly</b> (which does not necessarily mean the government produces the good itself, nor is it strictly free of charge).</p>
+    </details>
+
+    <details>
+      <summary>Joint Provision</summary>
+      <p>The government supplies a fixed quantity alongside private producers. Total supply is the <b>horizontal sum</b> of public and private supply. MPC* is drawn as a parallel shift of MPC = MSC, using a constant horizontal addition over the displayed range. A lower market price can reduce private output, so the increase in total output is smaller than public output.<br><br>This branch isolates the market-supply effect. Public output is sold at the market price; public production costs are not specified. The original Qs is a reference only: a new social optimum and DWL require a model of public resource costs.</p>
+    </details>
+
+    <details>
+      <summary>Legislation (Compulsory Consumption)</summary>
+      <p>Rules or laws set by the government to <b>force or ensure</b> that a certain amount of goods with positive externalities are consumed or produced, backed by <b>penalties or punitive measures</b>.</p>
+    </details>
+
+    <details>
+      <summary>Education & Campaigns</summary>
+      <p>Government measures used to <b>persuade consumers</b> to voluntarily consume more of a good generating positive externalities by encouraging them to <b>internalise the external benefits</b>.</p>
+    </details>
+  </div>
+</div>
+
+<script>
+  const policySelect = document.getElementById('policy-select');
+  const sliderContainer = document.getElementById('slider-container');
+  const policySlider = document.getElementById('policy-slider');
+  const sliderLabel = document.getElementById('slider-label');
+
+  const toggleTooltips = document.getElementById('toggle-tooltips');
+  const toggleDwl = document.getElementById('toggle-dwl');
+  const toggleGap = document.getElementById('toggle-gap');
+  const toggleMeb = document.getElementById('toggle-meb');
+  const toggleSubsidyCost = document.getElementById('toggle-subsidy-cost');
+  const toggleSubsidyCostLabel = document.getElementById('toggle-subsidy-cost-label');
+
+  const dwl = document.getElementById('dwl');
+  const labelDwlText = document.getElementById('label-dwl-text');
+  const subsidyCostRect = document.getElementById('subsidy-cost-rect');
+  const labelSubsidyCostText = document.getElementById('label-subsidy-cost-text');
+  const diagramTooltip = document.getElementById('diagram-tooltip');
+  const mainContent = document.querySelector('.main-content');
+
+  const labelQe = document.getElementById('label-qe');
+  const dotEe = document.getElementById('dot-ee');
+  const labelQs = document.getElementById('label-qs');
+  const dotEs = document.getElementById('dot-es');
+
+  const touchTargetEe = document.getElementById('touch-target-ee');
+  const touchTargetEs = document.getElementById('touch-target-es');
+  const touchTargetQe = document.getElementById('touch-target-qe');
+  const touchTargetQs = document.getElementById('touch-target-qs');
+
+  const linePolicyCurve = document.getElementById('line-policy-curve');
+  const arrowPolicy = document.getElementById('arrow-policy');
+  const labelPolicyCurve = document.getElementById('label-policy-curve');
+  const labelPolicyArrow = document.getElementById('label-policy-arrow');
+  const labelMsb = document.getElementById('label-msb');
+
+  const arrowMeb = document.getElementById('arrow-meb');
+  const labelMeb = document.getElementById('label-meb');
+  const arrowGap = document.getElementById('arrow-gap');
+  const labelGap = document.getElementById('label-gap');
+
+  const lineQpol = document.getElementById('line-qpol');
+  const linePpol = document.getElementById('line-ppol');
+  const dotPol = document.getElementById('dot-pol');
+  const labelPol = document.getElementById('label-pol');
+  const labelQpol = document.getElementById('label-qpol');
+  const labelPpol = document.getElementById('label-ppol');
+
+  let globalCurrentQ = 60;
+  const globalQs = 75;
+
+  function toSvgX(q) { return 70 + 4.333333333333333 * q; }
+  function toSvgY(p) { return 380 - 3.4 * p; }
+
+  function renderDiagram() {
+    const policy = policySelect.value;
+    document.getElementById('joint-results').style.display=policy==='joint_provision'?'block':'none';
+    document.querySelectorAll('.joint-only').forEach(el=>el.remove());
+    toggleDwl.disabled=policy==='joint_provision';
+    toggleDwl.closest('label').title=policy==='joint_provision'?'DWL requires public production-cost assumptions.':'';
+    document.getElementById('slider-max-label').textContent='High';
+    policySlider.max=policy==='joint_provision'?'60':'30';
+    const meb = 15;
+    const sliderVal = parseFloat(policySlider.value);
+
+    const qe = 60;
+    const pe = 15 + 0.45 * qe;
+    const qs = 75;
+    const ps = 15 + 0.45 * qs;
+    const pmsb_qe = pe + meb;
+
+    const qeX = toSvgX(qe), peY = toSvgY(pe);
+    const qsX = toSvgX(qs), psY = toSvgY(ps);
+    const aY = toSvgY(pmsb_qe);
+
+    labelMsb.textContent = "MSB = MPB + MEB";
+    document.getElementById('label-mpc').textContent='MPC = MSC';
+    document.getElementById('label-es').innerHTML='E<tspan baseline-shift="sub" font-size="9">s</tspan>';
+    document.getElementById('dot-a').style.display='inline';document.getElementById('label-a').style.display='inline';
+
+    const mpcX1 = toSvgX(0), mpcY1 = toSvgY(15);
+    const mpcX2 = toSvgX(95), mpcY2 = toSvgY(15 + 0.45 * 95);
+    document.getElementById('curve-mpc').setAttribute('x1', mpcX1);
+    document.getElementById('curve-mpc').setAttribute('y1', mpcY1);
+    document.getElementById('curve-mpc').setAttribute('x2', mpcX2);
+    document.getElementById('curve-mpc').setAttribute('y2', mpcY2);
+    document.getElementById('label-mpc').setAttribute('x', mpcX2 + 6);
+    document.getElementById('label-mpc').setAttribute('y', mpcY2 + 4);
+
+    const mpbX1 = toSvgX(0), mpbY1 = toSvgY(75);
+    const mpbX2 = toSvgX(95), mpbY2 = toSvgY(75 - 0.55 * 95);
+    document.getElementById('curve-mpb').setAttribute('x1', mpbX1);
+    document.getElementById('curve-mpb').setAttribute('y1', mpbY1);
+    document.getElementById('curve-mpb').setAttribute('x2', mpbX2);
+    document.getElementById('curve-mpb').setAttribute('y2', mpbY2);
+    document.getElementById('label-mpb').setAttribute('x', mpbX2 + 6);
+    document.getElementById('label-mpb').setAttribute('y', mpbY2 + 4);
+
+    const msbX1 = toSvgX(0), msbY1 = toSvgY(90);
+    const msbX2 = toSvgX(95), msbY2 = toSvgY(90 - 0.55 * 95);
+    document.getElementById('curve-msb').setAttribute('x1', msbX1);
+    document.getElementById('curve-msb').setAttribute('y1', msbY1);
+    document.getElementById('curve-msb').setAttribute('x2', msbX2);
+    document.getElementById('curve-msb').setAttribute('y2', msbY2);
+    labelMsb.setAttribute('x', msbX2 + 6);
+    labelMsb.setAttribute('y', msbY2 + 4);
+
+    document.getElementById('line-qe').setAttribute('x1', qeX);
+    document.getElementById('line-qe').setAttribute('y1', peY);
+    document.getElementById('line-qe').setAttribute('x2', qeX);
+    document.getElementById('line-qe').setAttribute('y2', 380);
+
+    document.getElementById('line-pe').setAttribute('x1', 70);
+    document.getElementById('line-pe').setAttribute('y1', peY);
+    document.getElementById('line-pe').setAttribute('x2', qeX);
+    document.getElementById('line-pe').setAttribute('y2', peY);
+
+    document.getElementById('line-qs').setAttribute('x1', qsX);
+    document.getElementById('line-qs').setAttribute('y1', psY);
+    document.getElementById('line-qs').setAttribute('x2', qsX);
+    document.getElementById('line-qs').setAttribute('y2', 380);
+
+    document.getElementById('line-ps').setAttribute('x1', 70);
+    document.getElementById('line-ps').setAttribute('y1', psY);
+    document.getElementById('line-ps').setAttribute('x2', qsX);
+    document.getElementById('line-ps').setAttribute('y2', psY);
+
+    dotEe.setAttribute('cx', qeX);
+    dotEe.setAttribute('cy', peY);
+    document.getElementById('label-ee').setAttribute('x', qeX + 12);
+    document.getElementById('label-ee').setAttribute('y', peY + 12);
+
+    dotEs.setAttribute('cx', qsX);
+    dotEs.setAttribute('cy', psY);
+    document.getElementById('label-es').setAttribute('x', qsX + 12);
+    document.getElementById('label-es').setAttribute('y', psY - 6);
+
+    touchTargetEe.setAttribute('cx', qeX);
+    touchTargetEe.setAttribute('cy', peY);
+    touchTargetEs.setAttribute('cx', qsX);
+    touchTargetEs.setAttribute('cy', psY);
+
+    touchTargetQe.setAttribute('x', qeX - 18);
+    touchTargetQe.setAttribute('y', 385);
+    touchTargetQs.setAttribute('x', qsX - 18);
+    touchTargetQs.setAttribute('y', 385);
+
+    document.getElementById('dot-a').setAttribute('cx', qeX);
+    document.getElementById('dot-a').setAttribute('cy', aY);
+    document.getElementById('label-a').setAttribute('x', qeX - 16);
+    document.getElementById('label-a').setAttribute('y', aY - 6);
+
+    labelQe.setAttribute('x', qeX);
+    labelQe.setAttribute('y', 400);
+
+    const labelPe = document.getElementById('label-pe');
+    labelPe.setAttribute('x', 60);
+    labelPe.setAttribute('y', peY);
+
+    labelQs.setAttribute('x', qsX);
+    labelQs.setAttribute('y', 400);
+
+    const labelPs = document.getElementById('label-ps');
+    labelPs.setAttribute('x', 60);
+    labelPs.setAttribute('y', psY);
+
+    linePolicyCurve.style.strokeDasharray = '6,4';
+    linePolicyCurve.style.display = 'none';
+    arrowPolicy.style.display = 'none';
+    labelPolicyCurve.style.display = 'none';
+    labelPolicyArrow.style.display = 'none';
+    lineQpol.style.display = 'none';
+    linePpol.style.display = 'none';
+    dotPol.style.display = 'none';
+    labelPol.style.display = 'none';
+    labelQpol.style.display = 'none';
+    labelPpol.style.display = 'none';
+    subsidyCostRect.style.display = 'none';
+    labelSubsidyCostText.style.display = 'none';
+
+    labelQe.textContent = "Qe";
+    labelQe.style.display = 'inline';
+    labelPe.textContent = "Pe";
+    labelPe.style.display = 'inline';
+    labelQs.textContent = "Qs";
+    labelQs.style.display = 'inline';
+    labelPs.textContent = "Ps";
+    labelPs.style.display = 'inline';
+
+    let currentQ = qe;
+
+    if (policy === 'indirect_subsidy' || policy === 'direct_subsidy') {
+      toggleSubsidyCostLabel.style.display = 'flex';
+    } else {
+      toggleSubsidyCostLabel.style.display = 'none';
+    }
+
+    if (policy === 'none') {
+      sliderContainer.style.display = 'none';
+      currentQ = qe;
+    } 
+    else if (policy === 'indirect_subsidy') {
+      sliderContainer.style.display = 'flex';
+      sliderLabel.innerHTML = '<strong>Subsidy Level:</strong>';
+
+      const s = sliderVal;
+      currentQ = 60 + s;
+      const psub = 15 - s + 0.45 * currentQ;
+      const qsubX = toSvgX(currentQ), psubY = toSvgY(psub);
+
+      let subStartQ = 0;
+      if (15 - s < 0) {
+        subStartQ = (s - 15) / 0.45;
+      }
+      const subX1 = toSvgX(subStartQ);
+      const subY1 = toSvgY(Math.max(0, 15 - s));
+      const subX2 = toSvgX(95);
+      const subY2 = toSvgY(15 - s + 0.45 * 95);
+      linePolicyCurve.setAttribute('x1', subX1);
+      linePolicyCurve.setAttribute('y1', subY1);
+      linePolicyCurve.setAttribute('x2', subX2);
+      linePolicyCurve.setAttribute('y2', subY2);
+
+      if (s === 0) {
+        linePolicyCurve.style.display = 'none';
+        labelPolicyCurve.style.display = 'none';
+      } else {
+        linePolicyCurve.style.display = 'inline';
+        labelPolicyCurve.textContent = "MPC - Subsidy";
+        labelPolicyCurve.setAttribute('x', subX2 + 6);
+        labelPolicyCurve.setAttribute('y', subY2 + 4);
+        labelPolicyCurve.removeAttribute('text-anchor');
+        labelPolicyCurve.style.display = 'inline';
+      }
+
+      if (s > 0) {
+        const qShift = 35;
+        const qShiftX = toSvgX(qShift);
+        const yOld = toSvgY(15 + 0.45 * qShift);
+        const yNew = toSvgY(15 - s + 0.45 * qShift);
+        arrowPolicy.setAttribute('x1', qShiftX);
+        arrowPolicy.setAttribute('y1', yOld - 2);
+        arrowPolicy.setAttribute('x2', qShiftX);
+        arrowPolicy.setAttribute('y2', yNew + 2);
+        arrowPolicy.style.display = 'block';
+
+        labelPolicyArrow.setAttribute('x', qShiftX + 8);
+        labelPolicyArrow.setAttribute('y', (yOld + yNew) / 2);
+        labelPolicyArrow.setAttribute('dominant-baseline', 'central');
+        labelPolicyArrow.setAttribute('text-anchor', 'start');
+        labelPolicyArrow.textContent = "Subsidy";
+        labelPolicyArrow.style.display = 'inline';
+      }
+
+      if (s > 0) {
+        dotPol.setAttribute('cx', qsubX);
+        dotPol.setAttribute('cy', psubY);
+        dotPol.style.display = 'block';
+
+        lineQpol.setAttribute('x1', qsubX);
+        lineQpol.setAttribute('y1', psubY);
+        lineQpol.setAttribute('x2', qsubX);
+        lineQpol.setAttribute('y2', 380);
+        lineQpol.style.display = 'inline';
+      }
+
+      if (Math.abs(currentQ - qs) < 0.1 && s > 0) {
+        labelQs.textContent = "Qs = Qsub";
+      } else if (s > 0) {
+        labelQpol.textContent = "Qsub";
+        labelQpol.setAttribute('x', qsubX);
+        labelQpol.setAttribute('y', 415);
+        labelQpol.style.display = 'inline';
+      }
+    } 
+    else if (policy === 'direct_subsidy') {
+      sliderContainer.style.display = 'flex';
+      sliderLabel.innerHTML = '<strong>Subsidy Level:</strong>';
+
+      const s = sliderVal;
+      currentQ = 60 + s;
+      const psub = 75 + s - 0.55 * currentQ;
+      const qsubX = toSvgX(currentQ), psubY = toSvgY(psub);
+
+      const subX1 = toSvgX(0), subY1 = toSvgY(75 + s);
+      const subX2 = toSvgX(95), subY2 = toSvgY(75 + s - 0.55 * 95);
+      linePolicyCurve.setAttribute('x1', subX1);
+      linePolicyCurve.setAttribute('y1', subY1);
+      linePolicyCurve.setAttribute('x2', subX2);
+      linePolicyCurve.setAttribute('y2', subY2);
+
+      if (s === 0) {
+        linePolicyCurve.style.display = 'none';
+        labelPolicyCurve.style.display = 'none';
+      } else if (Math.abs(s - 15) < 0.1) {
+        labelMsb.textContent = "MSB = MPB + Subsidy";
+        linePolicyCurve.style.display = 'none';
+        labelPolicyCurve.style.display = 'none';
+      } else {
+        linePolicyCurve.style.display = 'inline';
+        labelPolicyCurve.textContent = "MPB + Subsidy";
+        labelPolicyCurve.setAttribute('x', subX2 + 6);
+        labelPolicyCurve.setAttribute('y', subY2 + 4);
+        labelPolicyCurve.removeAttribute('text-anchor');
+        labelPolicyCurve.style.display = 'inline';
+      }
+
+      if (s > 0) {
+        const qShift = 35;
+        const qShiftX = toSvgX(qShift);
+        const yOld = toSvgY(75 - 0.55 * qShift);
+        const yNew = toSvgY(75 + s - 0.55 * qShift);
+        arrowPolicy.setAttribute('x1', qShiftX);
+        arrowPolicy.setAttribute('y1', yOld + 2);
+        arrowPolicy.setAttribute('x2', qShiftX);
+        arrowPolicy.setAttribute('y2', yNew - 2);
+        arrowPolicy.style.display = 'block';
+
+        labelPolicyArrow.setAttribute('x', qShiftX + 8);
+        labelPolicyArrow.setAttribute('y', (yOld + yNew) / 2);
+        labelPolicyArrow.setAttribute('dominant-baseline', 'central');
+        labelPolicyArrow.setAttribute('text-anchor', 'start');
+        labelPolicyArrow.textContent = "Subsidy";
+        labelPolicyArrow.style.display = 'inline';
+      }
+
+      if (s > 0) {
+        dotPol.setAttribute('cx', qsubX);
+        dotPol.setAttribute('cy', psubY);
+        dotPol.style.display = 'block';
+
+        lineQpol.setAttribute('x1', qsubX);
+        lineQpol.setAttribute('y1', psubY);
+        lineQpol.setAttribute('x2', qsubX);
+        lineQpol.setAttribute('y2', 380);
+        lineQpol.style.display = 'inline';
+      }
+
+      if (Math.abs(currentQ - qs) < 0.1 && s > 0) {
+        labelQs.textContent = "Qs = Qsub";
+      } else if (s > 0) {
+        labelQpol.textContent = "Qsub";
+        labelQpol.setAttribute('x', qsubX);
+        labelQpol.setAttribute('y', 415);
+        labelQpol.style.display = 'inline';
+      }
+    } 
+    else if (policy === 'joint_provision') {
+      sliderContainer.style.display='flex';sliderLabel.innerHTML='<strong>Government Output (Qg):</strong>';
+      const qg=sliderVal;currentQ=60+.45*qg;const qp=currentQ-qg,price=75-.55*currentQ,qx=toSvgX(currentQ),px=toSvgX(qp),py=toSvgY(price);
+      const el=(tag,attrs,text)=>{const e=document.createElementNS('http://www.w3.org/2000/svg',tag);Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));e.classList.add('joint-only');if(text!==undefined)e.textContent=text;document.getElementById('diagram').append(e);return e;};
+      document.getElementById('label-mpc').textContent='MPC = MSC';document.getElementById('label-es').textContent='Es';labelQs.textContent='Qs';document.getElementById('dot-a').style.display='none';document.getElementById('label-a').style.display='none';
+      linePolicyCurve.setAttribute('x1',toSvgX(Math.max(0,qg-15/.45)));linePolicyCurve.setAttribute('y1',toSvgY(Math.max(0,15-.45*qg)));linePolicyCurve.setAttribute('x2',toSvgX(95));linePolicyCurve.setAttribute('y2',toSvgY(15+.45*(95-qg)));linePolicyCurve.style.display=qg>0?'inline':'none';
+      
+      labelPolicyCurve.textContent='MPC*';labelPolicyCurve.setAttribute('x',toSvgX(95)+6);labelPolicyCurve.setAttribute('y',toSvgY(15+.45*(95-qg))+4);labelPolicyCurve.style.display=qg>0?'inline':'none';
+      if(qg>0){dotPol.setAttribute('cx',qx);dotPol.setAttribute('cy',py);dotPol.style.display='block';lineQpol.setAttribute('x1',qx);lineQpol.setAttribute('x2',qx);lineQpol.setAttribute('y1',py);lineQpol.setAttribute('y2',380);lineQpol.style.display='inline';labelQpol.textContent='Qtotal';labelQpol.setAttribute('x',qx);labelQpol.setAttribute('y',418);labelQpol.style.display='inline';
+        el('line',{x1:px,y1:py,x2:px,y2:380,class:'guide-line'});el('circle',{cx:px,cy:py,r:3.5,fill:'#16a34a'});el('text',{id:'joint-private-label',x:px,y:418,'text-anchor':'middle','font-weight':'bold',fill:'#16a34a'},'Qprivate');
+        arrowPolicy.setAttribute('x1',px);arrowPolicy.setAttribute('x2',qx);arrowPolicy.setAttribute('y1',335);arrowPolicy.setAttribute('y2',335);arrowPolicy.style.display='block';labelPolicyArrow.setAttribute('x',(px+qx)/2);labelPolicyArrow.setAttribute('y',322);labelPolicyArrow.setAttribute('dominant-baseline','auto');labelPolicyArrow.setAttribute('text-anchor','middle');labelPolicyArrow.textContent='Government output (Qg)';labelPolicyArrow.style.display='inline';
+        el('line',{x1:70,y1:py,x2:qx,y2:py,class:'guide-line'});el('text',{id:'joint-price-label',x:60,y:py-4,'text-anchor':'end','font-weight':'bold',fill:'#4169e1'},'Pjoint');}
+      document.getElementById('joint-results').innerHTML=`<h2>Public output and the change in market output are different.</h2><p>${qg>0?'Government provision <strong>increases total supply</strong>. Private output <strong>falls</strong>, while total output <strong>rises</strong>. Some government output replaces private output, so the increase in total output is smaller than government output.':'With <strong>no government provision</strong>, private output and total output remain at the original market outcome.'}</p><p><strong>Total output</strong> combines government and private output.</p><p><strong>Scope:</strong> fixed government output, sold at the market price, is added horizontally to private supply. Qs marks the <em>original</em> social optimum. Government production costs are unspecified, so this branch does not determine a new social optimum or DWL.</p>`;
+    }
+    else if (policy === 'education') {
+      sliderContainer.style.display = 'flex';
+      sliderLabel.innerHTML = '<strong>Campaign Intensity:</strong>';
+
+      const c = sliderVal;
+      currentQ = 60 + c;
+      const pedu = 75 + c - 0.55 * currentQ;
+      const qeduX = toSvgX(currentQ), peduY = toSvgY(pedu);
+
+      const eduX1 = toSvgX(0), eduY1 = toSvgY(75 + c);
+      const eduX2 = toSvgX(95), eduY2 = toSvgY(75 + c - 0.55 * 95);
+      linePolicyCurve.setAttribute('x1', eduX1);
+      linePolicyCurve.setAttribute('y1', eduY1);
+      linePolicyCurve.setAttribute('x2', eduX2);
+      linePolicyCurve.setAttribute('y2', eduY2);
+
+      if (c === 0) {
+        linePolicyCurve.style.display = 'none';
+        labelPolicyCurve.style.display = 'none';
+      } else if (Math.abs(c - 15) < 0.1) {
+        labelMsb.textContent = "MSB = MPB*";
+        linePolicyCurve.style.display = 'none';
+        labelPolicyCurve.style.display = 'none';
+      } else {
+        linePolicyCurve.style.display = 'inline';
+        labelPolicyCurve.textContent = "MPB*";
+        labelPolicyCurve.setAttribute('x', eduX2 + 6);
+        labelPolicyCurve.setAttribute('y', eduY2 + 4);
+        labelPolicyCurve.removeAttribute('text-anchor');
+        labelPolicyCurve.style.display = 'inline';
+      }
+
+      arrowPolicy.style.display = 'none';
+      labelPolicyArrow.style.display = 'none';
+
+      if (c > 0) {
+        dotPol.setAttribute('cx', qeduX);
+        dotPol.setAttribute('cy', peduY);
+        dotPol.style.display = 'block';
+
+        lineQpol.setAttribute('x1', qeduX);
+        lineQpol.setAttribute('y1', peduY);
+        lineQpol.setAttribute('x2', qeduX);
+        lineQpol.setAttribute('y2', 380);
+        lineQpol.style.display = 'inline';
+      }
+
+      if (Math.abs(currentQ - qs) < 0.1 && c > 0) {
+        labelQs.textContent = "Qs = Qedu";
+      } else if (c > 0) {
+        labelQpol.textContent = "Qedu";
+        labelQpol.setAttribute('x', qeduX);
+        labelQpol.setAttribute('y', 415);
+        labelQpol.style.display = 'inline';
+      }
+    }
+
+    if ((policy === 'indirect_subsidy' || policy === 'direct_subsidy') && toggleSubsidyCost.checked && sliderVal > 0) {
+      const pProd = 15 + 0.45 * currentQ;
+      const pCons = 75 - 0.55 * currentQ;
+      const yProd = toSvgY(pProd);
+      const yCons = toSvgY(pCons);
+      const x0 = 70;
+      const xQ = toSvgX(currentQ);
+
+      subsidyCostRect.setAttribute('x', x0);
+      subsidyCostRect.setAttribute('y', yProd);
+      subsidyCostRect.setAttribute('width', xQ - x0);
+      subsidyCostRect.setAttribute('height', yCons - yProd);
+      subsidyCostRect.style.display = 'block';
+
+      labelSubsidyCostText.setAttribute('x', (x0 + xQ) / 2);
+      labelSubsidyCostText.setAttribute('y', (yProd + yCons) / 2);
+      labelSubsidyCostText.style.display = 'block';
+    }
+
+    globalCurrentQ = currentQ;
+
+    if (policy !== 'joint_provision' && toggleDwl.checked && Math.abs(currentQ - qs) > 0.1) {
+      dwl.style.display = 'block';
+      labelDwlText.style.display = 'block';
+
+      const curX = toSvgX(currentQ);
+      const pMsc = 15 + 0.45 * currentQ;
+      const pMsb = 90 - 0.55 * currentQ;
+      const yMsc = toSvgY(pMsc);
+      const yMsb = toSvgY(pMsb);
+
+      dwl.setAttribute('points', `${qsX},${psY} ${curX},${yMsc} ${curX},${yMsb}`);
+
+      const dwlCenterX = (2 * curX + qsX) / 3;
+      const dwlCenterY = (yMsc + yMsb + psY) / 3;
+      labelDwlText.setAttribute('x', dwlCenterX);
+      labelDwlText.setAttribute('y', dwlCenterY);
+      labelDwlText.textContent = "DWL";
+
+      if (currentQ > qs) {
+        dwl.setAttribute('fill', 'rgba(220, 38, 38, 0.35)');
+      } else {
+        dwl.setAttribute('fill', 'rgba(220, 38, 38, 0.25)');
+      }
+    } else {
+      dwl.style.display = 'none';
+      labelDwlText.style.display = 'none';
+      diagramTooltip.style.display = 'none';
+    }
+
+    if (toggleMeb.checked) {
+      const mebArrowX = qeX - 12;
+      arrowMeb.setAttribute('x1', mebArrowX);
+      arrowMeb.setAttribute('y1', peY - 2);
+      arrowMeb.setAttribute('x2', mebArrowX);
+      arrowMeb.setAttribute('y2', aY + 2);
+      arrowMeb.style.display = 'block';
+
+      labelMeb.setAttribute('x', mebArrowX - 6);
+      labelMeb.setAttribute('y', (peY + aY) / 2);
+      labelMeb.style.display = 'block';
+    } else {
+      arrowMeb.style.display = 'none';
+      labelMeb.style.display = 'none';
+    }
+
+    if (policy !== 'joint_provision' && toggleGap.checked && Math.abs(currentQ - qs) > 0.1) {
+      const yGap = 345;
+      const xStart = toSvgX(Math.min(currentQ, qs));
+      const xEnd = toSvgX(Math.max(currentQ, qs));
+
+      arrowGap.setAttribute('x1', xStart + 4);
+      arrowGap.setAttribute('y1', yGap);
+      arrowGap.setAttribute('x2', xEnd - 4);
+      arrowGap.setAttribute('y2', yGap);
+      arrowGap.style.display = 'block';
+
+      labelGap.setAttribute('x', (xStart + xEnd) / 2);
+      labelGap.setAttribute('y', yGap - 10);
+      
+      if (currentQ < qs) {
+        labelGap.textContent = "Under-consumption";
+        labelGap.setAttribute('fill', '#dc2626');
+      } else {
+        labelGap.textContent = "Over-consumption";
+        labelGap.setAttribute('fill', '#991b1b');
+      }
+      labelGap.style.display = 'block';
+    } else {
+      arrowGap.style.display = 'none';
+      labelGap.style.display = 'none';
+    }
+
+    if(policy==='joint_provision'&&toggleGap.checked&&Math.abs(currentQ-qs)>1e-9){
+      const left=toSvgX(Math.min(currentQ,qs)),right=toSvgX(Math.max(currentQ,qs));
+      arrowGap.setAttribute('x1',left+4);arrowGap.setAttribute('x2',right-4);arrowGap.setAttribute('y1',345);arrowGap.setAttribute('y2',345);arrowGap.style.display='block';
+      labelGap.setAttribute('x',(left+right)/2);labelGap.setAttribute('y',332);labelGap.textContent=currentQ<qs?'Under-consumption / Under-production':'Over-consumption / Over-production';labelGap.style.display='block';
+    }
+    if (!toggleTooltips.checked) {
+      diagramTooltip.style.display = 'none';
+    }
+  }
+
+  function showTooltip(htmlContent, e) {
+    if (!document.getElementById('toggle-tooltips').checked) return;
+    const tip=document.getElementById('diagram-tooltip');
+    tip.innerHTML='<button type="button" class="tooltip-close" aria-label="Close explanation">×</button><div>'+htmlContent+'</div>';
+    tip.style.display='block';
+    tip.querySelector('button').onclick=dismissTooltip;
+    if(window.innerWidth>900){
+      const box=tip.getBoundingClientRect();
+      const x=Number.isFinite(e?.clientX)?e.clientX:24;
+      const y=Number.isFinite(e?.clientY)?e.clientY:24;
+      tip.style.left=Math.max(8,Math.min(x+12,window.innerWidth-box.width-8))+'px';
+      tip.style.top=Math.max(8,Math.min(y+12,window.innerHeight-box.height-8))+'px';
+    }
+  }
+
+  function hideTooltip() {
+    if (!document.getElementById('toggle-tooltips').checked) {dismissTooltip();return;}
+    // Keep explanations available on touch screens and after a deliberate tap/click.
+    if(window.innerWidth>900 && !window.widgetTipPinned){
+      clearTimeout(window.widgetTipTimer);
+      window.widgetTipTimer=setTimeout(()=>{if(!window.widgetTipPinned)document.getElementById('diagram-tooltip').style.display='none';},160);
+    }
+  }
+  function dismissTooltip(){
+    clearTimeout(window.widgetTipTimer);window.widgetTipPinned=false;
+    document.getElementById('diagram-tooltip').style.display='none';
+  }
+
+  const dwlContent = () => globalCurrentQ < globalQs ? `
+    <strong style="color: #f87171;">Why is this DWL?</strong><br>
+    • <strong>Horizontally:</strong> Output is not at Q<sub>s</sub> (under-consumption).<br>
+    • <strong>Vertically:</strong> MSB is not equal to MSC (MSB &gt; MSC for these units), representing forgone net benefit to society.
+  ` : `
+    <strong style="color: #f87171;">Why is this DWL?</strong><br>
+    • <strong>Horizontally:</strong> Output is not at Q<sub>s</sub> (over-consumption).<br>
+    • <strong>Vertically:</strong> MSB is not equal to MSC (MSC &gt; MSB for these units), representing net welfare loss from over-production.
+  `;
+
+  const qeContent = `
+    <strong style="color: #60a5fa;">Free Market Output (Q<sub>e</sub>)</strong><br>
+    This is the output determined by <strong>MPB = MPC</strong>. It reflects the outcome produced by private market forces without government intervention.
+  `;
+
+  const qsContent = `
+    <strong style="color: #f87171;">Socially Optimal Output (Q<sub>s</sub>)</strong><br>
+    This is the output level that maximizes total social welfare where <strong>MSB = MSC</strong>. At this point, allocative efficiency is achieved.
+  `;
+
+  const subsidyCostContent = `
+    <strong style="color: #c084fc;">Total Cost of Subsidy</strong><br>
+    This area represents the total cost of subsidy because it is the subsidy amount multiplied by the units of output.
+  `;
+
+  dwl.addEventListener('mousemove', (e) => toggleDwl.checked && Math.abs(globalCurrentQ - globalQs) > 0.1 && showTooltip(dwlContent(), e));
+  dwl.addEventListener('click', (e) => toggleDwl.checked && Math.abs(globalCurrentQ - globalQs) > 0.1 && showTooltip(dwlContent(), e));
+  dwl.addEventListener('mouseleave', hideTooltip);
+
+  subsidyCostRect.addEventListener('mousemove', (e) => toggleSubsidyCost.checked && showTooltip(subsidyCostContent, e));
+  subsidyCostRect.addEventListener('click', (e) => toggleSubsidyCost.checked && showTooltip(subsidyCostContent, e));
+  subsidyCostRect.addEventListener('mouseleave', hideTooltip);
+
+  [labelQe, dotEe, touchTargetEe, touchTargetQe].forEach(el => {
+    el.addEventListener('mousemove', (e) => showTooltip(qeContent, e));
+    el.addEventListener('click', (e) => showTooltip(qeContent, e));
+    el.addEventListener('mouseleave', hideTooltip);
+  });
+
+  [labelQs, dotEs, touchTargetEs, touchTargetQs].forEach(el => {
+    el.addEventListener('mousemove', (e) => showTooltip(policySelect.value==='joint_provision'?'<strong>Original social optimum (Qs)</strong><br>This is the benchmark before public provision. A new optimum requires public production-cost assumptions.':qsContent, e));
+    el.addEventListener('click', (e) => showTooltip(policySelect.value==='joint_provision'?'<strong>Original social optimum (Qs)</strong><br>This is the benchmark before public provision. A new optimum requires public production-cost assumptions.':qsContent, e));
+    el.addEventListener('mouseleave', hideTooltip);
+  });
+
+  policySelect.addEventListener('change', () => {
+    policySlider.value = 0;
+    if(policySelect.value==='free_provision')toggleSubsidyCost.checked=false;
+    updateDiagram();
+  });
+  policySlider.addEventListener('input', updateDiagram);
+  toggleTooltips.addEventListener('change', updateDiagram);
+  toggleDwl.addEventListener('change', updateDiagram);
+  toggleGap.addEventListener('change', updateDiagram);
+  toggleMeb.addEventListener('change', updateDiagram);
+  toggleSubsidyCost.addEventListener('change', updateDiagram);
+
+
+  // Free provision: a full producer subsidy fixes consumer price at zero.
+  const freeControls=document.createElement('div');freeControls.id='free-controls';freeControls.className='control-row';freeControls.style.display='none';
+  freeControls.innerHTML='<div class="control-group"><label for="free-meb-slider"><strong>MEB:</strong></label><span class="scale-label">None</span><input id="free-meb-slider" type="range" min="0" max="120" value="60" step="1"><span class="scale-label">High</span></div><label class="toggle-label"><input type="checkbox" id="free-compare" checked> Compare free-market DWL</label>';
+  document.querySelector('.controls').append(freeControls);
+  const freeResults=document.createElement('section');freeResults.id='free-results';freeResults.className='policy-note';freeResults.setAttribute('aria-live','polite');freeResults.style.display='none';document.getElementById('joint-results').after(freeResults);
+  const freeSlider=document.getElementById('free-meb-slider'),freeCompare=document.getElementById('free-compare');
+  freeSlider.addEventListener('input',updateDiagram);freeCompare.addEventListener('change',updateDiagram);
+  const baseRenderDiagram=renderDiagram;let freeHidden=[];
+  renderDiagram=function(){
+    freeHidden.forEach(([el,display])=>el.style.display=display);freeHidden=[];document.getElementById('free-scene')?.remove();
+    baseRenderDiagram();const active=policySelect.value==='free_provision';freeControls.style.display=active?'flex':'none';freeResults.style.display=active?'block':'none';
+    if(!active)return;
+    sliderContainer.style.display='none';toggleSubsidyCostLabel.style.display='flex';toggleDwl.disabled=false;
+    const svg=document.getElementById('diagram'),ns='http://www.w3.org/2000/svg';
+    [...svg.children].filter(el=>el.tagName!=='defs').forEach(el=>{freeHidden.push([el,el.style.display]);el.style.display='none';});
+    const scene=document.createElementNS(ns,'g');scene.id='free-scene';svg.append(scene);
+    const add=(tag,attrs={},text)=>{const el=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));if(text!==undefined)el.textContent=text;scene.append(el);return el;};
+    const txt=(x,y,t,attrs={})=>add('text',{x,y,'font-weight':'bold',...attrs},t),x=q=>70+2.65*q,y=p=>380-1.75*p;
+    const demand=q=>75-.55*q,cost=q=>15+.45*q,qf=75/.55,qe=60,meb=(qf-qe)*Number(freeSlider.value)/80,qs=qe+meb,pp=cost(qf),social=q=>demand(q)+meb;
+    const freeLoss=.5*(qf-qs)**2,marketLoss=.5*(qe-qs)**2,epsilon=1e-7;
+    window.currentFreeModel={qf,qe,qs,meb,pp,pc:0,subsidy:pp,freeLoss,marketLoss};
+    const tooltip=(el,html,label)=>{el.classList.add('has-tooltip');el.setAttribute('aria-label',label);el.onmousemove=e=>showTooltip(html,e);el.onmouseleave=hideTooltip;el.onclick=e=>showTooltip(html,e);};
+    const line=(a,b,c,d,attrs={})=>add('line',{x1:x(a),y1:y(b),x2:x(c),y2:y(d),...attrs});
+    const area=(id,q,className,html)=>{const el=add('polygon',{id,class:className,points:`${x(qs)},${y(cost(qs))} ${x(q)},${y(cost(q))} ${x(q)},${y(social(q))}`});tooltip(el,html,'Explain '+id.replaceAll('-',' '));};
+    if(freeCompare.checked&&marketLoss>epsilon)area('free-market-loss',qe,'ban-free-area','<strong>Free-market DWL</strong><br>The unregulated market under-consumes because consumers do not take MEB into account. The area measures social benefits forgone between Qe and Qs.');
+    if(toggleDwl.checked&&freeLoss>epsilon)area('free-policy-loss',qf,'dwl-poly',qf>qs?'<strong>DWL under free provision</strong><br>Output exceeds Qs. MSC exceeds MSB on the excess units.':'<strong>DWL under free provision</strong><br>Output is below Qs. Further units would create net social benefits, even though their private benefit is negative in this stylised linear model.');
+    if(toggleSubsidyCost.checked){const r=add('rect',{x:x(0),y:y(pp),width:x(qf)-x(0),height:y(0)-y(pp),class:'subsidy-rect'});scene.prepend(r);tooltip(r,'<strong>Government subsidy expenditure</strong><br>The subsidy reimburses producers while consumers pay no price. This payment is a transfer; resource costs are represented by MPC = MSC. Fiscal distortion and administration costs are excluded.','Explain subsidy expenditure');}
+    line(0,0,190,0,{class:'axis','marker-end':'url(#arrow)'});add('line',{x1:70,y1:380,x2:70,y2:25,class:'axis','marker-end':'url(#arrow)'});
+    const heading=txt(64,12,'',{'text-anchor':'end',class:'axis-title',style:'font-size:12px'});['Price /','Costs /','Benefits'].forEach((word,i)=>{const span=document.createElementNS(ns,'tspan');span.setAttribute('x',64);if(i)span.setAttribute('dy',14);span.textContent=word;heading.append(span);});txt(x(190)+9,385,'Qty',{class:'axis-title'});
+    line(0,demand(0),qf,0,{class:'line-mpb'});txt(x(qf)-8,y(0)-17,'MPB',{fill:'#2563eb','text-anchor':'end'});
+    line(0,cost(0),190,cost(190),{class:'line-mpc'});txt(x(190)+6,y(cost(190))+4,'MPC = MSC',{fill:'#16a34a'});
+    line(0,social(0),Math.min(190,(75+meb)/.55),Math.max(0,social(190)),{class:'line-msb'});txt(x(190)+6,y(Math.max(0,social(190)))+4,meb>epsilon?'MSB':'MPB = MSB',{fill:'#dc2626'});
+    line(qf,0,190,cost(190)-pp,{class:'line-policy',style:'stroke-dasharray:none'});txt(x(190)+6,y(cost(190)-pp)+4,'MPC*',{fill:'#4169e1'});
+    line(qf,0,qf,pp,{class:'guide-line'});line(0,pp,qf,pp,{class:'guide-line'});txt(60,y(pp)+4,'Pp',{'text-anchor':'end',fill:'#4169e1'});txt(60,379,'Pc (free)',{'text-anchor':'end',fill:'#4169e1',style:'font-size:11px'});
+    const point=(q,p,t,color,label)=>{const e=add('circle',{cx:x(q),cy:y(p),r:4.5,fill:color});txt(x(q)+8,y(p)-9,t,{fill:color});tooltip(e,label,'Explain '+t);};
+    line(qe,0,qe,cost(qe),{class:'guide-line'});line(0,cost(qe),qe,cost(qe),{class:'guide-line'});txt(60,y(cost(qe))+4,'Pe',{'text-anchor':'end'});txt(x(qe),402,meb<epsilon?'Qe = Qs':'Qe',{'text-anchor':'middle'});point(qe,cost(qe),meb<epsilon?'Ee = Es':'Ee','#1f2937','<strong>Free-market equilibrium</strong><br>MPB = MPC. Private curves and this output remain fixed as MEB changes.');
+    line(qs,0,qs,cost(qs),{class:'guide-line'});if(meb>epsilon)txt(x(qs),402,Math.abs(qs-qf)<epsilon?'Qs = Qf':'Qs',{'text-anchor':'middle',fill:'#dc2626'});if(meb>epsilon)point(qs,cost(qs),'Es','#dc2626','<strong>Social optimum</strong><br>MSB = MSC. The socially optimal output rises as MEB increases.');
+    if(Math.abs(qs-qf)>epsilon)txt(x(qf),402,'Qf',{'text-anchor':'middle',fill:'#4169e1'});point(qf,0,'Ef','#4169e1','<strong>Free provision</strong><br>Consumers pay no price. Producers receive Pp, funded by the government. Output stays fixed at Qf while MEB varies.');
+    if(toggleMeb.checked&&meb>epsilon){line(20,demand(20),20,social(20),{class:'free-externality',stroke:'#2563eb','stroke-width':2});txt(x(20)+10,(y(demand(20))+y(social(20)))/2+4,'MEB',{fill:'#2563eb'});}
+    if(toggleGap.checked&&Math.abs(qf-qs)>epsilon){line(Math.min(qf,qs),-27,Math.max(qf,qs),-27,{class:'free-gap-arrow',stroke:'#dc2626','stroke-width':2,'marker-start':'url(#arrow-start-red)','marker-end':'url(#arrow-end-red)'});txt((x(qf)+x(qs))/2,447,qf>qs?'Over-consumption / Over-production':'Under-consumption / Under-production',{class:'free-gap-label','text-anchor':'middle',fill:'#dc2626',style:'font-size:11px'});}
+    const state=Math.abs(qf-qs)<epsilon?'Socially optimal provision':qf>qs?'Excessive provision':'Insufficient provision';
+    const comparison=freeLoss<epsilon?'Free provision <strong>eliminates DWL</strong>.':Math.abs(freeLoss-marketLoss)<epsilon?'Free provision and the free market have <strong>the same DWL</strong>.':freeLoss<marketLoss?'Free provision <strong>reduces DWL</strong>, but some loss remains.':'Free provision <strong>increases DWL</strong> relative to the free market.';
+    freeResults.innerHTML=`<h2>${state}</h2><p>${qf>qs+epsilon?'MEB is too low to justify all the units consumed for free.':qs>qf+epsilon?'MEB is high enough that some socially beneficial units remain unprovided.':'MEB exactly offsets the gap between social cost and private benefit at the free-provision output.'}</p><p>${comparison}</p><p><strong>Mechanism:</strong> the government reimburses producers through a full subsidy. MPC* is MPC less the subsidy; the consumer price is zero. Producers receive Pp. The subsidy is fixed as MEB changes.</p><p><strong>Assumptions:</strong> linear private curves, constant MEB, no rationing, and no administration or tax-financing distortion costs. Negative private benefits beyond the demand intercept represent unwillingness to consume additional units without compensation. The full-subsidy outcome is socially optimal only at the matching MEB level.</p>`;
+  };
+
+  /* SHARED INTERACTIONS v2 — presentation only; original equations are above. */
+  const widgetSvg=document.getElementById('diagram');
+  const widgetControls=document.querySelector('.controls');
+  const widgetIsPolicy=!!document.getElementById('policy-select');
+  const options=widgetControls.querySelector('.toggle-grid,.option-row,.checkbox-group');
+  const optionOrder=['toggle-tooltips','toggle-dwl','dwl-check','toggle-gap','under-check','over-check','overprod-check','toggle-meb','meb-check','mec-check','toggle-subsidy-cost','tax-rev-check','tax-size-check'];
+  optionOrder.forEach(id=>{const input=document.getElementById(id);if(input&&options?.contains(input)){const label=input.closest('label');if(['toggle-gap','under-check','over-check','overprod-check'].includes(id)){label.title=label.textContent.trim();[...label.childNodes].filter(n=>n.nodeType===3).forEach(n=>n.remove());label.append(' Output Gap');}options.append(label);}});
+  const widgetInitial=[...widgetControls.querySelectorAll('input,select')].map(el=>({el,value:el.value,checked:el.checked}));
+  const widgetFrame=document.createElement('div');widgetFrame.className='diagram-frame';
+  widgetFrame.setAttribute('aria-label','Economics diagram; scroll horizontally when enlarged');
+  widgetSvg.before(widgetFrame);widgetFrame.append(widgetSvg);
+  widgetSvg.setAttribute('role','group');widgetSvg.setAttribute('aria-label',document.title+' — interactive diagram');
+  const tip=document.getElementById('diagram-tooltip');
+  widgetFrame.after(tip);tip.setAttribute('role','note');tip.setAttribute('aria-live','polite');
+  tip.addEventListener('mouseenter',()=>clearTimeout(window.widgetTipTimer));
+  tip.addEventListener('mouseleave',hideTooltip);
+  const toolbar=document.createElement('div');toolbar.className='toolbar';
+  toolbar.innerHTML='<span class="hint">Hover, tap or focus diagram points and shaded areas.</span><button type="button" class="zoom-button" aria-pressed="false">Enlarge diagram</button><button type="button" class="reset-button"><strong>Reset Diagram</strong></button>';
+  widgetFrame.after(toolbar);toolbar.setAttribute("aria-label","Diagram view and export controls");
+  const help=document.createElement('p');help.className='diagram-help';help.textContent='Use Enlarge diagram for a closer view on smaller screens.';toolbar.after(help);
+  toolbar.querySelector('.zoom-button').onclick=e=>{
+    const enlarged=widgetFrame.classList.toggle('zoomed');
+    e.currentTarget.setAttribute('aria-pressed',String(enlarged));e.currentTarget.textContent=enlarged?'Fit diagram':'Enlarge diagram';
+    widgetFrame.tabIndex=enlarged?0:-1;dismissTooltip();
+  };
+  toolbar.querySelector('.reset-button').onclick=()=>{
+    widgetInitial.forEach(({el,value,checked})=>{el.value=value;if(el.type==='checkbox')el.checked=checked;});
+    const select=document.getElementById('policy-select');if(select)select.dispatchEvent(new Event('change'));
+    document.querySelectorAll('.sidebar details').forEach(el=>el.open=false);
+    widgetFrame.classList.remove('zoomed');widgetFrame.scrollLeft=0;
+    const zoom=toolbar.querySelector('.zoom-button');zoom.textContent='Enlarge diagram';zoom.setAttribute('aria-pressed','false');
+    dismissTooltip();updateDiagram();
+  };
+  document.querySelectorAll('.sidebar details').forEach(el=>el.open=false);
+  document.getElementById('toggle-tooltips').addEventListener('change',dismissTooltip);
+  widgetControls.addEventListener('input',dismissTooltip);widgetControls.addEventListener('change',dismissTooltip);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')dismissTooltip();});
+  document.addEventListener('click',e=>{if(!e.target.closest('#diagram-tooltip')&&!e.target.closest('[data-tooltip-target]'))dismissTooltip();});
+  window.addEventListener('resize',dismissTooltip);window.addEventListener('scroll',()=>{if(window.innerWidth>900)dismissTooltip();},true);
+  widgetSvg.addEventListener('click',e=>{
+    const el=e.target.closest('[data-tooltip-target]');if(!el)return;
+    window.widgetTipPinned=true;clearTimeout(window.widgetTipTimer);
+    el.dispatchEvent(new MouseEvent('mousemove',{clientX:e.clientX,clientY:e.clientY}));
+  });
+  widgetSvg.addEventListener('focusin',e=>{
+    const el=e.target.closest('[data-tooltip-target]');if(!el)return;
+    const r=el.getBoundingClientRect();window.widgetTipPinned=true;
+    el.dispatchEvent(new MouseEvent('mousemove',{clientX:r.left+r.width/2,clientY:r.top+r.height/2}));
+  });
+  widgetSvg.addEventListener('focusout',e=>{if(!tip.contains(e.relatedTarget))dismissTooltip();});
+  widgetSvg.addEventListener('keydown',e=>{
+    const el=e.target.closest('[data-tooltip-target]');if(el&&['Enter',' '].includes(e.key)){e.preventDefault();const r=el.getBoundingClientRect();el.dispatchEvent(new MouseEvent('click',{bubbles:true,clientX:r.x+r.width/2,clientY:r.y+r.height/2}));}
+  });
+  function visible(el){return el&&getComputedStyle(el).display!=='none'&&!el.closest('[style*="display: none"]');}
+  function registerTargets(){
+    widgetSvg.querySelectorAll('.has-tooltip,.touch-target,[id="dwl"],[id="area-dwl"],[id="area-tax-rev"],[id="subsidy-cost-rect"]').forEach(el=>{
+      if(!el.classList.contains('has-tooltip')&&!el.classList.contains('touch-target')&&!el.onmousemove&& !['dwl','subsidy-cost-rect'].includes(el.id))return;
+      el.dataset.tooltipTarget='';el.setAttribute('role','button');el.setAttribute('tabindex','0');
+      const names={'dwl':'Explain deadweight loss','area-dwl':'Explain deadweight loss','area-tax-rev':'Explain tax revenue','subsidy-cost-rect':'Explain subsidy expenditure','dot-ee':'Explain free market equilibrium','dot-es':'Explain social optimum','touch-target-ee':'Explain free market equilibrium','touch-target-es':'Explain social optimum','touch-target-qe':'Explain free market output','touch-target-qs':'Explain socially optimal output'};
+      el.setAttribute('aria-label',names[el.id]||('Explain '+(el.textContent.trim()||'this diagram point')));
+      if(el.classList.contains('touch-target'))el.setAttribute('tabindex','-1');
+    });
+  }
+  function labelLayout(){
+    // Preserve very small gaps without reversed or overlapping arrowheads.
+    widgetSvg.querySelectorAll('#under-arrow,#over-arrow,#arrow-gap').forEach(el=>{
+      if(!visible(el))return;const inset=el.id==='arrow-gap'?4:2;
+      const left=+el.getAttribute('x1')-inset,right=+el.getAttribute('x2')+inset;
+      const pad=Math.min(inset,Math.max(0,(right-left)/4));el.setAttribute('x1',left+pad);el.setAttribute('x2',right-pad);
+    });
+    widgetSvg.querySelectorAll('#meb-arrow,#mec-arrow').forEach(el=>{if(!visible(el))return;const top=+el.getAttribute('y1')-2,bottom=+el.getAttribute('y2')+2,pad=Math.min(2,Math.max(0,(bottom-top)/4));el.setAttribute('y1',top+pad);el.setAttribute('y2',bottom-pad);});
+    widgetSvg.querySelectorAll('line[marker-start],line[data-original-start]').forEach(el=>{
+      if(!el.dataset.originalStart){el.dataset.originalStart=el.getAttribute('marker-start');el.dataset.originalEnd=el.getAttribute('marker-end');}
+      const length=Math.hypot(+el.getAttribute('x2')- +el.getAttribute('x1'),+el.getAttribute('y2')- +el.getAttribute('y1'));
+      el.setAttribute('marker-start',length<18?'none':el.dataset.originalStart);el.setAttribute('marker-end',length<18?'none':el.dataset.originalEnd);
+    });
+    // Uniform externality annotation and typographic subscripts.
+    ['label-meb','label-mec'].forEach(id=>document.getElementById(id)?.setAttribute('fill','#2563eb'));
+    const mecGroup=document.getElementById('group-mec');if(mecGroup)mecGroup.querySelectorAll('line,polygon,text').forEach(el=>el.setAttribute(el.tagName==='line'?'stroke':'fill','#2563eb'));
+    if(!widgetIsPolicy)widgetSvg.querySelectorAll('#arrow-purple-start path,#arrow-purple-end path').forEach(el=>el.setAttribute('fill','#2563eb'));
+    widgetSvg.querySelectorAll('#label-qe,#label-qs,#label-qpol,#label-pe,#label-ps,#label-ppol,#label-ee,#label-es,#group-dynamic-axis-labels text,#group-dynamic-nodes text,#ban-scene text,#free-scene text,.joint-only text,#label-mpc,#label-policy-curve').forEach(el=>{
+      const text=el.textContent;const pattern=/\b([QPES])(?:_)?(private|total|joint|quota|sub|edu|gov|s0|g|b|e|s|c|p|t|f)\b/g;
+      if(!pattern.test(text))return;pattern.lastIndex=0;el.replaceChildren();let last=0;
+      for(const m of text.matchAll(pattern)){el.append(document.createTextNode(text.slice(last,m.index)+m[1]));const sub=document.createElementNS('http://www.w3.org/2000/svg','tspan');sub.setAttribute('baseline-shift','sub');sub.setAttribute('font-size','9');sub.textContent=m[2];el.append(sub);last=m.index+m[0].length;}el.append(document.createTextNode(text.slice(last)));
+    });
+    // Reset positions is handled by the original renderer before each pass.
+    widgetSvg.querySelectorAll('.label-leader').forEach(el=>el.remove());
+    const qLabels=[...widgetSvg.querySelectorAll('#label-qe,#label-qs,#label-qpol,#joint-private-label,#group-dynamic-axis-labels text')].filter(el=>visible(el)&&+el.getAttribute('y')>=380);
+    const lanes=[[],[],[]];
+    qLabels.sort((a,b)=>+a.getAttribute('x')- +b.getAttribute('x'));
+    qLabels.forEach(el=>{
+      const x=+el.getAttribute('x'),w=el.getBBox().width;
+      let lane=lanes.findIndex(list=>list.every(b=>x-w/2>b+8));if(lane<0)lane=2;
+      lanes[lane].push(x+w/2);el.setAttribute('y',400+lane*18);
+    });
+    const pLabels=[...widgetSvg.querySelectorAll('#label-pe,#label-ps,#label-ppol,#joint-price-label,#group-dynamic-axis-labels text')].filter(el=>visible(el)&&+el.getAttribute('y')<380);
+    pLabels.sort((a,b)=>+a.getAttribute('y')- +b.getAttribute('y'));
+    let previous=-Infinity;
+    pLabels.forEach(el=>{
+      const old=+el.getAttribute('y');const y=Math.max(old,previous+17);previous=y;
+      el.setAttribute('y',y);
+      if(y-old>1){const l=document.createElementNS('http://www.w3.org/2000/svg','line');l.setAttribute('class','label-leader');l.setAttribute('x1',66);l.setAttribute('y1',y-4);l.setAttribute('x2',70);l.setAttribute('y2',old-4);l.setAttribute('stroke','#9ca3af');widgetSvg.append(l);}
+    });
+    const curveLabels=[...widgetSvg.querySelectorAll('#label-mpb,#label-mpc,#label-msb,#label-msc,#label-policy-curve,#group-dynamic-curve-labels text')].filter(el=>visible(el)&&el.textContent!=='Quota');
+    curveLabels.sort((a,b)=>+a.getAttribute('y')- +b.getAttribute('y'));
+    let curvePrevious=-Infinity;
+    curveLabels.forEach(el=>{const old=+el.getAttribute('y'),y=Math.max(old,curvePrevious+18);curvePrevious=y;el.setAttribute('y',y);if(y-old>1){const l=document.createElementNS('http://www.w3.org/2000/svg','line');l.setAttribute('class','label-leader');const x=+el.getAttribute('x');l.setAttribute('x1',x-4);l.setAttribute('y1',old-4);l.setAttribute('x2',x);l.setAttribute('y2',y-4);l.setAttribute('stroke',el.getAttribute('fill')||'#9ca3af');widgetSvg.append(l);}});
+    // Hide only the text when a narrow DWL triangle cannot contain it.
+    const area=document.getElementById('dwl')||document.getElementById('area-dwl');
+    const label=document.getElementById('label-dwl-text');
+    if(visible(area)&&label){const b=area.getBBox();if(b.width<30||b.height<26)label.style.display='none';}
+    // Keep text inside the viewBox, including merged price/curve labels.
+    widgetSvg.querySelectorAll('text').forEach(el=>{
+      if(!visible(el))return;const b=el.getBBox();const x=+el.getAttribute('x');
+      if(b.x < -30)el.setAttribute('x',x+(-30-b.x));
+      else if(b.x+b.width>660)el.setAttribute('x',x-(b.x+b.width-660));
+    });
+  }
+  // Restore presentation-only edits before the model renders the next state.
+  let labelSnapshots=[];
+  function restoreLabelPresentation(){
+    labelSnapshots.forEach(({el,html,x,y,display})=>{if(el.isConnected){el.innerHTML=html;el.setAttribute('x',x);el.setAttribute('y',y);el.style.display=display;}});
+    labelSnapshots=[];widgetSvg.querySelectorAll('.collision-leader').forEach(e=>e.remove());
+  }
+  const overlapNote=document.createElement('p');overlapNote.className='diagram-help';overlapNote.hidden=true;widgetSvg.closest('.diagram-frame').after(overlapNote);
+  function snapshotLabels(){labelSnapshots=[...widgetSvg.querySelectorAll('text')].map(el=>({el,html:el.innerHTML,x:el.getAttribute('x'),y:el.getAttribute('y'),display:el.style.display}));}
+  function mergeExactLabels(){
+    snapshotLabels();
+    const labels=[...widgetSvg.querySelectorAll('text')].filter(e=>visible(e)&&/^[QP][a-z]+$/.test(e.textContent.trim()));
+    const used=new Set();
+    labels.forEach(a=>{if(used.has(a))return;const name=a.textContent.trim(),x=+a.getAttribute('x'),y=+a.getAttribute('y');const group=labels.filter(b=>!used.has(b)&&b.textContent.trim()[0]===name[0]&&(name[0]==='Q'?Math.abs(+b.getAttribute('x')-x)<1e-7:Math.abs(+b.getAttribute('y')-y)<1e-7));if(group.length>1){a.textContent=[...new Set(group.map(b=>b.textContent.trim()))].join(' = ');group.slice(1).forEach(b=>b.style.display='none');group.forEach(b=>used.add(b));}});
+    const pairs=[['label-ee','dot-ee'],['label-es','dot-es'],['label-pol','dot-pol']].map(([l,d])=>({l:document.getElementById(l),d:document.getElementById(d)})).filter(o=>visible(o.l)&&visible(o.d));
+    pairs.forEach((a,i)=>pairs.slice(i+1).forEach(b=>{if(visible(b.l)&&Math.abs(+a.d.getAttribute('cx')- +b.d.getAttribute('cx'))<1e-7&&Math.abs(+a.d.getAttribute('cy')- +b.d.getAttribute('cy'))<1e-7){a.l.textContent+=' = '+b.l.textContent;b.l.style.display='none';}}));
+  }
+  function avoidLabelCollisions(){
+    const labels=[...widgetSvg.querySelectorAll('text')].filter(e=>visible(e)&&e.getBBox().width);
+    const placed=[],overlaps=(a,b)=>a.x<b.x+b.width+3&&a.x+a.width+3>b.x&&a.y<b.y+b.height+3&&a.y+a.height+3>b.y;
+    labels.forEach(el=>{
+      const ox=+el.getAttribute('x'),oy=+el.getAttribute('y');let box=el.getBBox(),moved=false;
+      if(placed.some(b=>overlaps(box,b))){
+        const offsets=[];for(let r=18;r<=144;r+=18)offsets.push([0,-r],[0,r],[r,0],[-r,0],[r,-r],[-r,-r],[r,r],[-r,r]);
+        for(const [dx,dy] of offsets){el.setAttribute('x',ox+dx);el.setAttribute('y',oy+dy);box=el.getBBox();if(box.x>=-30&&box.x+box.width<=660&&box.y>=5&&box.y+box.height<=469&&!placed.some(b=>overlaps(box,b))){moved=true;break;}}
+        if(!moved){el.setAttribute('x',ox);el.setAttribute('y',oy);box=el.getBBox();}
+      }
+      if(moved){const l=document.createElementNS('http://www.w3.org/2000/svg','line');Object.entries({class:'collision-leader',x1:ox,y1:oy-4,x2:Math.max(box.x,Math.min(ox,box.x+box.width)),y2:box.y+box.height/2,stroke:'#9ca3af','stroke-width':.8,'pointer-events':'none'}).forEach(([k,v])=>l.setAttribute(k,v));el.parentNode.insertBefore(l,el);}
+      placed.push(box);
+    });
+    const combined=labels.some(e=>/\b[QPE][a-z]+\s*=\s*[QPE][a-z]+/.test(e.textContent));
+    overlapNote.hidden=!combined;overlapNote.textContent=combined?'Combined labels indicate the same position or value. Nearby but different outcomes stay separate.':'';
+  }
+  const exportStatus=document.createElement('p');exportStatus.className='diagram-help';exportStatus.setAttribute('role','status');toolbar.after(exportStatus);
+  const downloadButton=document.createElement('button');downloadButton.type='button';downloadButton.textContent='Download diagram';toolbar.append(downloadButton);
+  const copyButton=document.createElement('button');copyButton.type='button';copyButton.textContent='Copy diagram';toolbar.append(copyButton);
+  const exportLabel=document.createElement('label');exportLabel.className='export-format';exportLabel.textContent='Image style ';
+  const exportStyle=document.createElement('select');exportStyle.setAttribute('aria-label','Image style');exportStyle.innerHTML='<option value=colour>Colour</option><option value=grayscale>Grayscale (print)</option>';exportLabel.append(exportStyle);toolbar.insertBefore(exportLabel,downloadButton);
+  exportStyle.addEventListener('change',()=>{exportStatus.textContent='';});
+  function diagramSVG(){
+    const clone=widgetSvg.cloneNode(true),src=[widgetSvg,...widgetSvg.querySelectorAll('*')],dst=[clone,...clone.querySelectorAll('*')];
+    const props=['display','visibility','fill','fill-opacity','stroke','stroke-width','stroke-opacity','stroke-dasharray','stroke-linecap','stroke-linejoin','paint-order','opacity','font-family','font-size','font-weight','font-style','text-anchor','dominant-baseline','baseline-shift','marker-start','marker-end'];
+    src.forEach((el,i)=>{const cs=getComputedStyle(el);props.forEach(p=>{let v=cs.getPropertyValue(p);if(p.startsWith('marker'))v=v.replace(/url\(["']?[^#)]*#([^)'" ]+)["']?\)/g,'url(#$1)');dst[i].style.setProperty(p,v);});dst[i].removeAttribute('tabindex');dst[i].removeAttribute('role');});
+    clone.querySelectorAll('.touch-target').forEach(e=>e.remove());
+    clone.setAttribute('x','0');clone.setAttribute('y','110');clone.setAttribute('width','710');clone.setAttribute('height','470');clone.style.width='710px';clone.style.height='470px';
+    const ns='http://www.w3.org/2000/svg',out=document.createElementNS(ns,'svg');out.setAttribute('xmlns',ns);out.setAttribute('width','1420');out.setAttribute('height','1250');out.setAttribute('viewBox','0 0 710 625');
+    const bg=document.createElementNS(ns,'rect');bg.setAttribute('width','710');bg.setAttribute('height','625');bg.setAttribute('fill','white');out.append(bg);
+    const title=document.createElementNS(ns,'text');title.setAttribute('x','20');title.setAttribute('y','25');title.setAttribute('style','font:bold 17px system-ui;fill:#4169e1');title.textContent=document.querySelector('h1').textContent;out.append(title);
+    const policy=document.getElementById('policy-select');if(policy){const sub=document.createElementNS(ns,'text');sub.setAttribute('x','20');sub.setAttribute('y','45');sub.setAttribute('style','font:13px system-ui;fill:#374151');sub.textContent=policy.selectedOptions[0].textContent;out.append(sub);}out.append(clone);appendExportKey(out);if(exportStyle.value==='grayscale')makeGrayscale(out);return new XMLSerializer().serializeToString(out);
+  }
+  function makeGrayscale(out){
+    const ns='http://www.w3.org/2000/svg';
+    const defs=document.createElementNS(ns,'defs');out.prepend(defs);
+    const rgb=value=>{const m=value.match(/^rgba?\(([^)]+)\)$/);if(m)return m[1].split(/[, ]+/).filter(Boolean).map(Number);const h=value.match(/^#([0-9a-f]{6})$/i);return h?[0,2,4].map(i=>parseInt(h[1].slice(i,i+2),16)):null;};
+    const kind=c=>c[0]>c[1]&&c[1]>c[2]*2?'other':c[0]>c[1]*1.3&&c[0]>c[2]*1.3?'social':c[1]>c[0]*1.2&&c[1]>c[2]*1.1?'private-cost':c[2]>c[0]*1.2&&c[2]>c[1]*1.1?(c[0]>50?'policy':'private-benefit'):'other';
+    const patterns={};
+    function hatch(k){if(patterns[k])return patterns[k];const id='print-hatch-'+k,pat=document.createElementNS(ns,'pattern');Object.entries({id,width:8,height:8,patternUnits:'userSpaceOnUse'}).forEach(([a,v])=>pat.setAttribute(a,v));
+      const bg=document.createElementNS(ns,'rect');Object.entries({width:8,height:8,fill:'#fff'}).forEach(([a,v])=>bg.setAttribute(a,v));pat.append(bg);
+      const path=document.createElementNS(ns,'path');Object.entries({d:k==='social'?'M-2,2 L2,-2 M0,8 L8,0 M6,10 L10,6':k==='policy'?'M0,0 L8,8 M0,8 L8,0':'M0,4 L8,4',fill:'none',stroke:'#777','stroke-width':1}).forEach(([a,v])=>path.setAttribute(a,v));pat.append(path);defs.append(pat);return patterns[k]='url(#'+id+')';}
+    // Freeze distinct line styles in the exported copy; live diagrams remain in colour.
+    const elements=[...out.querySelectorAll('*')].filter(el=>!defs.contains(el));
+    elements.forEach(el=>{for(const prop of ['fill','stroke']){const value=el.style.getPropertyValue(prop)||el.getAttribute(prop),c=rgb(value||'');if(!c)continue;
+      const alpha=c[3]??1,chromatic=(Math.max(...c.slice(0,3))-Math.min(...c.slice(0,3)))/Math.max(1,...c.slice(0,3))>.5;
+      if(alpha===0){el.style.setProperty(prop,'transparent');continue;}
+      const k=kind(c),shape=['polygon','rect','path'].includes(el.tagName);
+      if(prop==='fill'&&chromatic&&shape&&!el.closest('marker')){el.style.setProperty('fill',hatch(k));el.style.setProperty('fill-opacity','1');}
+      else {const gray=Math.round(.2126*c[0]+.7152*c[1]+.0722*c[2]);el.style.setProperty(prop,prop==='fill'&&['text','tspan'].includes(el.tagName)?'#222':`rgba(${gray},${gray},${gray},${alpha})`);}
+      if(prop==='stroke'&&chromatic&&['line','path'].includes(el.tagName)&&!el.closest('marker')&&!el.classList.contains('collision-leader')&&!el.classList.contains('label-leader')){el.style.setProperty('stroke','#333');el.style.setProperty('stroke-dasharray','none');}
+    }});
+    
+  }
+  async function diagramPNG(){const blob=new Blob([diagramSVG()],{type:'image/svg+xml;charset=utf-8'}),url=URL.createObjectURL(blob);try{const img=new Image();await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=reject;img.src=url;});const canvas=document.createElement('canvas');canvas.width=1420;canvas.height=img.naturalHeight;canvas.getContext('2d').drawImage(img,0,0);return await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('Image creation failed')),'image/png'));}finally{URL.revokeObjectURL(url);}}
+  function saveImage(blob){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=document.title.replace(/[^a-z0-9]+/gi,'_')+(exportStyle.value==='grayscale'?'_Grayscale':'')+'.png';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}
+  downloadButton.onclick=async()=>{try{saveImage(await diagramPNG());exportStatus.textContent=(exportStyle.value==='grayscale'?'Grayscale':'Colour')+' diagram prepared for download.';}catch(e){exportStatus.textContent='Unable to create the image. Please try opening the widget in its own browser tab.';}};
+  copyButton.onclick=async()=>{try{if(!navigator.clipboard?.write||!window.ClipboardItem)throw new Error('Clipboard unavailable');const png=diagramPNG();await navigator.clipboard.write([new ClipboardItem({'image/png':png})]);exportStatus.textContent=(exportStyle.value==='grayscale'?'Grayscale':'Colour')+' diagram copied. Paste it into your notes.';}catch(e){exportStatus.textContent='Image copying is unavailable in this browser or embed. Use Download diagram instead.';}};
+
+  // Approved UX: contextual area key, selected-policy glossary, main-index navigation.
+  const areaKey=document.createElement('div');areaKey.className='area-key';areaKey.setAttribute('aria-label','Shaded area colour and grayscale key');widgetFrame.after(areaKey);
+  const glossaryItems=[...document.querySelectorAll('.sidebar > details')];
+  const glossaryPolicyNames={indirect_subsidy:'Indirect Subsidy',direct_subsidy:'Direct Subsidy',free_provision:'Free Provision',joint_provision:'Joint Provision',education:'Education & Campaigns',tax:'Tax',quota:'Quota on Output',ban:'Ban (a quota of zero)',qpoll:'Quota on Pollutant',rd:'Research & Development (R&D)',edu:'Education & Campaigns'};
+  const normalise=s=>s.replace(/\s+/g,' ').trim();
+  const nameOf=el=>normalise(el.querySelector('summary')?.textContent||'');
+  const policyNames=new Set(Object.values(glossaryPolicyNames));policyNames.add('Direct Government Provision');policyNames.add('Legislation (Compulsory Consumption)');
+  const nav=document.createElement('nav');nav.className='related-widget';nav.setAttribute('aria-label','Widget navigation');const link=document.createElement('a');link.href='index.html';link.textContent='Back to main index';nav.append(link);help.after(nav);
+  function visibleArea(id){const el=document.getElementById(id);if(!el||!visible(el))return false;const box=el.getBBox();return box.width>1e-7&&box.height>1e-7;}
+  function currentAreaKey(){
+    const policy=document.getElementById('policy-select')?.value;if(!['ban','free_provision'].includes(policy))return [];
+    const entries=[];
+    const candidates=policy==='ban'?[['ban-loss-area','DWL under ban','social','#dc2626'],['ban-free-area','Free-market DWL','other','#d97706']]:[['free-policy-loss','Free-provision DWL','social','#dc2626'],['free-market-loss','Free-market DWL','other','#d97706']];
+    candidates.forEach(([id,label,pattern,colour])=>{if(visibleArea(id))entries.push({label,pattern,colour});});
+    if(policy==='free_provision'&&[...document.querySelectorAll('#free-scene .subsidy-rect')].some(el=>visible(el)&&el.getBBox().height>0))entries.push({label:'Subsidy expenditure',pattern:'policy',colour:'#4169e1'});
+    return entries;
+  }
+  function approvedUX(){
+    const entries=currentAreaKey();areaKey.replaceChildren();areaKey.hidden=!entries.length;
+    if(entries.length){const heading=document.createElement('span');heading.className='key-heading';heading.textContent='Colour / grayscale key';areaKey.append(heading);entries.forEach(entry=>{const item=document.createElement('span');item.className='key-item';const colour=document.createElement('i');colour.className='key-colour';colour.style.backgroundColor=entry.colour;colour.setAttribute('aria-hidden','true');const pattern=document.createElement('i');pattern.className='key-pattern '+entry.pattern;pattern.setAttribute('aria-hidden','true');item.append(colour,pattern,document.createTextNode(entry.label));areaKey.append(item);});}
+    document.querySelector('.ban-legend')?.setAttribute('hidden','');
+    const policy=document.getElementById('policy-select')?.value;if(!policy)return;
+    const selectedName=glossaryPolicyNames[policy],selected=glossaryItems.find(el=>nameOf(el)===selectedName);
+    const order=[...(selected?[selected]:[]),...glossaryItems.filter(el=>el!==selected&&!policyNames.has(nameOf(el))),...glossaryItems.filter(el=>el!==selected&&policyNames.has(nameOf(el)))];
+    const sidebar=document.querySelector('.sidebar');order.forEach(el=>sidebar.append(el));
+  }
+  function appendExportKey(out){
+    const entries=currentAreaKey(),ns='http://www.w3.org/2000/svg',height=entries.length?625+18*(entries.length-1):625;
+    out.setAttribute('height',String(height*2));out.setAttribute('viewBox','0 0 710 '+height);out.querySelector('rect')?.setAttribute('height',String(height));
+    entries.forEach((entry,i)=>{const text=document.createElementNS(ns,'text');text.setAttribute('x','20');text.setAttribute('y',String(608+i*18));text.setAttribute('style','font:12px system-ui;fill:#374151');const kind=exportStyle.value==='grayscale'?{social:'Diagonal hatch',other:'Horizontal hatch',policy:'Crosshatch'}[entry.pattern]:{social:'Red shading',other:'Amber shading',policy:'Blue shading'}[entry.pattern];text.textContent=kind+': '+entry.label;out.append(text);});
+  }
+
+  function compactAnnotations(){
+    const defs=widgetSvg.querySelector('defs'),ns='http://www.w3.org/2000/svg';
+    if(!widgetSvg.querySelector('#externality-start'))for(const [id,d,ref] of [['externality-start','M10,1 L0,5 L10,9 Z',1],['externality-end','M0,1 L10,5 L0,9 Z',9]]){const m=document.createElementNS(ns,'marker');Object.entries({id,viewBox:'0 0 10 10',refX:ref,refY:5,markerWidth:5,markerHeight:5,orient:'auto'}).forEach(([k,v])=>m.setAttribute(k,v));const path=document.createElementNS(ns,'path');path.setAttribute('d',d);path.setAttribute('fill','#2563eb');m.append(path);defs.append(m);}
+    widgetSvg.querySelectorAll('#arrow-meb,#meb-arrow,#mec-arrow,#group-mec line,#ban-scene line,.free-externality').forEach(el=>{
+      if(!visible(el)||Math.abs(+el.getAttribute('x1')- +el.getAttribute('x2'))>1e-6)return;
+      if(getComputedStyle(el).stroke!=='rgb(37, 99, 235)'&&!el.matches('#arrow-meb,#meb-arrow,#mec-arrow,.free-externality'))return;
+      if(Math.abs(+el.getAttribute('y2')- +el.getAttribute('y1'))>=10){el.setAttribute('marker-start','url(#externality-start)');el.setAttribute('marker-end','url(#externality-end)');}
+    });
+    const captions=[...widgetSvg.querySelectorAll('#label-output-gap,#label-gap,#label-overprod,#ban-scene text,.free-gap-label')].filter(el=>visible(el)&&/(Under|Over)-(consumption|production)/i.test(el.textContent));
+    const qlabels=[...widgetSvg.querySelectorAll('text')].filter(el=>visible(el)&&/^[Qq]/.test(el.textContent)&&+el.getAttribute('y')>=380&&+el.getAttribute('y')<440);
+    const bottom=Math.max(402,...qlabels.map(el=>el.getBBox().y+el.getBBox().height));
+    captions.forEach(el=>el.setAttribute('y',Math.min(459,bottom+28)));
+    widgetSvg.querySelectorAll('#under-arrow,#over-arrow,#arrow-gap,#line-overprod,.free-gap-arrow').forEach(el=>{if(visible(el)){el.setAttribute('y1',Math.min(441,bottom+10));el.setAttribute('y2',Math.min(441,bottom+10));}});
+    widgetSvg.querySelectorAll('#ban-scene line').forEach(el=>{if(+el.getAttribute('y1')===452&&+el.getAttribute('y2')===452){el.setAttribute('y1',Math.min(441,bottom+10));el.setAttribute('y2',Math.min(441,bottom+10));}});
+  }
+
+  function qualitativeControls(){document.querySelectorAll('input[type="range"]').forEach(el=>{const lo=+el.min,hi=+el.max,v=+el.value,t=(v-lo)/(hi-lo);el.setAttribute('aria-valuetext',t===0?'Minimum':t===1?'Maximum':t<.34?'Low':t<.67?'Moderate':'High');});}
+  function updateDiagram(){restoreLabelPresentation();renderDiagram();qualitativeControls();mergeExactLabels();labelLayout();compactAnnotations();avoidLabelCollisions();registerTargets();approvedUX();}
+  updateDiagram();
+
+</script>
+
+</body>
+</html>

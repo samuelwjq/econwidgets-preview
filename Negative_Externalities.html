@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Negative Externalities Diagram</title>
+  <style>
+/* ECON WIDGET DESIGN SYSTEM v2 — shared across all four standalone files. */
+:root{--accent:#4169e1;--ink:#1f2937;--muted:#6b7280;--border:#e5e7eb;--panel:#f3f4f6;--blue:#2563eb;--green:#16a34a;--red:#dc2626;--radius:8px}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:#fff;max-width:1240px;margin:0 auto;padding:20px 16px;line-height:1.5}
+.widget-header{margin:0 0 16px;border-left:4px solid var(--accent);padding-left:12px}
+.widget-header h1{font-size:20px;line-height:1.3;margin:0;font-weight:700}
+.widget-header p{font-size:13px;color:var(--muted);margin:4px 0 0}
+.layout{display:grid;grid-template-columns:minmax(0,2fr) minmax(270px,1fr);gap:20px;align-items:start}
+.main-content{min-width:0;position:relative}
+.sidebar{min-width:0;background:#f9fafb;padding:16px;border-radius:var(--radius);border:1px solid var(--border)}
+.controls{display:flex;flex-direction:column;gap:12px;margin-bottom:12px;background:var(--panel);padding:12px 16px;border-radius:var(--radius)}
+.control-row,.control-group,.policy-selector,.slider-card{display:flex;gap:8px;align-items:center;min-width:0;flex-wrap:wrap}
+.control-row,.policy-selector,.slider-card{width:100%}
+.control-group{flex:1;width:100%}
+.control-group>label:not(.toggle-label):not(.checkbox-label),.policy-selector>label{font-size:13px;font-weight:600}
+.policy-selector select{flex:1}
+.checkbox-group,.option-row,.toggle-grid{display:flex;flex-wrap:wrap;gap:2px 16px;align-items:center;width:100%;border:0;padding:0;background:transparent}
+.checkbox-group>strong{display:none}
+.checkbox-label,.toggle-label{font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;min-height:36px;user-select:none;line-height:1.35}
+input[type=checkbox]{accent-color:var(--accent);width:17px;height:17px;flex-shrink:0;cursor:pointer;margin:0}
+input[type=range]{accent-color:var(--accent);flex:1;min-width:70px;width:100px;height:36px;cursor:pointer;margin:0}
+.scale-label{font-size:12px;font-weight:500;color:var(--muted)}
+select,button{font:600 13px/1.4 system-ui,sans-serif;min-height:40px;border:1px solid #d1d5db;border-radius:6px;background:#fff;color:var(--ink);padding:8px 10px;cursor:pointer;max-width:100%;min-width:0}
+select{width:auto;text-overflow:ellipsis}
+button:hover{border-color:var(--accent);background:#f0f4ff}
+:focus-visible{outline:3px solid #819bea;outline-offset:3px}
+.export-format{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600}.toolbar{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding-top:8px;border-top:1px solid #dcdfe5}
+.toolbar .hint{flex:1;font-size:12px;color:var(--muted);min-width:140px}
+.reset-button{color:#4169e1;border-color:#b6c6f5}
+.diagram-frame{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);background:#fff}
+svg#diagram{width:100%;height:auto;display:block;background:#fff;overflow:hidden}
+.diagram-frame.zoomed svg{min-width:720px}
+.diagram-help{font-size:12px;color:var(--muted);margin:6px 2px 0}
+.axis{stroke:#374151;stroke-width:2}
+.line-mpb{stroke:var(--blue);stroke-width:2.5}
+.line-mpc{stroke:var(--green);stroke-width:2.5}
+.line-msb,.line-msc{stroke:var(--red);stroke-width:2.5}
+.line-policy,.line-tax,.line-quota,.line-qpoll,.line-rd,.line-edu{stroke:var(--accent);stroke-width:2.5;stroke-dasharray:6,4}
+.guide-line{stroke:#9ca3af;stroke-width:1.2;stroke-dasharray:4,4}
+.dwl-poly{fill:rgba(220,38,38,.25);stroke:var(--red);stroke-width:1.5;cursor:pointer}
+.tax-poly,.subsidy-rect{fill:rgba(65,105,225,.18);stroke:var(--accent);stroke-width:1.5;stroke-dasharray:4,4;cursor:pointer}
+.policy-arrow{stroke:var(--accent);stroke-width:2}
+.under-arrow,.over-arrow{stroke:var(--red);stroke-width:2}
+.meb-arrow,.mec-arrow{stroke:var(--blue);stroke-width:2}
+text{font-size:13px;font-family:system-ui,sans-serif}
+text[font-size="11"]{font-size:11px}
+text[font-size="12"]{font-size:12px}
+tspan[baseline-shift="sub"]{font-size:9px}
+.has-tooltip,.touch-target,[data-tooltip-target]{cursor:pointer}
+.touch-target{fill:transparent}
+svg circle.has-tooltip{stroke:transparent;stroke-width:16;pointer-events:all}
+svg text{paint-order:stroke;stroke:#fff;stroke-width:2px;stroke-linejoin:round}
+svg text tspan{stroke-width:1px}
+#label-dwl-text,#label-subsidy-cost-text{stroke-width:0;pointer-events:none}
+.tooltip{position:fixed;background:#1f2937;color:#fff;padding:12px 38px 12px 14px;border-radius:6px;font-size:13px;line-height:1.5;display:none;z-index:100;max-width:min(320px,calc(100vw - 24px));box-shadow:0 8px 22px #0003;border:1px solid #374151;pointer-events:auto}
+.tooltip strong{color:#fb923c}
+.tooltip-close{position:absolute;right:3px;top:3px;background:transparent;color:#fff;border:0;padding:3px 7px;min-height:30px;font-size:20px}
+.tooltip-close:hover{background:#374151}
+.glossary-title{margin:0 0 12px;font-size:16px;font-weight:700;color:#111827;border-bottom:2px solid var(--border);padding-bottom:6px}
+details{margin-bottom:8px;background:#fff;border:1px solid var(--border);border-radius:6px;padding:0 12px}
+details:last-child{margin-bottom:0}
+details[open]{border-color:var(--accent)}
+summary{font-weight:600;font-size:13px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:44px;padding:8px 0}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"▸";font-size:13px;color:#9ca3af;flex-shrink:0}
+details[open] summary::after{transform:rotate(90deg);color:var(--accent)}
+details p{margin:0 0 12px;font-size:13px;color:#4b5563;line-height:1.55}
+@media(hover:hover){.dwl-poly:hover{fill:rgba(220,38,38,.4)}.tax-poly:hover,.subsidy-rect:hover{fill:rgba(65,105,225,.3)}}
+@media(max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}.sidebar{padding:14px}.main-content{position:relative}.tooltip{position:relative;left:0!important;top:0!important;width:100%;max-width:100%;margin-top:10px}.controls{padding:12px}.control-group:has(input[type=range])>label{flex-basis:100%}}
+@media(max-width:480px){body{padding:12px 8px}.widget-header h1{font-size:18px}.controls{gap:8px}.control-group:has(select)>label,.policy-selector>label{flex-basis:100%}select{width:100%}.checkbox-label,.toggle-label{min-height:40px}.toolbar .hint{flex-basis:100%}.layout{gap:14px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+.policy-note{font-size:13px;line-height:1.5;color:#4b5563;background:#f0f4ff;border:1px solid #cbd7fa;border-radius:8px;padding:12px;margin:10px 0}.policy-note p{margin:4px 0}.policy-note h2{font-size:15px;margin:0 0 6px;color:#4169e1}
+.policy-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0}.policy-metrics>div{background:white;border:1px solid #e5e7eb;border-radius:6px;padding:10px}.policy-metrics span{display:block;font-size:12px;color:#6b7280}.policy-metrics strong{font-size:18px;color:#1f2937}
+.ban-legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:12px;margin:8px 0}.ban-legend i{display:inline-block;width:14px;height:10px;margin-right:5px;border:1px solid;vertical-align:middle}.ban-free-area{fill:rgba(217,119,6,.18);stroke:#b45309;stroke-width:1.4;stroke-dasharray:4,3;cursor:pointer}.metric-value{font-weight:700;color:#4169e1;font-variant-numeric:tabular-nums}
+@media(max-width:480px){.policy-metrics{grid-template-columns:1fr}.policy-metrics>div{display:flex;align-items:center;justify-content:space-between;gap:8px}.policy-metrics strong{font-size:16px}}
+strong,b{color:#dc2626!important;font-weight:700}
+.tooltip{background:#fff;color:var(--ink);border-color:#b6c6f5}
+.tooltip-close{color:var(--ink)}
+.tooltip-close:hover{background:#f0f4ff}
+.area-key{display:flex;gap:8px 16px;flex-wrap:wrap;align-items:center;font-size:12px;margin:8px 2px}.area-key[hidden],.ban-legend[hidden]{display:none}.key-heading{font-weight:600;color:#4b5563}.key-item{display:inline-flex;align-items:center;gap:6px}.key-item i{display:inline-block;width:16px;height:12px;border:1px solid #777;flex-shrink:0}.key-colour{opacity:.65}.key-pattern.social{background:repeating-linear-gradient(135deg,#fff 0 4px,#777 4px 5px)}.key-pattern.other{background:repeating-linear-gradient(0deg,#fff 0 4px,#777 4px 5px)}.key-pattern.policy{background:repeating-linear-gradient(45deg,transparent 0 4px,#777 4px 5px),repeating-linear-gradient(135deg,#fff 0 4px,#777 4px 5px)}.related-widget{margin:12px 2px}.related-widget a{display:inline-block;color:#4169e1;font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:3px;padding:8px 0;max-width:100%}
+</style>
+</head>
+<body>
+<header class="widget-header"><h1>Negative externalities</h1><p>A-level Economics · Interactive diagrams</p></header>
+
+<div class="layout">
+  <!-- Interactive Diagram Section -->
+  <div class="main-content">
+    <div class="controls">
+      <div class="control-group">
+        <label for="mec-slider"><strong>MEC:</strong></label>
+        <span class="scale-label">None</span>
+        <input type="range" id="mec-slider" min="0" max="40" value="25" step="1">
+        <span class="scale-label">High</span>
+      </div>
+      <div class="checkbox-group">
+        <strong>Show:</strong>
+        <label class="checkbox-label">
+          <input type="checkbox" id="toggle-tooltips" checked> Tooltips
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="mec-check" checked> MEC Label
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="dwl-check" checked> DWL Area
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="over-check" checked> Over-consumption / Over-production
+        </label>
+      </div>
+    </div>
+
+    <svg id="diagram" viewBox="-40 0 710 470">
+      <defs>
+        <!-- Standard Axis Arrow -->
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#374151" />
+        </marker>
+        <!-- Two-Sided Red Arrow Markers for Overproduction -->
+        <marker id="arrow-left" viewBox="0 0 10 10" refX="2" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M 10 1.5 L 0 5 L 10 8.5 z" fill="#dc2626" />
+        </marker>
+        <marker id="arrow-right" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#dc2626" />
+        </marker>
+        <!-- Two-Sided Purple Arrow Markers for MEC -->
+        <marker id="arrow-purple-start" viewBox="0 0 10 10" refX="2" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M 10 1.5 L 0 5 L 10 8.5 z" fill="#4169e1" />
+        </marker>
+        <marker id="arrow-purple-end" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#4169e1" />
+        </marker>
+      </defs>
+
+      <!-- Deadweight Loss Area & Label -->
+      <polygon id="dwl" class="dwl-poly" points="" />
+      <text id="label-dwl-text" fill="#7f1d1d" font-weight="bold" text-anchor="middle" dominant-baseline="central" font-size="11">DWL</text>
+
+      <!-- Axes -->
+      <line x1="70" y1="380" x2="590" y2="380" class="axis" marker-end="url(#arrow)" />
+      <line x1="70" y1="380" x2="70" y2="25" class="axis" marker-end="url(#arrow)" />
+
+      <!-- Over-production / Over-consumption Two-Sided Arrow -->
+      <text id="label-output-gap" y="463" text-anchor="middle" fill="#dc2626" font-weight="bold" font-size="12">Over-consumption / Over-production</text>
+      <line id="over-arrow" class="over-arrow" marker-start="url(#arrow-left)" marker-end="url(#arrow-right)" />
+
+      <!-- MEC Two-Sided Vertical Arrow & Text Label (Purple) -->
+      <line id="mec-arrow" class="mec-arrow" marker-start="url(#arrow-purple-start)" marker-end="url(#arrow-purple-end)" />
+      <text id="label-mec" fill="#4169e1" font-weight="bold" text-anchor="start" dominant-baseline="central">MEC</text>
+
+      <!-- Axis Title Labels -->
+      <text class="axis-title" x="64" y="12" text-anchor="end" font-weight="bold" style="font-size:12px"><tspan x="64">Price /</tspan><tspan x="64" dy="14">Costs /</tspan><tspan x="64" dy="14">Benefits</tspan></text>
+      <text class="axis-title" x="600" y="385" font-weight="bold">Qty</text>
+      
+
+      <!-- Guides -->
+      <line id="line-qe" class="guide-line" />
+      <line id="line-pe" class="guide-line" />
+      <line id="line-qs" class="guide-line" />
+      <line id="line-ps" class="guide-line" />
+
+      <!-- Curves -->
+      <line id="curve-mpb" class="line-mpb" />
+      <line id="curve-mpc" class="line-mpc" />
+      <line id="curve-msc" class="line-msc" />
+
+      <!-- Curve Labels -->
+      <text id="label-mpb" fill="#2563eb" font-weight="bold">MPB = MSB</text>
+      <text id="label-mpc" fill="#16a34a" font-weight="bold">MPC</text>
+      <text id="label-msc" fill="#dc2626" font-weight="bold">MSC = MPC + MEC</text>
+
+      <!-- Equilibrium Points & Node Dots -->
+      <circle id="dot-ee" r="3.5" fill="#1f2937" />
+      <circle id="dot-es" r="3.5" fill="#dc2626" />
+      <circle id="dot-a" r="3.5" fill="#dc2626" />
+
+      <!-- Point Labels (Ee, Es, A) -->
+      <text id="label-ee" fill="#1f2937" font-weight="bold">E<tspan baseline-shift="sub" font-size="9">e</tspan></text>
+      <text id="label-es" fill="#dc2626" font-weight="bold">E<tspan baseline-shift="sub" font-size="9">s</tspan></text>
+      <text id="label-a" fill="#dc2626" font-weight="bold">A</text>
+
+      <!-- Axis Value Labels -->
+      <text id="label-qe" y="415" text-anchor="middle" font-weight="bold">Qe</text>
+      <text id="label-pe" x="45" text-anchor="end" font-weight="bold">Pe</text>
+      <text id="label-qs" y="415" text-anchor="middle" font-weight="bold" fill="#dc2626">Qs</text>
+      <text id="label-ps" x="45" text-anchor="end" font-weight="bold" fill="#dc2626">Ps</text>
+    </svg>
+
+    <!-- Standardized Tooltip Element -->
+    <div id="diagram-tooltip" class="tooltip"></div>
+  </div>
+
+  <!-- Key Terms Sidebar -->
+  <div class="sidebar">
+    <h3 class="glossary-title">Key Glossary Terms</h3>
+<details><summary>Diagram assumptions &amp; definitions</summary><p>This diagram illustrates negative externalities in production: MSC = MPC + MEC, with no external benefits (MSB = MPB).</p><p><strong>MPB:</strong> the additional benefit to the consumer from consuming an additional unit. <strong>MPC:</strong> the additional cost to the producer of producing an additional unit.</p></details>
+
+    <details>
+      <summary>MPB (Marginal Private Benefit)</summary>
+      <p>The additional benefit enjoyed by the private consumer from consuming an extra unit of a good or service.</p>
+    </details>
+
+    <details>
+      <summary>MPC (Marginal Private Cost)</summary>
+      <p>The additional cost incurred by the private producer from producing an extra unit of a good or service.</p>
+    </details>
+
+    <details>
+      <summary>MEC (Marginal External Cost)</summary>
+      <p>The uncompensated cost inflicted on third parties outside the market transaction from producing one extra unit.</p>
+    </details>
+
+    <details>
+      <summary>MEB (Marginal External Benefit)</summary>
+      <p>The uncompensated gain enjoyed by third parties outside the market transaction from producing or consuming one extra unit. <em>(Note: external benefits are assumed absent in this negative-production-externality diagram, so MPB = MSB).</em></p>
+    </details>
+
+    <details>
+      <summary>MSC (Marginal Social Cost)</summary>
+      <p>The total cost to society of producing an extra unit of output (<strong>MSC = MPC + MEC</strong>).</p>
+    </details>
+
+    <details>
+      <summary>MSB (Marginal Social Benefit)</summary>
+      <p>The total benefit to society of consuming an extra unit of output (<strong>MSB = MPB + MEB</strong>).</p>
+    </details>
+
+    <details>
+      <summary>Deadweight Loss (DWL)</summary>
+      <p>The reduction in net benefit to society when output level is not at the social optimum (represented by triangle <strong>AE<sub>s</sub>E<sub>e</sub></strong>).</p>
+    </details>
+
+    <details>
+      <summary>Free Market Equilibrium (Pe, Qe)</summary>
+      <p>The price and quantity determined solely by private market forces at point <strong>E<sub>e</sub></strong> where private demand equals private supply (MPB = MPC), ignoring external spillover costs.</p>
+    </details>
+
+    <details>
+      <summary>Socially Optimal Equilibrium (Ps, Qs)</summary>
+      <p>The allocatively efficient point <strong>E<sub>s</sub></strong> where social welfare is maximized (MSB = MSC).</p>
+    </details>
+
+    <details>
+      <summary>Over-production / Over-consumption</summary>
+      <p>Occurs when market output exceeds the socially desirable level (<strong>Qe &gt; Qs</strong>). This is driven by negative externalities in production (over-production) or consumption (over-consumption).</p>
+    </details>
+  </div>
+</div>
+
+<script>
+  const mecSlider = document.getElementById('mec-slider');
+  const mecCheck = document.getElementById('mec-check');
+  const dwlCheck = document.getElementById('dwl-check');
+  const overCheck = document.getElementById('over-check');
+  const dwl = document.getElementById('dwl');
+  const labelDwlText = document.getElementById('label-dwl-text');
+  const overArrow = document.getElementById('over-arrow');
+  const mecArrow = document.getElementById('mec-arrow');
+  const labelMec = document.getElementById('label-mec');
+
+  function toSvgX(q) { return 70 + 3.9 * q; }
+  function toSvgY(p) { return 380 - 3.4 * p; }
+
+  function renderDiagram() {
+    const mec = parseFloat(mecSlider.value);
+    const isZeroMec = (mec === 0);
+    document.getElementById("label-qe").textContent=isZeroMec?"Qe = Qs":"Qe";
+    document.getElementById("label-pe").textContent=isZeroMec?"Pe = Ps":"Pe";
+
+    // Render MPB (ends at q = 90)
+    const mpbX1 = toSvgX(0), mpbY1 = toSvgY(90);
+    const mpbX2 = toSvgX(90), mpbY2 = toSvgY(90 - 0.7 * 90);
+    document.getElementById('curve-mpb').setAttribute('x1', mpbX1);
+    document.getElementById('curve-mpb').setAttribute('y1', mpbY1);
+    document.getElementById('curve-mpb').setAttribute('x2', mpbX2);
+    document.getElementById('curve-mpb').setAttribute('y2', mpbY2);
+    document.getElementById('label-mpb').setAttribute('x', mpbX2 + 6);
+    document.getElementById('label-mpb').setAttribute('y', mpbY2 + 4);
+
+    // Render MPC (ends at q = 80 so labels remain cleanly inside SVG bounds)
+    const mpcX1 = toSvgX(0), mpcY1 = toSvgY(10);
+    const mpcX2 = toSvgX(80), mpcY2 = toSvgY(10 + 0.5 * 80);
+    document.getElementById('curve-mpc').setAttribute('x1', mpcX1);
+    document.getElementById('curve-mpc').setAttribute('y1', mpcY1);
+    document.getElementById('curve-mpc').setAttribute('x2', mpcX2);
+    document.getElementById('curve-mpc').setAttribute('y2', mpcY2);
+    document.getElementById('label-mpc').setAttribute('x', mpcX2 + 6);
+    document.getElementById('label-mpc').setAttribute('y', mpcY2 + 4);
+
+    if (isZeroMec) {
+      document.getElementById('label-mpc').textContent = "MPC = MSC";
+      document.getElementById('curve-msc').style.display = "none";
+      document.getElementById('label-msc').style.display = "none";
+    } else {
+      document.getElementById('label-mpc').textContent = "MPC";
+      document.getElementById('curve-msc').style.display = "inline";
+      document.getElementById('label-msc').style.display = "inline";
+
+      // Render MSC (Aligned vertically with MPC at q = 80)
+      const mscX1 = toSvgX(0), mscY1 = toSvgY(10 + mec);
+      const mscX2 = toSvgX(80), mscY2 = toSvgY(10 + mec + 0.5 * 80);
+      document.getElementById('curve-msc').setAttribute('x1', mscX1);
+      document.getElementById('curve-msc').setAttribute('y1', mscY1);
+      document.getElementById('curve-msc').setAttribute('x2', mscX2);
+      document.getElementById('curve-msc').setAttribute('y2', mscY2);
+      
+      // MSC Label aligned vertically with MPC label
+      document.getElementById('label-msc').setAttribute('x', mscX2 + 6);
+      document.getElementById('label-msc').setAttribute('y', mscY2 + 4);
+    }
+
+    // Free market & social optimum values
+    const qe = 80 / 1.2;
+    const pe = 90 - 0.7 * qe;
+    const qs = (80 - mec) / 1.2;
+    const ps = 90 - 0.7 * qs;
+    const pmsc_qe = pe + mec;
+
+    const qeX = toSvgX(qe), peY = toSvgY(pe);
+    document.getElementById('line-qe').setAttribute('x1', qeX);
+    document.getElementById('line-qe').setAttribute('y1', peY);
+    document.getElementById('line-qe').setAttribute('x2', qeX);
+    document.getElementById('line-qe').setAttribute('y2', 380);
+
+    document.getElementById('line-pe').setAttribute('x1', 70);
+    document.getElementById('line-pe').setAttribute('y1', peY);
+    document.getElementById('line-pe').setAttribute('x2', qeX);
+    document.getElementById('line-pe').setAttribute('y2', peY);
+
+    document.getElementById('label-qe').setAttribute('x', qeX);
+    document.getElementById('label-pe').setAttribute('y', peY + 4);
+
+    // Ee Point & Repositioned Label (Shifted further right to avoid blocking lines)
+    document.getElementById('dot-ee').setAttribute('cx', qeX);
+    document.getElementById('dot-ee').setAttribute('cy', peY);
+    document.getElementById('label-ee').setAttribute('x', qeX + 16);
+    document.getElementById('label-ee').setAttribute('y', peY + 4);
+
+    if (isZeroMec) {
+      document.getElementById('line-qs').style.display = 'none';
+      document.getElementById('line-ps').style.display = 'none';
+      document.getElementById('label-qs').style.display = 'none';
+      document.getElementById('label-ps').style.display = 'none';
+      document.getElementById('dot-es').style.display = 'none';
+      document.getElementById('dot-a').style.display = 'none';
+      document.getElementById('label-es').style.display = 'none';
+      document.getElementById('label-a').style.display = 'none';
+      dwl.style.display = 'none';
+      labelDwlText.style.display = 'none';
+      overArrow.style.display = 'none';
+      mecArrow.style.display = 'none';
+      labelMec.style.display = 'none';
+    } else {
+      document.getElementById('line-qs').style.display = 'inline';
+      document.getElementById('line-ps').style.display = 'inline';
+      document.getElementById('label-qs').style.display = 'inline';
+      document.getElementById('label-ps').style.display = 'inline';
+      document.getElementById('dot-es').style.display = 'inline';
+      document.getElementById('dot-a').style.display = 'inline';
+      document.getElementById('label-es').style.display = 'inline';
+      document.getElementById('label-a').style.display = 'inline';
+
+      const qsX = toSvgX(qs), psY = toSvgY(ps);
+      const aY = toSvgY(pmsc_qe);
+
+      document.getElementById('line-qs').setAttribute('x1', qsX);
+      document.getElementById('line-qs').setAttribute('y1', psY);
+      document.getElementById('line-qs').setAttribute('x2', qsX);
+      document.getElementById('line-qs').setAttribute('y2', 380);
+
+      document.getElementById('line-ps').setAttribute('x1', 70);
+      document.getElementById('line-ps').setAttribute('y1', psY);
+      document.getElementById('line-ps').setAttribute('x2', qsX);
+      document.getElementById('line-ps').setAttribute('y2', psY);
+
+      document.getElementById('label-qs').setAttribute('x', qsX);
+      document.getElementById('label-ps').setAttribute('y', psY + 4);
+
+      // Es Point & Repositioned Label (Shifted further left clear of MSC line and guides)
+      document.getElementById('dot-es').setAttribute('cx', qsX);
+      document.getElementById('dot-es').setAttribute('cy', psY);
+      document.getElementById('label-es').setAttribute('x', qsX - 32);
+      document.getElementById('label-es').setAttribute('y', psY + 4);
+
+      // Point A & Repositioned Label
+      document.getElementById('dot-a').setAttribute('cx', qeX);
+      document.getElementById('dot-a').setAttribute('cy', aY);
+      document.getElementById('label-a').setAttribute('x', qeX - 16);
+      document.getElementById('label-a').setAttribute('y', aY - 6);
+
+      // DWL Polygon Points (Es, Ee, A)
+      dwl.setAttribute('points', `${qsX},${psY} ${qeX},${peY} ${qeX},${aY}`);
+      dwl.style.display = dwlCheck.checked ? 'block' : 'none';
+
+      // DWL Text positioning (Centroid of triangle AEsEe)
+      const dwlCenterX = (qsX + 2 * qeX) / 3;
+      const dwlCenterY = (psY + peY + aY) / 3;
+      labelDwlText.setAttribute('x', dwlCenterX);
+      labelDwlText.setAttribute('y', dwlCenterY);
+
+      // Hide DWL text if triangle width/height is too small to fit text comfortably (MEC < 10)
+      const isDwlTooSmall = mec < 10;
+      labelDwlText.style.display = (dwlCheck.checked && !isDwlTooSmall) ? 'block' : 'none';
+
+      // Render Two-Sided Arrow between Qs and Qe
+      overArrow.setAttribute('x1', qsX + 2);
+      overArrow.setAttribute('y1', 440);
+      overArrow.setAttribute('x2', qeX - 2);
+      overArrow.setAttribute('y2', 440);
+      overArrow.style.display = overCheck.checked ? 'block' : 'none';
+
+      // Render Two-Sided Vertical Arrow & Label for MEC (to the right of Qe / DWL triangle at Q = 74)
+      if (mecCheck.checked) {
+        const qMec = 22;
+        const qMecX = toSvgX(qMec);
+        const mpcY_q = toSvgY(10 + 0.5 * qMec);
+        const mscY_q = toSvgY(10 + mec + 0.5 * qMec);
+
+        mecArrow.setAttribute('x1', qMecX);
+        mecArrow.setAttribute('y1', mscY_q + 2);
+        mecArrow.setAttribute('x2', qMecX);
+        mecArrow.setAttribute('y2', mpcY_q - 2);
+        mecArrow.style.display = 'block';
+
+        labelMec.setAttribute('x', qMecX + 6);
+        labelMec.setAttribute('y', (mscY_q + mpcY_q) / 2);
+        labelMec.style.display = 'block';
+      } else {
+        mecArrow.style.display = 'none';
+        labelMec.style.display = 'none';
+      }
+    }
+  }
+
+  // Standardized Tooltip Logic
+  const diagramTooltip = document.getElementById('diagram-tooltip');
+  const mainContent = document.querySelector('.main-content');
+  const toggleTooltips = document.getElementById('toggle-tooltips');
+
+  function showTooltip(htmlContent, e) {
+    if (!document.getElementById('toggle-tooltips').checked) return;
+    const tip=document.getElementById('diagram-tooltip');
+    tip.innerHTML='<button type="button" class="tooltip-close" aria-label="Close explanation">×</button><div>'+htmlContent+'</div>';
+    tip.style.display='block';
+    tip.querySelector('button').onclick=dismissTooltip;
+    if(window.innerWidth>900){
+      const box=tip.getBoundingClientRect();
+      const x=Number.isFinite(e?.clientX)?e.clientX:24;
+      const y=Number.isFinite(e?.clientY)?e.clientY:24;
+      tip.style.left=Math.max(8,Math.min(x+12,window.innerWidth-box.width-8))+'px';
+      tip.style.top=Math.max(8,Math.min(y+12,window.innerHeight-box.height-8))+'px';
+    }
+  }
+
+  function hideTooltip() {
+    if (!document.getElementById('toggle-tooltips').checked) {dismissTooltip();return;}
+    // Keep explanations available on touch screens and after a deliberate tap/click.
+    if(window.innerWidth>900 && !window.widgetTipPinned){
+      clearTimeout(window.widgetTipTimer);
+      window.widgetTipTimer=setTimeout(()=>{if(!window.widgetTipPinned)document.getElementById('diagram-tooltip').style.display='none';},160);
+    }
+  }
+  function dismissTooltip(){
+    clearTimeout(window.widgetTipTimer);window.widgetTipPinned=false;
+    document.getElementById('diagram-tooltip').style.display='none';
+  }
+
+  // Canonical Dictionary Tooltip Configuration
+  const tooltipBindings = [
+    {
+      targets: ['label-qe', 'dot-ee', 'label-ee'],
+      content: `<strong style="color: #60a5fa;">Free Market Output (Q<sub>e</sub>)</strong><br>This is the output determined by <strong>MPB = MPC</strong>. It reflects the outcome produced by private market forces without government intervention.`
+    },
+    {
+      targets: ['label-qs', 'dot-es', 'label-es'],
+      content: `<strong style="color: #f87171;">Socially Optimal Output (Q<sub>s</sub>)</strong><br>This is the output level that maximizes total social welfare where <strong>MSB = MSC</strong>. At this point, allocative efficiency is achieved.`
+    },
+    {
+      targets: ['dwl', 'label-dwl-text'],
+      content: `<strong style="color: #f87171;">Why is this DWL?</strong><br>• <strong>Horizontally:</strong> Output is not at Q<sub>s</sub> (over-consumption).<br>• <strong>Vertically:</strong> MSB is not equal to MSC (MSC &gt; MSB for these units), representing net welfare loss from over-production.`
+    }
+  ];
+
+  tooltipBindings.forEach(binding => {
+    binding.targets.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.add('has-tooltip');
+        el.addEventListener('mousemove', (e) => showTooltip(binding.content, e));
+        el.addEventListener('click', (e) => showTooltip(binding.content, e));
+        el.addEventListener('mouseleave', hideTooltip);
+      }
+    });
+  });
+
+  mecSlider.addEventListener('input', updateDiagram);
+  mecCheck.addEventListener('change', updateDiagram);
+  dwlCheck.addEventListener('change', updateDiagram);
+  overCheck.addEventListener('change', updateDiagram);
+
+
+  /* SHARED INTERACTIONS v2 — presentation only; original equations are above. */
+  const widgetSvg=document.getElementById('diagram');
+  const widgetControls=document.querySelector('.controls');
+  const widgetIsPolicy=!!document.getElementById('policy-select');
+  const options=widgetControls.querySelector('.toggle-grid,.option-row,.checkbox-group');
+  const optionOrder=['toggle-tooltips','toggle-dwl','dwl-check','toggle-gap','under-check','over-check','overprod-check','toggle-meb','meb-check','mec-check','toggle-subsidy-cost','tax-rev-check','tax-size-check'];
+  optionOrder.forEach(id=>{const input=document.getElementById(id);if(input&&options?.contains(input)){const label=input.closest('label');if(['toggle-gap','under-check','over-check','overprod-check'].includes(id)){label.title=label.textContent.trim();[...label.childNodes].filter(n=>n.nodeType===3).forEach(n=>n.remove());label.append(' Output Gap');}options.append(label);}});
+  const widgetInitial=[...widgetControls.querySelectorAll('input,select')].map(el=>({el,value:el.value,checked:el.checked}));
+  const widgetFrame=document.createElement('div');widgetFrame.className='diagram-frame';
+  widgetFrame.setAttribute('aria-label','Economics diagram; scroll horizontally when enlarged');
+  widgetSvg.before(widgetFrame);widgetFrame.append(widgetSvg);
+  widgetSvg.setAttribute('role','group');widgetSvg.setAttribute('aria-label',document.title+' — interactive diagram');
+  const tip=document.getElementById('diagram-tooltip');
+  widgetFrame.after(tip);tip.setAttribute('role','note');tip.setAttribute('aria-live','polite');
+  tip.addEventListener('mouseenter',()=>clearTimeout(window.widgetTipTimer));
+  tip.addEventListener('mouseleave',hideTooltip);
+  const toolbar=document.createElement('div');toolbar.className='toolbar';
+  toolbar.innerHTML='<span class="hint">Hover, tap or focus diagram points and shaded areas.</span><button type="button" class="zoom-button" aria-pressed="false">Enlarge diagram</button><button type="button" class="reset-button"><strong>Reset Diagram</strong></button>';
+  widgetFrame.after(toolbar);toolbar.setAttribute("aria-label","Diagram view and export controls");
+  const help=document.createElement('p');help.className='diagram-help';help.textContent='Use Enlarge diagram for a closer view on smaller screens.';toolbar.after(help);
+  toolbar.querySelector('.zoom-button').onclick=e=>{
+    const enlarged=widgetFrame.classList.toggle('zoomed');
+    e.currentTarget.setAttribute('aria-pressed',String(enlarged));e.currentTarget.textContent=enlarged?'Fit diagram':'Enlarge diagram';
+    widgetFrame.tabIndex=enlarged?0:-1;dismissTooltip();
+  };
+  toolbar.querySelector('.reset-button').onclick=()=>{
+    widgetInitial.forEach(({el,value,checked})=>{el.value=value;if(el.type==='checkbox')el.checked=checked;});
+    const select=document.getElementById('policy-select');if(select)select.dispatchEvent(new Event('change'));
+    document.querySelectorAll('.sidebar details').forEach(el=>el.open=false);
+    widgetFrame.classList.remove('zoomed');widgetFrame.scrollLeft=0;
+    const zoom=toolbar.querySelector('.zoom-button');zoom.textContent='Enlarge diagram';zoom.setAttribute('aria-pressed','false');
+    dismissTooltip();updateDiagram();
+  };
+  document.querySelectorAll('.sidebar details').forEach(el=>el.open=false);
+  document.getElementById('toggle-tooltips').addEventListener('change',dismissTooltip);
+  widgetControls.addEventListener('input',dismissTooltip);widgetControls.addEventListener('change',dismissTooltip);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')dismissTooltip();});
+  document.addEventListener('click',e=>{if(!e.target.closest('#diagram-tooltip')&&!e.target.closest('[data-tooltip-target]'))dismissTooltip();});
+  window.addEventListener('resize',dismissTooltip);window.addEventListener('scroll',()=>{if(window.innerWidth>900)dismissTooltip();},true);
+  widgetSvg.addEventListener('click',e=>{
+    const el=e.target.closest('[data-tooltip-target]');if(!el)return;
+    window.widgetTipPinned=true;clearTimeout(window.widgetTipTimer);
+    el.dispatchEvent(new MouseEvent('mousemove',{clientX:e.clientX,clientY:e.clientY}));
+  });
+  widgetSvg.addEventListener('focusin',e=>{
+    const el=e.target.closest('[data-tooltip-target]');if(!el)return;
+    const r=el.getBoundingClientRect();window.widgetTipPinned=true;
+    el.dispatchEvent(new MouseEvent('mousemove',{clientX:r.left+r.width/2,clientY:r.top+r.height/2}));
+  });
+  widgetSvg.addEventListener('focusout',e=>{if(!tip.contains(e.relatedTarget))dismissTooltip();});
+  widgetSvg.addEventListener('keydown',e=>{
+    const el=e.target.closest('[data-tooltip-target]');if(el&&['Enter',' '].includes(e.key)){e.preventDefault();const r=el.getBoundingClientRect();el.dispatchEvent(new MouseEvent('click',{bubbles:true,clientX:r.x+r.width/2,clientY:r.y+r.height/2}));}
+  });
+  function visible(el){return el&&getComputedStyle(el).display!=='none'&&!el.closest('[style*="display: none"]');}
+  function registerTargets(){
+    widgetSvg.querySelectorAll('.has-tooltip,.touch-target,[id="dwl"],[id="area-dwl"],[id="area-tax-rev"],[id="subsidy-cost-rect"]').forEach(el=>{
+      if(!el.classList.contains('has-tooltip')&&!el.classList.contains('touch-target')&&!el.onmousemove&& !['dwl','subsidy-cost-rect'].includes(el.id))return;
+      el.dataset.tooltipTarget='';el.setAttribute('role','button');el.setAttribute('tabindex','0');
+      const names={'dwl':'Explain deadweight loss','area-dwl':'Explain deadweight loss','area-tax-rev':'Explain tax revenue','subsidy-cost-rect':'Explain subsidy expenditure','dot-ee':'Explain free market equilibrium','dot-es':'Explain social optimum','touch-target-ee':'Explain free market equilibrium','touch-target-es':'Explain social optimum','touch-target-qe':'Explain free market output','touch-target-qs':'Explain socially optimal output'};
+      el.setAttribute('aria-label',names[el.id]||('Explain '+(el.textContent.trim()||'this diagram point')));
+      if(el.classList.contains('touch-target'))el.setAttribute('tabindex','-1');
+    });
+  }
+  function labelLayout(){
+    // Preserve very small gaps without reversed or overlapping arrowheads.
+    widgetSvg.querySelectorAll('#under-arrow,#over-arrow,#arrow-gap').forEach(el=>{
+      if(!visible(el))return;const inset=el.id==='arrow-gap'?4:2;
+      const left=+el.getAttribute('x1')-inset,right=+el.getAttribute('x2')+inset;
+      const pad=Math.min(inset,Math.max(0,(right-left)/4));el.setAttribute('x1',left+pad);el.setAttribute('x2',right-pad);
+    });
+    widgetSvg.querySelectorAll('#meb-arrow,#mec-arrow').forEach(el=>{if(!visible(el))return;const top=+el.getAttribute('y1')-2,bottom=+el.getAttribute('y2')+2,pad=Math.min(2,Math.max(0,(bottom-top)/4));el.setAttribute('y1',top+pad);el.setAttribute('y2',bottom-pad);});
+    widgetSvg.querySelectorAll('line[marker-start],line[data-original-start]').forEach(el=>{
+      if(!el.dataset.originalStart){el.dataset.originalStart=el.getAttribute('marker-start');el.dataset.originalEnd=el.getAttribute('marker-end');}
+      const length=Math.hypot(+el.getAttribute('x2')- +el.getAttribute('x1'),+el.getAttribute('y2')- +el.getAttribute('y1'));
+      el.setAttribute('marker-start',length<18?'none':el.dataset.originalStart);el.setAttribute('marker-end',length<18?'none':el.dataset.originalEnd);
+    });
+    // Uniform externality annotation and typographic subscripts.
+    ['label-meb','label-mec'].forEach(id=>document.getElementById(id)?.setAttribute('fill','#2563eb'));
+    const mecGroup=document.getElementById('group-mec');if(mecGroup)mecGroup.querySelectorAll('line,polygon,text').forEach(el=>el.setAttribute(el.tagName==='line'?'stroke':'fill','#2563eb'));
+    if(!widgetIsPolicy)widgetSvg.querySelectorAll('#arrow-purple-start path,#arrow-purple-end path').forEach(el=>el.setAttribute('fill','#2563eb'));
+    widgetSvg.querySelectorAll('#label-qe,#label-qs,#label-qpol,#label-pe,#label-ps,#label-ppol,#label-ee,#label-es,#group-dynamic-axis-labels text,#group-dynamic-nodes text,#ban-scene text,.joint-only text,#label-mpc,#label-policy-curve').forEach(el=>{
+      const text=el.textContent;const pattern=/\b([QPES])(?:_)?(private|total|joint|quota|sub|edu|gov|s0|g|b|e|s|c|p|t)\b/g;
+      if(!pattern.test(text))return;pattern.lastIndex=0;el.replaceChildren();let last=0;
+      for(const m of text.matchAll(pattern)){el.append(document.createTextNode(text.slice(last,m.index)+m[1]));const sub=document.createElementNS('http://www.w3.org/2000/svg','tspan');sub.setAttribute('baseline-shift','sub');sub.setAttribute('font-size','9');sub.textContent=m[2];el.append(sub);last=m.index+m[0].length;}el.append(document.createTextNode(text.slice(last)));
+    });
+    // Reset positions is handled by the original renderer before each pass.
+    widgetSvg.querySelectorAll('.label-leader').forEach(el=>el.remove());
+    const qLabels=[...widgetSvg.querySelectorAll('#label-qe,#label-qs,#label-qpol,#group-dynamic-axis-labels text')].filter(el=>visible(el)&&+el.getAttribute('y')>=380);
+    const lanes=[[],[],[]];
+    qLabels.sort((a,b)=>+a.getAttribute('x')- +b.getAttribute('x'));
+    qLabels.forEach(el=>{
+      const x=+el.getAttribute('x'),w=el.getBBox().width;
+      let lane=lanes.findIndex(list=>list.every(b=>x-w/2>b+8));if(lane<0)lane=2;
+      lanes[lane].push(x+w/2);el.setAttribute('y',400+lane*18);
+    });
+    const pLabels=[...widgetSvg.querySelectorAll('#label-pe,#label-ps,#label-ppol,#group-dynamic-axis-labels text')].filter(el=>visible(el)&&+el.getAttribute('y')<380);
+    pLabels.sort((a,b)=>+a.getAttribute('y')- +b.getAttribute('y'));
+    let previous=-Infinity;
+    pLabels.forEach(el=>{
+      const old=+el.getAttribute('y');const y=Math.max(old,previous+17);previous=y;
+      el.setAttribute('y',y);
+      if(y-old>1){const l=document.createElementNS('http://www.w3.org/2000/svg','line');l.setAttribute('class','label-leader');l.setAttribute('x1',66);l.setAttribute('y1',y-4);l.setAttribute('x2',70);l.setAttribute('y2',old-4);l.setAttribute('stroke','#9ca3af');widgetSvg.append(l);}
+    });
+    const curveLabels=[...widgetSvg.querySelectorAll('#label-mpb,#label-mpc,#label-msb,#label-msc,#label-policy-curve,#group-dynamic-curve-labels text')].filter(el=>visible(el)&&el.textContent!=='Quota');
+    curveLabels.sort((a,b)=>+a.getAttribute('y')- +b.getAttribute('y'));
+    let curvePrevious=-Infinity;
+    curveLabels.forEach(el=>{const old=+el.getAttribute('y'),y=Math.max(old,curvePrevious+18);curvePrevious=y;el.setAttribute('y',y);if(y-old>1){const l=document.createElementNS('http://www.w3.org/2000/svg','line');l.setAttribute('class','label-leader');const x=+el.getAttribute('x');l.setAttribute('x1',x-4);l.setAttribute('y1',old-4);l.setAttribute('x2',x);l.setAttribute('y2',y-4);l.setAttribute('stroke',el.getAttribute('fill')||'#9ca3af');widgetSvg.append(l);}});
+    // Hide only the text when a narrow DWL triangle cannot contain it.
+    const area=document.getElementById('dwl')||document.getElementById('area-dwl');
+    const label=document.getElementById('label-dwl-text');
+    if(visible(area)&&label){const b=area.getBBox();if(b.width<30||b.height<26)label.style.display='none';}
+    // Keep text inside the viewBox, including merged price/curve labels.
+    widgetSvg.querySelectorAll('text').forEach(el=>{
+      if(!visible(el))return;const b=el.getBBox();const x=+el.getAttribute('x');
+      if(b.x < -30)el.setAttribute('x',x+(-30-b.x));
+      else if(b.x+b.width>660)el.setAttribute('x',x-(b.x+b.width-660));
+    });
+  }
+  // Restore presentation-only edits before the model renders the next state.
+  let labelSnapshots=[];
+  function restoreLabelPresentation(){
+    labelSnapshots.forEach(({el,html,x,y,display})=>{if(el.isConnected){el.innerHTML=html;el.setAttribute('x',x);el.setAttribute('y',y);el.style.display=display;}});
+    labelSnapshots=[];widgetSvg.querySelectorAll('.collision-leader').forEach(e=>e.remove());
+  }
+  const overlapNote=document.createElement('p');overlapNote.className='diagram-help';overlapNote.hidden=true;widgetSvg.closest('.diagram-frame').after(overlapNote);
+  function snapshotLabels(){labelSnapshots=[...widgetSvg.querySelectorAll('text')].map(el=>({el,html:el.innerHTML,x:el.getAttribute('x'),y:el.getAttribute('y'),display:el.style.display}));}
+  function mergeExactLabels(){
+    snapshotLabels();
+    const labels=[...widgetSvg.querySelectorAll('text')].filter(e=>visible(e)&&/^[QP][a-z]+$/.test(e.textContent.trim()));
+    const used=new Set();
+    labels.forEach(a=>{if(used.has(a))return;const name=a.textContent.trim(),x=+a.getAttribute('x'),y=+a.getAttribute('y');const group=labels.filter(b=>!used.has(b)&&b.textContent.trim()[0]===name[0]&&(name[0]==='Q'?Math.abs(+b.getAttribute('x')-x)<1e-7:Math.abs(+b.getAttribute('y')-y)<1e-7));if(group.length>1){a.textContent=[...new Set(group.map(b=>b.textContent.trim()))].join(' = ');group.slice(1).forEach(b=>b.style.display='none');group.forEach(b=>used.add(b));}});
+    const pairs=[['label-ee','dot-ee'],['label-es','dot-es'],['label-pol','dot-pol']].map(([l,d])=>({l:document.getElementById(l),d:document.getElementById(d)})).filter(o=>visible(o.l)&&visible(o.d));
+    pairs.forEach((a,i)=>pairs.slice(i+1).forEach(b=>{if(visible(b.l)&&Math.abs(+a.d.getAttribute('cx')- +b.d.getAttribute('cx'))<1e-7&&Math.abs(+a.d.getAttribute('cy')- +b.d.getAttribute('cy'))<1e-7){a.l.textContent+=' = '+b.l.textContent;b.l.style.display='none';}}));
+  }
+  function avoidLabelCollisions(){
+    const labels=[...widgetSvg.querySelectorAll('text')].filter(e=>visible(e)&&e.getBBox().width);
+    const placed=[],overlaps=(a,b)=>a.x<b.x+b.width+3&&a.x+a.width+3>b.x&&a.y<b.y+b.height+3&&a.y+a.height+3>b.y;
+    labels.forEach(el=>{
+      const ox=+el.getAttribute('x'),oy=+el.getAttribute('y');let box=el.getBBox(),moved=false;
+      if(placed.some(b=>overlaps(box,b))){
+        const offsets=[];for(let r=18;r<=144;r+=18)offsets.push([0,-r],[0,r],[r,0],[-r,0],[r,-r],[-r,-r],[r,r],[-r,r]);
+        for(const [dx,dy] of offsets){el.setAttribute('x',ox+dx);el.setAttribute('y',oy+dy);box=el.getBBox();if(box.x>=-30&&box.x+box.width<=660&&box.y>=5&&box.y+box.height<=469&&!placed.some(b=>overlaps(box,b))){moved=true;break;}}
+        if(!moved){el.setAttribute('x',ox);el.setAttribute('y',oy);box=el.getBBox();}
+      }
+      if(moved){const l=document.createElementNS('http://www.w3.org/2000/svg','line');Object.entries({class:'collision-leader',x1:ox,y1:oy-4,x2:Math.max(box.x,Math.min(ox,box.x+box.width)),y2:box.y+box.height/2,stroke:'#9ca3af','stroke-width':.8,'pointer-events':'none'}).forEach(([k,v])=>l.setAttribute(k,v));el.parentNode.insertBefore(l,el);}
+      placed.push(box);
+    });
+    const combined=labels.some(e=>/\b[QPE][a-z]+\s*=\s*[QPE][a-z]+/.test(e.textContent));
+    overlapNote.hidden=!combined;overlapNote.textContent=combined?'Combined labels indicate the same position or value. Nearby but different outcomes stay separate.':'';
+  }
+  const exportStatus=document.createElement('p');exportStatus.className='diagram-help';exportStatus.setAttribute('role','status');toolbar.after(exportStatus);
+  const downloadButton=document.createElement('button');downloadButton.type='button';downloadButton.textContent='Download diagram';toolbar.append(downloadButton);
+  const copyButton=document.createElement('button');copyButton.type='button';copyButton.textContent='Copy diagram';toolbar.append(copyButton);
+  const exportLabel=document.createElement('label');exportLabel.className='export-format';exportLabel.textContent='Image style ';
+  const exportStyle=document.createElement('select');exportStyle.setAttribute('aria-label','Image style');exportStyle.innerHTML='<option value=colour>Colour</option><option value=grayscale>Grayscale (print)</option>';exportLabel.append(exportStyle);toolbar.insertBefore(exportLabel,downloadButton);
+  exportStyle.addEventListener('change',()=>{exportStatus.textContent='';});
+  function diagramSVG(){
+    const clone=widgetSvg.cloneNode(true),src=[widgetSvg,...widgetSvg.querySelectorAll('*')],dst=[clone,...clone.querySelectorAll('*')];
+    const props=['display','visibility','fill','fill-opacity','stroke','stroke-width','stroke-opacity','stroke-dasharray','stroke-linecap','stroke-linejoin','paint-order','opacity','font-family','font-size','font-weight','font-style','text-anchor','dominant-baseline','baseline-shift','marker-start','marker-end'];
+    src.forEach((el,i)=>{const cs=getComputedStyle(el);props.forEach(p=>{let v=cs.getPropertyValue(p);if(p.startsWith('marker'))v=v.replace(/url\(["']?[^#)]*#([^)'" ]+)["']?\)/g,'url(#$1)');dst[i].style.setProperty(p,v);});dst[i].removeAttribute('tabindex');dst[i].removeAttribute('role');});
+    clone.querySelectorAll('.touch-target').forEach(e=>e.remove());
+    clone.setAttribute('x','0');clone.setAttribute('y','110');clone.setAttribute('width','710');clone.setAttribute('height','470');clone.style.width='710px';clone.style.height='470px';
+    const ns='http://www.w3.org/2000/svg',out=document.createElementNS(ns,'svg');out.setAttribute('xmlns',ns);out.setAttribute('width','1420');out.setAttribute('height','1250');out.setAttribute('viewBox','0 0 710 625');
+    const bg=document.createElementNS(ns,'rect');bg.setAttribute('width','710');bg.setAttribute('height','625');bg.setAttribute('fill','white');out.append(bg);
+    const title=document.createElementNS(ns,'text');title.setAttribute('x','20');title.setAttribute('y','25');title.setAttribute('style','font:bold 17px system-ui;fill:#4169e1');title.textContent=document.querySelector('h1').textContent;out.append(title);
+    const policy=document.getElementById('policy-select');if(policy){const sub=document.createElementNS(ns,'text');sub.setAttribute('x','20');sub.setAttribute('y','45');sub.setAttribute('style','font:13px system-ui;fill:#374151');sub.textContent=policy.selectedOptions[0].textContent;out.append(sub);}out.append(clone);appendExportKey(out);if(exportStyle.value==='grayscale')makeGrayscale(out);return new XMLSerializer().serializeToString(out);
+  }
+  function makeGrayscale(out){
+    const ns='http://www.w3.org/2000/svg';
+    const defs=document.createElementNS(ns,'defs');out.prepend(defs);
+    const rgb=value=>{const m=value.match(/^rgba?\(([^)]+)\)$/);if(m)return m[1].split(/[, ]+/).filter(Boolean).map(Number);const h=value.match(/^#([0-9a-f]{6})$/i);return h?[0,2,4].map(i=>parseInt(h[1].slice(i,i+2),16)):null;};
+    const kind=c=>c[0]>c[1]&&c[1]>c[2]*2?'other':c[0]>c[1]*1.3&&c[0]>c[2]*1.3?'social':c[1]>c[0]*1.2&&c[1]>c[2]*1.1?'private-cost':c[2]>c[0]*1.2&&c[2]>c[1]*1.1?(c[0]>50?'policy':'private-benefit'):'other';
+    const patterns={};
+    function hatch(k){if(patterns[k])return patterns[k];const id='print-hatch-'+k,pat=document.createElementNS(ns,'pattern');Object.entries({id,width:8,height:8,patternUnits:'userSpaceOnUse'}).forEach(([a,v])=>pat.setAttribute(a,v));
+      const bg=document.createElementNS(ns,'rect');Object.entries({width:8,height:8,fill:'#fff'}).forEach(([a,v])=>bg.setAttribute(a,v));pat.append(bg);
+      const path=document.createElementNS(ns,'path');Object.entries({d:k==='social'?'M-2,2 L2,-2 M0,8 L8,0 M6,10 L10,6':k==='policy'?'M0,0 L8,8 M0,8 L8,0':'M0,4 L8,4',fill:'none',stroke:'#777','stroke-width':1}).forEach(([a,v])=>path.setAttribute(a,v));pat.append(path);defs.append(pat);return patterns[k]='url(#'+id+')';}
+    // Freeze distinct line styles in the exported copy; live diagrams remain in colour.
+    const elements=[...out.querySelectorAll('*')].filter(el=>!defs.contains(el));
+    elements.forEach(el=>{for(const prop of ['fill','stroke']){const value=el.style.getPropertyValue(prop)||el.getAttribute(prop),c=rgb(value||'');if(!c)continue;
+      const alpha=c[3]??1,chromatic=(Math.max(...c.slice(0,3))-Math.min(...c.slice(0,3)))/Math.max(1,...c.slice(0,3))>.5;
+      if(alpha===0){el.style.setProperty(prop,'transparent');continue;}
+      const k=kind(c),shape=['polygon','rect','path'].includes(el.tagName);
+      if(prop==='fill'&&chromatic&&shape&&!el.closest('marker')){el.style.setProperty('fill',hatch(k));el.style.setProperty('fill-opacity','1');}
+      else {const gray=Math.round(.2126*c[0]+.7152*c[1]+.0722*c[2]);el.style.setProperty(prop,prop==='fill'&&['text','tspan'].includes(el.tagName)?'#222':`rgba(${gray},${gray},${gray},${alpha})`);}
+      if(prop==='stroke'&&chromatic&&['line','path'].includes(el.tagName)&&!el.closest('marker')&&!el.classList.contains('collision-leader')&&!el.classList.contains('label-leader')){el.style.setProperty('stroke','#333');el.style.setProperty('stroke-dasharray','none');}
+    }});
+    
+  }
+  async function diagramPNG(){const blob=new Blob([diagramSVG()],{type:'image/svg+xml;charset=utf-8'}),url=URL.createObjectURL(blob);try{const img=new Image();await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=reject;img.src=url;});const canvas=document.createElement('canvas');canvas.width=1420;canvas.height=img.naturalHeight;canvas.getContext('2d').drawImage(img,0,0);return await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('Image creation failed')),'image/png'));}finally{URL.revokeObjectURL(url);}}
+  function saveImage(blob){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=document.title.replace(/[^a-z0-9]+/gi,'_')+(exportStyle.value==='grayscale'?'_Grayscale':'')+'.png';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}
+  downloadButton.onclick=async()=>{try{saveImage(await diagramPNG());exportStatus.textContent=(exportStyle.value==='grayscale'?'Grayscale':'Colour')+' diagram prepared for download.';}catch(e){exportStatus.textContent='Unable to create the image. Please try opening the widget in its own browser tab.';}};
+  copyButton.onclick=async()=>{try{if(!navigator.clipboard?.write||!window.ClipboardItem)throw new Error('Clipboard unavailable');const png=diagramPNG();await navigator.clipboard.write([new ClipboardItem({'image/png':png})]);exportStatus.textContent=(exportStyle.value==='grayscale'?'Grayscale':'Colour')+' diagram copied. Paste it into your notes.';}catch(e){exportStatus.textContent='Image copying is unavailable in this browser or embed. Use Download diagram instead.';}};
+
+  // Approved UX: contextual area key, selected-policy glossary, main-index navigation.
+  const areaKey=document.createElement('div');areaKey.className='area-key';areaKey.setAttribute('aria-label','Shaded area colour and grayscale key');widgetFrame.after(areaKey);
+  const glossaryItems=[...document.querySelectorAll('.sidebar > details')];
+  const glossaryPolicyNames={indirect_subsidy:'Indirect Subsidy',direct_subsidy:'Direct Subsidy',free_provision:'Free Provision',joint_provision:'Joint Provision',education:'Education & Campaigns',tax:'Tax',quota:'Quota on Output',ban:'Ban (a quota of zero)',qpoll:'Quota on Pollutant',rd:'Research & Development (R&D)',edu:'Education & Campaigns'};
+  const normalise=s=>s.replace(/\s+/g,' ').trim();
+  const nameOf=el=>normalise(el.querySelector('summary')?.textContent||'');
+  const policyNames=new Set(Object.values(glossaryPolicyNames));policyNames.add('Direct Government Provision');policyNames.add('Legislation (Compulsory Consumption)');
+  const nav=document.createElement('nav');nav.className='related-widget';nav.setAttribute('aria-label','Widget navigation');const link=document.createElement('a');link.href='index.html';link.textContent='Back to main index';nav.append(link);help.after(nav);
+  function visibleArea(id){const el=document.getElementById(id);if(!el||!visible(el))return false;const box=el.getBBox();return box.width>1e-7&&box.height>1e-7;}
+  function currentAreaKey(){
+    const policy=document.getElementById('policy-select')?.value;if(!['ban','free_provision'].includes(policy))return [];
+    const entries=[];
+    const candidates=policy==='ban'?[['ban-loss-area','DWL under ban','social','#dc2626'],['ban-free-area','Free-market DWL','other','#d97706']]:[['free-policy-loss','Free-provision DWL','social','#dc2626'],['free-market-loss','Free-market DWL','other','#d97706']];
+    candidates.forEach(([id,label,pattern,colour])=>{if(visibleArea(id))entries.push({label,pattern,colour});});
+    if(policy==='free_provision'&&[...document.querySelectorAll('#free-scene .subsidy-rect')].some(el=>visible(el)&&el.getBBox().height>0))entries.push({label:'Subsidy expenditure',pattern:'policy',colour:'#4169e1'});
+    return entries;
+  }
+  function approvedUX(){
+    const entries=currentAreaKey();areaKey.replaceChildren();areaKey.hidden=!entries.length;
+    if(entries.length){const heading=document.createElement('span');heading.className='key-heading';heading.textContent='Colour / grayscale key';areaKey.append(heading);entries.forEach(entry=>{const item=document.createElement('span');item.className='key-item';const colour=document.createElement('i');colour.className='key-colour';colour.style.backgroundColor=entry.colour;colour.setAttribute('aria-hidden','true');const pattern=document.createElement('i');pattern.className='key-pattern '+entry.pattern;pattern.setAttribute('aria-hidden','true');item.append(colour,pattern,document.createTextNode(entry.label));areaKey.append(item);});}
+    document.querySelector('.ban-legend')?.setAttribute('hidden','');
+    const policy=document.getElementById('policy-select')?.value;if(!policy)return;
+    const selectedName=glossaryPolicyNames[policy],selected=glossaryItems.find(el=>nameOf(el)===selectedName);
+    const order=[...(selected?[selected]:[]),...glossaryItems.filter(el=>el!==selected&&!policyNames.has(nameOf(el))),...glossaryItems.filter(el=>el!==selected&&policyNames.has(nameOf(el)))];
+    const sidebar=document.querySelector('.sidebar');order.forEach(el=>sidebar.append(el));
+  }
+  function appendExportKey(out){
+    const entries=currentAreaKey(),ns='http://www.w3.org/2000/svg',height=entries.length?625+18*(entries.length-1):625;
+    out.setAttribute('height',String(height*2));out.setAttribute('viewBox','0 0 710 '+height);out.querySelector('rect')?.setAttribute('height',String(height));
+    entries.forEach((entry,i)=>{const text=document.createElementNS(ns,'text');text.setAttribute('x','20');text.setAttribute('y',String(608+i*18));text.setAttribute('style','font:12px system-ui;fill:#374151');const kind=exportStyle.value==='grayscale'?{social:'Diagonal hatch',other:'Horizontal hatch',policy:'Crosshatch'}[entry.pattern]:{social:'Red shading',other:'Amber shading',policy:'Blue shading'}[entry.pattern];text.textContent=kind+': '+entry.label;out.append(text);});
+  }
+
+  function compactAnnotations(){
+    const defs=widgetSvg.querySelector('defs'),ns='http://www.w3.org/2000/svg';
+    if(!widgetSvg.querySelector('#externality-start'))for(const [id,d,ref] of [['externality-start','M10,1 L0,5 L10,9 Z',1],['externality-end','M0,1 L10,5 L0,9 Z',9]]){const m=document.createElementNS(ns,'marker');Object.entries({id,viewBox:'0 0 10 10',refX:ref,refY:5,markerWidth:5,markerHeight:5,orient:'auto'}).forEach(([k,v])=>m.setAttribute(k,v));const path=document.createElementNS(ns,'path');path.setAttribute('d',d);path.setAttribute('fill','#2563eb');m.append(path);defs.append(m);}
+    widgetSvg.querySelectorAll('#arrow-meb,#meb-arrow,#mec-arrow,#group-mec line,#ban-scene line,.free-externality').forEach(el=>{
+      if(!visible(el)||Math.abs(+el.getAttribute('x1')- +el.getAttribute('x2'))>1e-6)return;
+      if(getComputedStyle(el).stroke!=='rgb(37, 99, 235)'&&!el.matches('#arrow-meb,#meb-arrow,#mec-arrow,.free-externality'))return;
+      if(Math.abs(+el.getAttribute('y2')- +el.getAttribute('y1'))>=10){el.setAttribute('marker-start','url(#externality-start)');el.setAttribute('marker-end','url(#externality-end)');}
+    });
+    const captions=[...widgetSvg.querySelectorAll('#label-output-gap,#label-gap,#label-overprod,#ban-scene text,.free-gap-label')].filter(el=>visible(el)&&/(Under|Over)-(consumption|production)/i.test(el.textContent));
+    const qlabels=[...widgetSvg.querySelectorAll('text')].filter(el=>visible(el)&&/^[Qq]/.test(el.textContent)&&+el.getAttribute('y')>=380&&+el.getAttribute('y')<440);
+    const bottom=Math.max(402,...qlabels.map(el=>el.getBBox().y+el.getBBox().height));
+    captions.forEach(el=>el.setAttribute('y',Math.min(459,bottom+28)));
+    widgetSvg.querySelectorAll('#under-arrow,#over-arrow,#arrow-gap,#line-overprod,.free-gap-arrow').forEach(el=>{if(visible(el)){el.setAttribute('y1',Math.min(441,bottom+10));el.setAttribute('y2',Math.min(441,bottom+10));}});
+    widgetSvg.querySelectorAll('#ban-scene line').forEach(el=>{if(+el.getAttribute('y1')===452&&+el.getAttribute('y2')===452){el.setAttribute('y1',Math.min(441,bottom+10));el.setAttribute('y2',Math.min(441,bottom+10));}});
+  }
+
+  function qualitativeControls(){document.querySelectorAll('input[type="range"]').forEach(el=>{const lo=+el.min,hi=+el.max,v=+el.value,t=(v-lo)/(hi-lo);el.setAttribute('aria-valuetext',t===0?'Minimum':t===1?'Maximum':t<.34?'Low':t<.67?'Moderate':'High');});}
+  function updateDiagram(){restoreLabelPresentation();renderDiagram();const gap=document.getElementById('over-arrow'),caption=document.getElementById('label-output-gap');caption.style.display=gap.style.display;caption.setAttribute('x',(+gap.getAttribute('x1') + +gap.getAttribute('x2'))/2);qualitativeControls();mergeExactLabels();labelLayout();compactAnnotations();avoidLabelCollisions();registerTargets();approvedUX();}
+  updateDiagram();
+
+</script>
+
+</body>
+</html>

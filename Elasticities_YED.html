@@ -1,0 +1,190 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Income Elasticity Of Demand</title><style>
+/* ECON WIDGET DESIGN SYSTEM v2 — shared across all four standalone files. */
+:root{--accent:#4169e1;--ink:#1f2937;--muted:#6b7280;--border:#e5e7eb;--panel:#f3f4f6;--blue:#2563eb;--green:#16a34a;--red:#dc2626;--radius:8px}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:#fff;max-width:1240px;margin:0 auto;padding:20px 16px;line-height:1.5}
+.widget-header{margin:0 0 16px;border-left:4px solid var(--accent);padding-left:12px}
+.widget-header h1{font-size:20px;line-height:1.3;margin:0;font-weight:700}
+.widget-header p{font-size:13px;color:var(--muted);margin:4px 0 0}
+.layout{display:grid;grid-template-columns:minmax(0,2fr) minmax(270px,1fr);gap:20px;align-items:start}
+.main-content{min-width:0;position:relative}
+.sidebar{min-width:0;background:#f9fafb;padding:16px;border-radius:var(--radius);border:1px solid var(--border)}
+.controls{display:flex;flex-direction:column;gap:12px;margin-bottom:12px;background:var(--panel);padding:12px 16px;border-radius:var(--radius)}
+.control-row,.control-group,.policy-selector,.slider-card{display:flex;gap:8px;align-items:center;min-width:0;flex-wrap:wrap}
+.control-row,.policy-selector,.slider-card{width:100%}
+.control-group{flex:1;width:100%}
+.control-group>label:not(.toggle-label):not(.checkbox-label),.policy-selector>label{font-size:13px;font-weight:600}
+.policy-selector select{flex:1}
+.checkbox-group,.option-row,.toggle-grid{display:flex;flex-wrap:wrap;gap:2px 16px;align-items:center;width:100%;border:0;padding:0;background:transparent}
+.checkbox-group>strong{display:none}
+.checkbox-label,.toggle-label{font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;min-height:36px;user-select:none;line-height:1.35}
+input[type=checkbox]{accent-color:var(--accent);width:17px;height:17px;flex-shrink:0;cursor:pointer;margin:0}
+input[type=range]{accent-color:var(--accent);flex:1;min-width:70px;width:100px;height:36px;cursor:pointer;margin:0}
+.scale-label{font-size:12px;font-weight:500;color:var(--muted)}
+select,button{font:600 13px/1.4 system-ui,sans-serif;min-height:40px;border:1px solid #d1d5db;border-radius:6px;background:#fff;color:var(--ink);padding:8px 10px;cursor:pointer;max-width:100%;min-width:0}
+select{width:auto;text-overflow:ellipsis}
+button:hover{border-color:var(--accent);background:#f0f4ff}
+:focus-visible{outline:3px solid #819bea;outline-offset:3px}
+.export-format{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600}.toolbar{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding-top:8px;border-top:1px solid #dcdfe5}
+.toolbar .hint{flex:1;font-size:12px;color:var(--muted);min-width:140px}
+.reset-button{color:#4169e1;border-color:#b6c6f5}
+.diagram-frame{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);background:#fff}
+svg#diagram{width:100%;height:auto;display:block;background:#fff;overflow:hidden}
+.diagram-frame.zoomed svg{min-width:720px}
+.diagram-help{font-size:12px;color:var(--muted);margin:6px 2px 0}
+.axis{stroke:#374151;stroke-width:2}
+.line-mpb{stroke:var(--blue);stroke-width:2.5}
+.line-mpc{stroke:var(--green);stroke-width:2.5}
+.line-msb,.line-msc{stroke:var(--red);stroke-width:2.5}
+.line-policy,.line-tax,.line-quota,.line-qpoll,.line-rd,.line-edu{stroke:var(--accent);stroke-width:2.5;stroke-dasharray:6,4}
+.guide-line{stroke:#9ca3af;stroke-width:1.2;stroke-dasharray:4,4}
+.dwl-poly{fill:rgba(220,38,38,.25);stroke:var(--red);stroke-width:1.5;cursor:pointer}
+.tax-poly,.subsidy-rect{fill:rgba(65,105,225,.18);stroke:var(--accent);stroke-width:1.5;stroke-dasharray:4,4;cursor:pointer}
+.policy-arrow{stroke:var(--accent);stroke-width:2}
+.under-arrow,.over-arrow{stroke:var(--red);stroke-width:2}
+.meb-arrow,.mec-arrow{stroke:var(--blue);stroke-width:2}
+text{font-size:13px;font-family:system-ui,sans-serif}
+text[font-size="11"]{font-size:11px}
+text[font-size="12"]{font-size:12px}
+tspan[baseline-shift="sub"]{font-size:9px}
+.has-tooltip,.touch-target,[data-tooltip-target]{cursor:pointer}
+.touch-target{fill:transparent}
+svg circle.has-tooltip{stroke:transparent;stroke-width:16;pointer-events:all}
+svg text{paint-order:stroke;stroke:#fff;stroke-width:2px;stroke-linejoin:round}
+svg text tspan{stroke-width:1px}
+#label-dwl-text,#label-subsidy-cost-text{stroke-width:0;pointer-events:none}
+.tooltip{position:fixed;background:#1f2937;color:#fff;padding:12px 38px 12px 14px;border-radius:6px;font-size:13px;line-height:1.5;display:none;z-index:100;max-width:min(320px,calc(100vw - 24px));box-shadow:0 8px 22px #0003;border:1px solid #374151;pointer-events:auto}
+.tooltip strong{color:#fb923c}
+.tooltip-close{position:absolute;right:3px;top:3px;background:transparent;color:#fff;border:0;padding:3px 7px;min-height:30px;font-size:20px}
+.tooltip-close:hover{background:#374151}
+.glossary-title{margin:0 0 12px;font-size:16px;font-weight:700;color:#111827;border-bottom:2px solid var(--border);padding-bottom:6px}
+details{margin-bottom:8px;background:#fff;border:1px solid var(--border);border-radius:6px;padding:0 12px}
+details:last-child{margin-bottom:0}
+details[open]{border-color:var(--accent)}
+summary{font-weight:600;font-size:13px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:44px;padding:8px 0}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"▸";font-size:13px;color:#9ca3af;flex-shrink:0}
+details[open] summary::after{transform:rotate(90deg);color:var(--accent)}
+details p{margin:0 0 12px;font-size:13px;color:#4b5563;line-height:1.55}
+@media(hover:hover){.dwl-poly:hover{fill:rgba(220,38,38,.4)}.tax-poly:hover,.subsidy-rect:hover{fill:rgba(65,105,225,.3)}}
+@media(max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}.sidebar{padding:14px}.main-content{position:relative}.tooltip{position:relative;left:0!important;top:0!important;width:100%;max-width:100%;margin-top:10px}.controls{padding:12px}.control-group:has(input[type=range])>label{flex-basis:100%}}
+@media(max-width:480px){body{padding:12px 8px}.widget-header h1{font-size:18px}.controls{gap:8px}.control-group:has(select)>label,.policy-selector>label{flex-basis:100%}select{width:100%}.checkbox-label,.toggle-label{min-height:40px}.toolbar .hint{flex-basis:100%}.layout{gap:14px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+.policy-note{font-size:13px;line-height:1.5;color:#4b5563;background:#f0f4ff;border:1px solid #cbd7fa;border-radius:8px;padding:12px;margin:10px 0}.policy-note p{margin:4px 0}.policy-note h2{font-size:15px;margin:0 0 6px;color:#4169e1}
+.policy-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0}.policy-metrics>div{background:white;border:1px solid #e5e7eb;border-radius:6px;padding:10px}.policy-metrics span{display:block;font-size:12px;color:#6b7280}.policy-metrics strong{font-size:18px;color:#1f2937}
+.ban-legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:12px;margin:8px 0}.ban-legend i{display:inline-block;width:14px;height:10px;margin-right:5px;border:1px solid;vertical-align:middle}.ban-free-area{fill:rgba(217,119,6,.18);stroke:#b45309;stroke-width:1.4;stroke-dasharray:4,3;cursor:pointer}.metric-value{font-weight:700;color:#4169e1;font-variant-numeric:tabular-nums}
+@media(max-width:480px){.policy-metrics{grid-template-columns:1fr}.policy-metrics>div{display:flex;align-items:center;justify-content:space-between;gap:8px}.policy-metrics strong{font-size:16px}}
+strong,b{color:#dc2626!important;font-weight:700}
+.tooltip{background:#fff;color:var(--ink);border-color:#b6c6f5}
+.tooltip-close{color:var(--ink)}
+.tooltip-close:hover{background:#f0f4ff}
+.area-key{display:flex;gap:8px 16px;flex-wrap:wrap;align-items:center;font-size:12px;margin:8px 2px}.area-key[hidden],.ban-legend[hidden]{display:none}.key-heading{font-weight:600;color:#4b5563}.key-item{display:inline-flex;align-items:center;gap:6px}.key-item i{display:inline-block;width:16px;height:12px;border:1px solid #777;flex-shrink:0}.key-colour{opacity:.65}.key-pattern.social{background:repeating-linear-gradient(135deg,#fff 0 4px,#777 4px 5px)}.key-pattern.other{background:repeating-linear-gradient(0deg,#fff 0 4px,#777 4px 5px)}.key-pattern.policy{background:repeating-linear-gradient(45deg,transparent 0 4px,#777 4px 5px),repeating-linear-gradient(135deg,#fff 0 4px,#777 4px 5px)}.related-widget{margin:12px 2px}.related-widget a{display:inline-block;color:#4169e1;font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:3px;padding:8px 0;max-width:100%}
+
+.summary-wrap{margin-top:16px;overflow-x:auto;border:1px solid var(--border);border-radius:8px}.summary-table{width:100%;border-collapse:collapse;font-size:13px;background:white}.summary-table caption{text-align:left;font-size:16px;font-weight:700;padding:12px}.summary-table th,.summary-table td{text-align:left;padding:10px 12px;border-top:1px solid var(--border)}.summary-table th{background:#f9fafb}.mechanism{font-size:13px;margin:12px 0 0;padding:12px;background:#f0f4ff;border:1px solid #cbd7fa;border-radius:8px}.shift-output{font-size:12px;color:var(--muted);min-width:70px;text-align:right}.slider-card>label{font-size:13px;font-weight:600;min-width:95px}.tooltip[hidden]{display:none!important}.diagram-help{min-height:18px}.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:8px 0}.legend span{display:flex;align-items:center;gap:6px}.legend i{width:22px;height:0;border-top:2px solid}.summary-table td:last-child{font-weight:600}@media(max-width:480px){.summary-table{font-size:12px;table-layout:fixed}.summary-table th,.summary-table td{padding:9px 6px;overflow-wrap:anywhere}.shift-output{flex-basis:100%;text-align:left}}
+
+.shift-choice{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.shift-choice button[aria-pressed="true"]{background:#4169e1;color:white;border-color:#4169e1}.welfare-area{stroke-width:1;cursor:pointer}.welfare-label{font-weight:700;pointer-events:none}.surplus-key{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:8px 0}.surplus-key[hidden],.surplus-key [hidden]{display:none}.surplus-key span{display:flex;align-items:center;gap:6px}.surplus-key i{width:18px;height:12px;border:1px solid #999}.surplus-key .cs{background:repeating-linear-gradient(135deg,#dbeafe 0 4px,#7ca0ce 4px 5px)}.surplus-key .ps{background:repeating-linear-gradient(0deg,#dcfce7 0 4px,#7aa888 4px 5px)}
+.tooltip strong{color:var(--accent)!important;font-weight:700}
+
+.tooltip[data-surplus="cs"] strong{color:#2563eb!important}.tooltip[data-surplus="ps"] strong{color:#16a34a!important}
+.slider-track{flex:1;min-width:70px;position:relative;padding-bottom:18px}.slider-track input[type=range]{width:100%;display:block}.slider-zero{position:absolute;left:50%;bottom:0;transform:translateX(-50%);font-size:12px;line-height:14px;font-weight:600;color:var(--muted);pointer-events:none}.slider-zero::before{content:"";display:block;width:1px;height:6px;background:#6b7280;margin:0 auto 2px}
+.mechanism h2{font-size:15px;margin:0 0 8px;color:var(--accent)}.mechanism ol{margin:0;padding-left:22px}.mechanism li{margin:0 0 7px}.mechanism li:last-child{margin-bottom:0}
+.cs-area-note strong{color:#2563eb!important}.ps-area-note strong{color:#16a34a!important}
+
+.elastic-readout{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:14px}.elastic-readout output{font-weight:750;color:#4169e1;font-variant-numeric:tabular-nums}.elastic-label{font-weight:650}.slider-card output{font-size:13px;font-weight:650;min-width:65px}.slider-scale{display:flex;justify-content:space-between;font-size:12px;color:#6b7280;width:100%}.result-banner{padding:10px 12px;border:1px solid #cbd7fa;border-radius:8px;margin-top:10px;font-size:14px;font-weight:650;background:#f0f4ff}.skeleton{min-height:28px}.curve-key{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;margin:8px 0}.curve-key i{display:inline-block;width:22px;border-top:2px solid;margin-right:6px}.area-key i.price{background:#ede9fe}.area-key i.quantity{background:#fef3c7}.area-key i.hatch-price{background:repeating-linear-gradient(135deg,#fff 0 4px,#777 4px 5px)}.area-key i.hatch-quantity{background:repeating-linear-gradient(0deg,#fff 0 4px,#777 4px 5px)}.model-note{font-size:12px;color:#6b7280;margin:10px 2px}.widget-header{text-align:center;border-left:0;border-bottom:3px solid #4169e1;padding:0 0 12px}.tooltip strong{color:#dc2626!important}
+.slider-scale.signed{padding-left:33.333%;padding-right:33.333%}.slider-scale{position:relative}.slider-scale span::before{content:"";display:block;height:6px;width:1px;background:#9ca3af;margin:0 auto 2px}.elastic-track{flex:1;min-width:100px}.elastic-track input{width:100%;display:block}.slider-scale{height:22px;display:block;padding:0!important}.slider-scale span{position:absolute;top:0;transform:translateX(-50%)}.slider-scale span:nth-child(1){left:0}.slider-scale span:nth-child(2){left:50%}.slider-scale span:nth-child(3){left:100%}.slider-scale.signed span:nth-child(1){left:33.333%}.slider-scale.signed span:nth-child(3){left:66.667%}</style></head><body>
+<header class="widget-header"><h1>Income Elasticity Of Demand</h1><p>Topic 3: Elasticities · A-Level Economics</p></header>
+<div class="layout"><main class="main-content">
+<div class="controls">
+<div class="slider-card"><label for="elasticity">YED</label><div class="elastic-track"><input id="elasticity" type="range" min="-3" max="3" step="0.1" value="1" aria-describedby="elasticity-label"><div class="slider-scale signed"><span>−1</span><span>0</span><span>1</span></div></div></div>
+<div class="elastic-readout"><span class="elastic-label" id="elasticity-label"></span></div>
+<div class="shift-choice" role="group" aria-label="Direction of income change"><span class="scale-label">Income:</span><button id="decrease" aria-pressed="false">Decrease income</button><button id="increase" aria-pressed="true">Increase income</button></div>
+<div class="slider-card"><label for="shock">Change size:</label><input id="shock" type="range" min="0" max="50" step="5" value="0"><output id="shock-value" for="shock"></output></div>
+<div class="toggle-grid"><label class="toggle-label"><input id="adjustment" type="checkbox">Price adjustment</label><label class="toggle-label"><input id="tooltips" type="checkbox" checked>Tooltips</label></div></div>
+<div class="diagram-frame" id="frame"><svg id="diagram" viewBox="0 0 700 500" role="img" aria-labelledby="diagram-title diagram-desc"><title id="diagram-title">Income Elasticity Of Demand</title><desc id="diagram-desc"></desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M1 1.5 L9 5 L1 8.5Z" fill="#374151"/></marker><clipPath id="plot"><rect x="90" y="30" width="520" height="380"/></clipPath></defs><g id="drawing"></g></svg></div>
+<div class="curve-key"><span><i style="border-color:#2563eb"></i>Demand</span><span><i style="border-color:#16a34a"></i>Supply</span><span>Initial shifted curve is lighter.</span></div>
+<div id="area-key" class="area-key" hidden></div><div id="tooltip" class="tooltip" role="note" hidden></div>
+<div class="toolbar"><button id="zoom" aria-pressed="false">Enlarge diagram</button><button id="reset" class="reset-button"><strong>Reset Diagram</strong></button><label class="export-format" for="image-style">Image style<select id="image-style"><option value="colour">Colour</option><option value="grayscale">Grayscale (print)</option></select></label><button id="download">Download diagram</button><button id="copy">Copy diagram</button></div>
+<p class="diagram-help">Hover, tap or focus the points and shaded areas for explanations.</p><p id="export-status" class="diagram-help" role="status"></p>
+
+<div class="summary-wrap"><table class="summary-table"><caption>Summary Of Changes</caption><thead><tr><th scope="col">Variable</th><th scope="col">Initial</th><th scope="col">New</th><th scope="col">Change</th></tr></thead><tbody id="summary-body"></tbody></table></div>
+<div id="mechanism" class="mechanism" aria-live="polite"></div><p class="model-note" id="model-note"></p>
+<nav class="related-widget" aria-label="Widget navigation"><a href="index.html">Back to main index</a></nav></main>
+<aside class="sidebar"><h2 class="glossary-title">Key Glossary Terms</h2><details><summary>Income Elasticity Of Demand</summary><div class="skeleton"><!-- Add definition here. --></div></details><details><summary>Inferior Goods</summary><div class="skeleton"><!-- Add definition here. --></div></details><details><summary>Normal Goods (Essential)</summary><div class="skeleton"><!-- Add definition here. --></div></details><details><summary>Normal Goods (Luxury)</summary><div class="skeleton"><!-- Add definition here. --></div></details><details><summary>Zero Income Elasticity</summary><div class="skeleton"><!-- Add definition here. --></div></details><details><summary>Unit Income Elasticity</summary><div class="skeleton"><!-- Add definition here. --></div></details><details><summary>Demand</summary><div class="skeleton"><!-- Add definition here. --></div></details><details><summary>Supply</summary><div class="skeleton"><!-- Add definition here. --></div></details><details><summary>Market Equilibrium</summary><div class="skeleton"><!-- Add definition here. --></div></details></aside></div>
+<script>const KIND='YED', TITLE='Income Elasticity Of Demand';
+// Topic calculations use initial-equilibrium point elasticity and linear curves.
+const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg',priceTopic=['PED','PES'].includes(KIND);
+const svg=$('diagram'),layer=$('drawing'),X=q=>90+520*q/110,Y=p=>410-380*p/110;
+let sign=1, activeShift=false;
+function elasticity(){const t=+$('elasticity').value;return priceTopic?(t===2?Infinity:t/(2-t)):t;}
+const sub=(a,i)=>`${a}<tspan baseline-shift="sub" font-size="9">${i}</tspan>`,eq=(a,b)=>Math.abs(a-b)<1e-8;
+function classify(e){if(priceTopic&&e===Infinity)return 'Perfectly price elastic '+(KIND==='PED'?'demand':'supply');if(priceTopic)return eq(e,0)?'Perfectly price inelastic '+(KIND==='PED'?'demand':'supply'):eq(e,1)?'Unit elastic '+(KIND==='PED'?'demand':'supply'):(e<1?'Price inelastic ':'Price elastic ')+(KIND==='PED'?'demand':'supply');if(KIND==='XED'){if(e===0)return 'Unrelated goods';return (eq(Math.abs(e),1)?'Unit XED: ':Math.abs(e)<1?'Weak ':'Strong ')+(e<0?'complements':'substitutes');}return e<0?'Inferior':eq(e,0)?'No income response':e<1?'Normal (essential)':eq(e,1)?'Normal (unit income elastic)':'Normal (luxury)';}
+function state(){const e=elasticity(),shock=priceTopic?(activeShift?sign:0):sign*+$('shock').value,delta=priceTopic?shock*25:50*e*shock/100;let p,q,qd,qs;
+if(priceTopic&&e===Infinity){p=50;q=50+delta;qd=KIND==='PED'?()=>q:p0=>50-(p0-50)+delta;qs=KIND==='PES'?()=>q:p0=>50+(p0-50)+delta;}
+else if(KIND==='PED'){p=50-delta/(1+e);q=50+e*delta/(1+e);qd=p0=>50-e*(p0-50);qs=p0=>50+(p0-50)+delta;}
+else if(KIND==='PES'){p=50+delta/(1+e);q=50+e*delta/(1+e);qd=p0=>50-(p0-50)+delta;qs=p0=>50+e*(p0-50);}
+else{p=50+delta/2;q=50+delta/2;qd=p0=>50-(p0-50)+delta;qs=p0=>50+(p0-50);}
+return {e,shock,delta,p,q,qd,qs,tr0:2500,tr1:p*q,priceEffect:(p-50)*50,quantityEffect:(q-50)*p};}
+function add(tag,attrs={},html=''){const n=document.createElementNS(NS,tag);for(const [k,v]of Object.entries(attrs))n.setAttribute(k,v);n.innerHTML=html;layer.append(n);return n;}
+function text(x,y,html,c='#374151',attrs={}){return add('text',{x,y,fill:c,'text-anchor':'middle',...attrs},html);}
+function line(x1,y1,x2,y2,c='#374151',attrs={}){return add('line',{x1,y1,x2,y2,stroke:c,'stroke-width':2,...attrs});}
+function tip(n,message){n.dataset.tip=message;n.setAttribute('tabindex','0');n.setAttribute('role','img');n.setAttribute('aria-label',message);return n;}
+function curve(fn,name,c){if(elasticity()===Infinity&&((KIND==='PED'&&name==='D')||(KIND==='PES'&&name==='S'))){line(X(0),Y(50),X(110),Y(50),c);tip(text(X(110)+10,Y(50)-8,name,c), 'Perfectly price elastic '+(KIND==='PED'?'demand':'supply')+' at P₀.');return;}const pts=[];for(let p=0;p<=110;p+=.25){const q=fn(p);if(q>=0&&q<=110)pts.push([X(q),Y(p)]);}if(pts.length<2)return;add('polyline',{points:pts.map(p=>p.join(',')).join(' '),stroke:c,'stroke-width':2.5,fill:'none','clip-path':'url(#plot)'});const pt=pts[Math.max(0,Math.floor(pts.length*.92))];tip(text(pt[0]+12,pt[1]-9,name,c,{'text-anchor':'start'}),'The '+name.replace(/<[^>]*>/g,'')+' curve.');}
+function guides(q,p){line(90,Y(p),X(q),Y(p),'#9ca3af',{'stroke-width':1,'stroke-dasharray':'4 4'});line(X(q),Y(p),X(q),410,'#9ca3af',{'stroke-width':1,'stroke-dasharray':'4 4'});}
+function labels(q,p){if(eq(p,50))text(78,Y(p)+4,sub('P',0)+' = '+sub('P',1),'#374151',{'text-anchor':'end'});else{const close=Math.abs(Y(p)-Y(50))<24,offset=close?12:0;const a=Y(50)+(p>50?offset:-offset),b=Y(p)+(p>50?-offset:offset);text(78,a+4,sub('P',0),'#374151',{'text-anchor':'end'});text(78,b+4,sub('P',1),'#4169e1',{'text-anchor':'end'});if(close){line(80,a,89,Y(50),'#9ca3af',{'stroke-width':1});line(80,b,89,Y(p),'#9ca3af',{'stroke-width':1});}}
+const values=[{v:50,l:sub('Q',0),c:'#374151'},{v:q,l:sub('Q',1),c:'#4169e1'}];if($('adjustment').checked&&!eq(p,50)){const st=state();values.push({v:st.qd(50),l:sub('Q','d'),c:'#2563eb'},{v:st.qs(50),l:sub('Q','s'),c:'#16a34a'});}values.sort((a,b)=>a.v-b.v);let groups=[];for(const a of values){let g=groups.find(g=>eq(g.v,a.v));if(g)g.labels.push(a.l);else groups.push({v:a.v,labels:[a.l],c:a.c});}let previous=-Infinity,lane=434;for(const g of groups){lane=X(g.v)-previous<45?lane+16:434;text(X(g.v),lane,g.labels.join(' = '),g.c);if(lane>434)line(X(g.v),414,X(g.v),lane-12,'#9ca3af',{'stroke-width':1});previous=X(g.v);}}
+
+function direction(v){return eq(v,0)?'Unchanged':v>0?'Increases':'Decreases';}function pct(v){const n=eq(v,0)?0:v;return (n>0?'+':'')+n.toFixed(1)+'%';}
+function row(label,initial,newValue,change){return `<tr><th scope="row">${label}</th><td>${initial}</td><td>${newValue}</td><td>${change}</td></tr>`;}
+function render(){hideTip();if(!priceTopic){const e=elasticity(),limit=e*sign<0?Math.min(50,Math.floor((100/Math.abs(e)+1e-8)/5)*5):50;$('shock').max=limit;if(+$('shock').value>limit)$('shock').value=limit;}const s=state(),{e,shock,delta,p,q}=s,changed=!eq(delta,0);layer.replaceChildren();$('elasticity-label').textContent=classify(e);$('elasticity').setAttribute('aria-valuetext',classify(e));if(!priceTopic){$('shock-value').textContent=Math.abs(shock)+'%';$('shock').setAttribute('aria-valuetext',Math.abs(shock)+' percent');}
+// Shade an exact decomposition: ΔTR = Q₀(P₁−P₀) + P₁(Q₁−Q₀).
+const key=[];
+if(priceTopic&&$('tr').checked&&changed){for(const [type,a,b,c,d,value,fill]of [['price',0,50,50,p,s.priceEffect,'#ede9fe'],['quantity',50,q,0,p,s.quantityEffect,'#fef3c7']]){if(eq(value,0))continue;tip(add('rect',{x:X(Math.min(a,b)),y:Y(Math.max(c,d)),width:Math.abs(X(b)-X(a)),height:Math.abs(Y(d)-Y(c)),fill,stroke:type==='price'?'#7c3aed':'#b45309','stroke-width':1,'data-area':type}),`${type==='price'?'Price':'Quantity'} effect: ${value>0?'gain':'loss'} in total revenue from the ${type==='price'?'price change on the initial quantity Q₀':'quantity change valued at the new price P₁'}.`);key.push(type);}}
+line(90,410,628,410,'#374151',{'marker-end':'url(#arrow)'});line(90,410,90,20,'#374151',{'marker-end':'url(#arrow)'});text(652,415,'Qty');text(66,28,'Price');
+const oldD=p0=>50-(KIND==='PED'?e:1)*(p0-50),oldS=p0=>50+(KIND==='PES'?e:1)*(p0-50);
+if(changed)curve(KIND==='PED'?oldS:oldD,sub(KIND==='PED'?'S':'D',0),KIND==='PED'?'#8fcea3':'#93b4f2');
+curve(s.qd,changed&&KIND!=='PED'?sub('D',1):'D','#2563eb');curve(s.qs,changed&&KIND==='PED'?sub('S',1):'S','#16a34a');
+guides(50,50);if(changed)guides(q,p);labels(q,p);
+function arrow(x1,y1,x2,y2,label,attrs={}){if(Math.hypot(x2-x1,y2-y1)<.1)return;const n=line(x1,y1,x2,y2,'#dc2626',{'stroke-width':1.3,'marker-end':'url(#change-arrow)',...attrs});if(label)tip(n,label);return n;}
+add('defs',{},'<marker id="change-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M1 1.5 L9 5 L1 8.5Z" fill="#dc2626"/></marker>');
+if(!eq(p,50)){arrow(38,Y(50),38,Y(p),'Equilibrium price '+direction(p-50).toLowerCase(),{'data-axis-change':'price'});text(20,(Y(50)+Y(p))/2+4,'ΔP','#dc2626');}
+if(!eq(q,50)){arrow(X(50),474,X(q),474,'Equilibrium quantity '+direction(q-50).toLowerCase(),{'data-axis-change':'quantity'});text((X(50)+X(q))/2,493,'ΔQ','#dc2626');}
+if($('adjustment').checked&&changed){const qd=s.qd(50),qs=s.qs(50);if(!eq(p,50)){
+const left=Math.min(qd,qs),right=Math.max(qd,qs),gap=qd>qs?'Shortage':'Surplus';
+const gapArrow=arrow(X(left),391,X(right),391,gap+' at P₀: the gap between quantity demanded and quantity supplied.',{'data-adjustment':'gap','marker-start':'url(#change-arrow)'});
+text((X(left)+X(right))/2,376,gap+' at '+sub('P',0),'#dc2626',{'data-adjustment':'caption'});
+for(const [start,k,c] of [[qd,'d','#2563eb'],[qs,'s','#16a34a']]){line(X(start),Y(50),X(start),410,'#9ca3af',{'stroke-width':1,'stroke-dasharray':'4 4','data-adjustment':'guide'});
+const dx=X(q)-X(start),dy=Y(p)-Y(50),len=Math.hypot(dx,dy);if(len>.1){const angle=Math.atan2(dy,dx)*180/Math.PI,size=Math.min(10,len*.15);for(const t of [.15,.45,.75])tip(add('polygon',{points:`${size},0 0,${-size*.42} 0,${size*.42}`,fill:'#dc2626',transform:`translate(${X(start)+t*dx} ${Y(50)+t*dy}) rotate(${angle})`,'data-adjustment':'movement'}),'As price adjusts, quantity '+(k==='d'?'demanded':'supplied')+' moves along the current curve towards E₁.');}}
+}else text(350,376,'No price adjustment: equilibrium price is unchanged.','#dc2626',{'data-adjustment':'caption'});}
+
+tip(add('circle',{cx:X(50),cy:Y(50),r:4,fill:'#374151'}),'Initial equilibrium E₀ at P₀ and Q₀.');
+if(!changed)text(X(50)+18,Y(50)-16,sub('E',0)+' = '+sub('E',1),'#374151',{'text-anchor':'start'});
+else{text(X(50)+(q>=50?-16:16),Y(50)+(p>=50?22:-18),sub('E',0),'#374151',{'text-anchor':q>=50?'end':'start'});tip(add('circle',{cx:X(q),cy:Y(p),r:4,fill:'#4169e1'}),'New equilibrium E₁: quantity demanded equals quantity supplied.');text(X(q)+(q>=50?16:-16),Y(p)-16,sub('E',1),'#4169e1',{'text-anchor':q>=50?'start':'end'});}
+$('area-key').hidden=key.length===0;$('area-key').innerHTML=key.map(k=>`<span class="key-item"><i class="${k}"></i><i class="hatch-${k}"></i>${k==='price'?'Price':'Quantity'} effect (colour / grayscale)</span>`).join('');
+let rows=row('Elasticity','—','—',classify(e));rows+=row('Equilibrium price','P₀','P₁',direction(p-50));rows+=row('Equilibrium quantity','Q₀','Q₁',direction(q-50));
+if(priceTopic){rows+=row('Total revenue','P₀ × Q₀','P₁ × Q₁',direction(s.tr1-s.tr0));rows+=row('Price effect','—','Q₀ × (P₁ − P₀)',eq(s.priceEffect,0)?'No change':s.priceEffect>0?'Gain':'Loss');rows+=row('Quantity effect','—','P₁ × (Q₁ − Q₀)',eq(s.quantityEffect,0)?'No change':s.quantityEffect>0?'Gain':'Loss');$('tr-result').textContent='Total revenue: '+direction(s.tr1-s.tr0).toLowerCase();}
+else{rows+=row(KIND==='XED'?'Related-good price':'Income','Initial level','Changed level',direction(shock));rows+=row('Demand','D₀','D₁',direction(delta));}
+$('summary-body').innerHTML=rows;
+let explanation;
+if(priceTopic){const other=KIND==='PED'?'supply':'demand',own=KIND==='PED'?'demand':'supply';explanation=shock===0?'Select Increase or Decrease to apply a significant '+other+' shift.':`A ${shock>0?'rise':'fall'} in ${other} shifts its curve ${shock>0?'right':'left'}. Equilibrium price ${direction(p-50).toLowerCase()} and quantity ${direction(q-50).toLowerCase()}. A higher ${KIND==='PED'?'|PED|':'PES'} gives a larger quantity response and a smaller price response to the same shift. The selected elasticity applies at the initial equilibrium on the ${own} curve.`;}
+else explanation=shock===0?'Choose an increase or decrease, then set the size of the '+(KIND==='XED'?'related-good price':'income')+' change.':`The ${KIND==='XED'?'related-good price':'income'} ${shock>0?'increases':'decreases'}. At the original price P₀, quantity demanded ${direction(e*shock).toLowerCase()}. ${eq(delta,0)?'Demand does not shift.':`The whole demand curve shifts ${delta>0?'right':'left'}.`} Supply stays fixed. Equilibrium price ${direction(p-50).toLowerCase()} and quantity ${direction(q-50).toLowerCase()}.`;
+$('mechanism').innerHTML='<h2>What Happens?</h2><p>'+explanation+'</p>';
+$('model-note').textContent=priceTopic?'Model: straight curves (horizontal at infinity); elasticity is measured at E₀ and varies along the curve. For a finite shift, the actual TR change can differ from the usual rule based on initial PED—including when initial |PED| = 1. PES does not itself determine a TR rule.': 'Model: the selected elasticity gives the proportional demand change at P₀. This shifts demand horizontally; the final equilibrium quantity change also depends on the fixed supply curve.'+(!priceTopic&&+$('shock').max<50?' Change size is limited to '+$('shock').max+'% at this elasticity and direction to keep quantity demanded at P₀ nonnegative.':'');
+$('diagram-desc').textContent=classify(e)+'. '+explanation;window.widgetState=s;
+}
+function hideTip(){$('tooltip').hidden=true;$('tooltip').style.display='none';}
+function showTip(n,event){if(!$('tooltips').checked||!n?.dataset.tip)return;const t=$('tooltip');t.replaceChildren();const span=document.createElement('span');span.textContent=n.dataset.tip;const close=document.createElement('button');close.className='tooltip-close';close.textContent='×';close.setAttribute('aria-label','Close explanation');close.onclick=hideTip;t.append(span,close);t.hidden=false;t.style.display='block';if(innerWidth>900){const r=n.getBoundingClientRect();t.style.left=Math.max(12,Math.min(event?.clientX??r.left,innerWidth-t.offsetWidth-12))+'px';t.style.top=Math.max(12,Math.min((event?.clientY??r.top)+12,innerHeight-t.offsetHeight-12))+'px';}}
+svg.addEventListener('pointerover',e=>{if(e.pointerType==='mouse')showTip(e.target.closest('[data-tip]'),e);});svg.addEventListener('click',e=>showTip(e.target.closest('[data-tip]'),e));svg.addEventListener('focusin',e=>showTip(e.target));svg.addEventListener('focusout',hideTip);svg.addEventListener('keydown',e=>{if(['Enter',' '].includes(e.key)){e.preventDefault();showTip(e.target);}});document.addEventListener('keydown',e=>{if(e.key==='Escape')hideTip();});document.addEventListener('pointerdown',e=>{if(!e.target.closest('[data-tip],#tooltip'))hideTip();});
+function choose(n){sign=n;$('increase').setAttribute('aria-pressed',n===1);$('decrease').setAttribute('aria-pressed',n===-1);render();}
+function activate(n){if(priceTopic)activeShift=true;else if(+$('shock').value===0)$('shock').value=25;choose(n);}$('increase').onclick=()=>activate(1);$('decrease').onclick=()=>activate(-1);
+for(const id of ['elasticity',...(!priceTopic?['shock']:[]),'tooltips','adjustment',...(priceTopic?['tr']:[])])$(id).addEventListener('input',render);
+$('zoom').onclick=()=>{const on=$('frame').classList.toggle('zoomed');$('zoom').textContent=on?'Fit diagram':'Enlarge diagram';$('zoom').setAttribute('aria-pressed',on);};
+$('reset').onclick=()=>{$('elasticity').value=1;activeShift=false;if(!priceTopic)$('shock').value=0;$('adjustment').checked=false;$('tooltips').checked=true;if(priceTopic)$('tr').checked=true;document.querySelectorAll('details').forEach(n=>n.open=false);$('frame').classList.remove('zoomed');$('zoom').textContent='Enlarge diagram';$('zoom').setAttribute('aria-pressed','false');$('export-status').textContent='';choose(1);};
+async function png(){const clone=svg.cloneNode(true),gray=$('image-style').value==='grayscale',areas=[...clone.querySelectorAll('[data-area]')];clone.setAttribute('xmlns',NS);clone.setAttribute('width','1400');clone.setAttribute('height','1200');clone.setAttribute('viewBox','0 0 700 600');const group=clone.querySelector('#drawing');group.setAttribute('transform','translate(0 80)');clone.querySelector('defs').insertAdjacentHTML('beforeend','<pattern id="hatch-price" width="7" height="7" patternUnits="userSpaceOnUse"><rect width="7" height="7" fill="#fff"/><path d="M-1 1L1-1 M0 7L7 0 M6 8L8 6" stroke="#777" stroke-width="1"/></pattern><pattern id="hatch-quantity" width="7" height="7" patternUnits="userSpaceOnUse"><rect width="7" height="7" fill="#fff"/><path d="M0 3L7 3" stroke="#777" stroke-width="1"/></pattern>');const style=document.createElementNS(NS,'style');style.textContent='text{font:13px system-ui,sans-serif;paint-order:stroke;stroke:white;stroke-width:2px}tspan{font-size:9px}';clone.append(style);
+if(gray)for(const n of clone.querySelectorAll('*'))for(const a of ['fill','stroke']){let v=n.getAttribute(a);if(v&&/^#[0-9a-f]{6}$/i.test(v)){let r=parseInt(v.slice(1,3),16),g=parseInt(v.slice(3,5),16),b=parseInt(v.slice(5,7),16),c=Math.round(.2126*r+.7152*g+.0722*b);n.setAttribute(a,`rgb(${c},${c},${c})`);}}
+if(gray)for(const n of areas)n.setAttribute('fill','url(#hatch-'+n.dataset.area+')');const heading=document.createElementNS(NS,'text');heading.setAttribute('x',350);heading.setAttribute('y',23);heading.setAttribute('text-anchor','middle');heading.textContent=TITLE+' ('+KIND+')';clone.append(heading);const setting=document.createElementNS(NS,'text');setting.setAttribute('x',350);setting.setAttribute('y',44);setting.setAttribute('text-anchor','middle');setting.textContent=$('elasticity-label').textContent+' · '+(priceTopic&&!activeShift?'No shift':sign>0?'Increase':'Decrease');clone.append(setting);for(let i=0;i<areas.length;i++){const k=areas[i].dataset.area;const key=document.createElementNS(NS,'g');key.innerHTML=`<rect x="${105+i*270}" y="578" width="18" height="12" fill="${gray?'url(#hatch-'+k+')':k==='price'?'#ede9fe':'#fef3c7'}" stroke="#777"/><text x="${130+i*270}" y="589">${k==='price'?'Price':'Quantity'} effect</text>`;clone.append(key);}
+const url=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(clone)],{type:'image/svg+xml'}));try{const img=new Image();await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=url;});const canvas=document.createElement('canvas');canvas.width=1400;canvas.height=1200;const ctx=canvas.getContext('2d');ctx.fillStyle='white';ctx.fillRect(0,0,1400,1200);ctx.drawImage(img,0,0);return await new Promise(res=>canvas.toBlob(res,'image/png'));}finally{URL.revokeObjectURL(url);}}
+$('download').onclick=async()=>{try{const blob=await png(),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='Elasticities_'+KIND+($('image-style').value==='grayscale'?'_Grayscale':'')+'.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);$('export-status').textContent='Diagram downloaded.';}catch(e){$('export-status').textContent='Could not generate the diagram image.';}};
+$('copy').onclick=async()=>{try{await navigator.clipboard.write([new ClipboardItem({'image/png':png()})]);$('export-status').textContent='Diagram copied.';}catch(e){$('export-status').textContent='Copying is unavailable in this browser or embed. Use Download diagram.';}};
+render();
+</script></body></html>
