@@ -10,7 +10,22 @@
   for(const [q,c]of Object.entries(mapping))document.querySelectorAll(q).forEach(e=>e.classList.add(c));
   const controls=document.querySelector('.controls'),layout=document.querySelector('.layout');if(controls&&layout&&controls.parentNode!==layout.parentNode)layout.before(controls);
  }
+ function alignMeb(svg){
+  // A vertical external-benefit arrow spans the two curves at its own x.
+  // Source heights had been measured at Qe while the arrow was shifted left.
+  const scope=svg.querySelector('#free-scene')||svg,benefit=scope.querySelector('#curve-mpb,line.line-mpb'),social=scope.querySelector('#curve-msb,line.line-msb');
+  if(!benefit||!social)return;
+  const atX=(line,x)=>{const x1=+line.getAttribute('x1'),x2=+line.getAttribute('x2'),y1=+line.getAttribute('y1'),y2=+line.getAttribute('y2');return y1+(x-x1)*(y2-y1)/(x2-x1);};
+  if(!svg.querySelector('#ew-meb-start')){const defs=svg.querySelector('defs');for(const[id,d,ref]of[['ew-meb-start','M10,1 L0,5 L10,9 Z',0],['ew-meb-end','M0,1 L10,5 L0,9 Z',10]]){const marker=document.createElementNS(NS,'marker');for(const[k,v]of Object.entries({id,viewBox:'0 0 10 10',refX:ref,refY:5,markerWidth:5,markerHeight:5,orient:'auto'}))marker.setAttribute(k,v);const shape=document.createElementNS(NS,'path');shape.setAttribute('d',d);shape.setAttribute('fill','#67717e');marker.append(shape);defs.append(marker);}}
+  for(const arrow of scope.querySelectorAll('#arrow-meb,.free-externality')){if(!visible(arrow))continue;const x=+arrow.getAttribute('x1');arrow.setAttribute('y1',atX(benefit,x));arrow.setAttribute('y2',atX(social,x));arrow.setAttribute('marker-start','url(#ew-meb-start)');arrow.setAttribute('marker-end','url(#ew-meb-end)');}
+ }
  function legacyCurveGeometry(svg){
+  const drawing=svg.querySelector('#drawing');
+  if(drawing){
+   // Keep existing welfare polygons inside the same visible plot as their curves.
+   if(!svg.querySelector('#ew-welfare-clip')){const defs=svg.querySelector('defs'),clip=document.createElementNS(NS,'clipPath'),rect=document.createElementNS(NS,'rect');clip.id='ew-welfare-clip';clip.setAttribute('clipPathUnits','userSpaceOnUse');for(const[k,v]of Object.entries({x:90,y:30,width:380,height:380}))rect.setAttribute(k,v);clip.append(rect);defs.append(clip);}
+   for(const area of drawing.querySelectorAll('#cs-area,#ps-area'))area.setAttribute('clip-path','url(#ew-welfare-clip)');
+  }
   // Retained visual square clipping and equal drawn length of the private pair.
   const plot=svg.querySelector('#diagram-plot');if(!plot)return;
   if(!plot.querySelector('#ew-square-clip')){const defs=document.createElementNS(NS,'defs');defs.innerHTML='<clipPath id="ew-square-clip"><rect x="70" y="25" width="355" height="355"/></clipPath>';plot.prepend(defs);}
@@ -25,11 +40,11 @@
  const areaIds={'dwl':['Deadweight loss','social'],'area-dwl':['Deadweight loss','social'],'free-policy-loss':['Free-provision DWL','social'],'free-market-loss':['Free-market DWL','other'],'subsidy-cost-rect':['Subsidy expenditure','policy'],'cs-area':['Consumer surplus','cs'],'ps-area':['Producer surplus','ps']};
  function summaryText(svg){
   if(!svg.querySelector('#diagram-plot')){
-   const state=window.currentState||{};const direction=(v,label)=>v==='Increases'?label+' Increases':v==='Decreases'?label+' Decreases':label+' Unchanged';
+   const state=window.currentState||{};if(state.step&&state.step<6)return '';const direction=(v,label)=>v==='Increases'?label+' Increases':v==='Decreases'?label+' Decreases':label+' Unchanged';
    return [direction(state.priceChange,'Price'),direction(state.quantityChange,'Qty')].join(' · ');
   }
   const policy=document.getElementById('policy-select')?.value||'none';
-  if(policy==='joint_provision'){const line=svg.querySelector('#line-qpol'),base=svg.querySelector('#line-qe'),current=line&&line.style.display!=='none'&&line.hasAttribute('x1')?Number(line.getAttribute('x1')):NaN,initial=Number(base?.getAttribute('x1')),qty=Number.isFinite(current)?current:initial;const q=qty>initial+.05?'Total Qty Increases':qty<initial-.05?'Total Qty Decreases':'Total Qty Unchanged';return q+' · DWL Not Determined';}
+  if(policy==='joint_provision'){const line=svg.querySelector('#line-qpol'),base=svg.querySelector('#line-qe'),current=line&&line.style.display!=='none'&&line.hasAttribute('x1')?Number(line.getAttribute('x1')):NaN,initial=Number(base?.getAttribute('x1')),qty=Number.isFinite(current)?current:initial;const q=qty>initial+.05?'Total Qty Increases':qty<initial-.05?'Total Qty Decreases':'Total Qty Unchanged';return q+' · '+(Math.abs(qty-initial)>.05?'DWL Decreases':'DWL Unchanged');}
   if(policy==='free_provision'&&window.currentFreeModel){const m=window.currentFreeModel,delta=m.freeLoss-m.marketLoss;return 'Total Qty Increases · DWL '+(Math.abs(delta)<1e-7?'Unchanged':delta<0?'Decreases':'Increases');}
   const base=svg.querySelector('#line-qe'),opt=svg.querySelector('#line-qs'),policyLine=svg.querySelector('#line-qpol'),baseX=+base?.getAttribute('x1'),optX=+opt?.getAttribute('x1'),currentX=policy==='none'||!policyLine||policyLine.style.display==='none'?baseX:+policyLine.getAttribute('x1');
   if(!Number.isFinite(baseX)||!Number.isFinite(optX)||!Number.isFinite(currentX))return 'Diagram summary unavailable';
@@ -45,7 +60,7 @@
  function refresh(){
   const svg=document.getElementById('diagram');if(running||!svg?.getScreenCTM())return;
   running=true;try{
-   P.resetPresentation(svg);chrome();legacyCurveGeometry(svg);
+   P.resetPresentation(svg);chrome();legacyCurveGeometry(svg);alignMeb(svg);
    if(svg.querySelector('#diagram-plot')){
     svg.classList.add('ew-policy-context');
     for(const e of svg.querySelectorAll('.line-mpb,.line-mpc,.line-msb,.line-msc'))e.style.stroke='#374151';
@@ -94,13 +109,13 @@
     else if(/(?:Under|Over)-(?:consumption|production)/i.test(plain)||/^(Shortage|Surplus) at/i.test(plain)){position(svg,e,290,490);e.setAttribute('text-anchor','middle');role='small';}
     else if(plain==='MEB'){role='small';}
     if(e.id==='label-policy-arrow'&&/^Government output \(Qg\)$/i.test(plain)&&svg.getBoundingClientRect().width<400){P.styleText(e,'small');const html=e.innerHTML,split=html.indexOf(' ');P.wrapText(e,[html.slice(0,split),html.slice(split)]);}
-    const annotation=e.id==='label-meb'?svg.querySelector('#arrow-meb'):e.id==='label-policy-arrow'?svg.querySelector('#arrow-policy'):null;
+    const mebLabel=gov&&plain==='MEB',annotation=mebLabel?(e.closest('#free-scene')||svg).querySelector('#arrow-meb,.free-externality'):e.id==='label-policy-arrow'?svg.querySelector('#arrow-policy'):null;
     if(annotation&&visible(annotation)){
      const a=segment(annotation);anchorUser={x:(a.x1+a.x2)/2,y:(a.y1+a.y2)/2};
-     if(document.getElementById('policy-select')?.value==='direct_subsidy'){
-      const meb=e.id==='label-meb';position(svg,e,anchorUser.x+(meb?8:-8),anchorUser.y);e.setAttribute('text-anchor',meb?'start':'end');e.setAttribute('dominant-baseline','central');
+     if(mebLabel||document.getElementById('policy-select')?.value==='direct_subsidy'){
+      position(svg,e,anchorUser.x+(mebLabel?8:-8),anchorUser.y);e.setAttribute('text-anchor',mebLabel?'start':'end');e.setAttribute('dominant-baseline','central');
      }
-     if(e.id==='label-meb'||/^(?:Subsidy)$/i.test(plain)){nearSegmentUser=a;avoidSegmentsUser=[a];}
+     if(mebLabel||/^(?:Subsidy)$/i.test(plain)){nearSegmentUser=a;avoidSegmentsUser=[a];}
     }
     if(!axis&&!anchorUser){const a=rootPoint(svg,e,+e.getAttribute('x'),+e.getAttribute('y'));anchorUser={x:a.x,y:a.y};}
     labels.push({id,element:e,kind,role,anchorUser,axis,nearSegmentUser,avoidSegmentsUser,maxDistancePx:kind==='curve'?(svg.getBoundingClientRect().width<C.gaps.compactCurveWidthPx?C.gaps.compactCurveProximityPx:C.gaps.curveProximityPx):nearSegmentUser?22:undefined,leader:kind==='curve'?false:axis||e.dataset.pointX!==undefined?undefined:false});
