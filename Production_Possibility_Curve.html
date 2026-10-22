@@ -97,8 +97,202 @@ strong,b{color:#dc2626!important;font-weight:700}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 [hidden]{display:none!important}.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tabs button{flex:1;min-width:140px}.tabs button[aria-selected="true"]{background:var(--accent);color:white;border-color:var(--accent)}.tab-panel{display:flex;flex-direction:column;gap:12px}.slider-card label{min-width:115px}.range-wrap{flex:1;min-width:140px}.range-wrap input{width:100%;display:block}.range-ends{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);gap:12px}.slider-card output{min-width:50px;text-align:right}.controls p{font-size:12px;margin:0;color:var(--muted)}.controls .instruction{font-size:13px;color:var(--ink)}.point-controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}.point-controls .slider-card{gap:4px}.point-controls label{min-width:0;flex-basis:100%}.point-controls input{width:100px}.result-banner{font-size:14px}.result-banner[data-status="outside"]{background:#fff7ed;border-color:#fed7aa}.result-banner[data-status="frontier"]{background:#f0fdf4;border-color:#bbf7d0}.result-banner p{font-size:13px;font-weight:400;margin:4px 0 0}.diagram-frame{overflow:auto}.diagram-frame svg{width:100%;display:block;min-width:0;touch-action:pan-y}.diagram-frame.zoomed svg{min-width:950px}.draggable{cursor:grab;touch-action:none}.draggable:active{cursor:grabbing}.draggable:focus .point-ring{stroke:#4169e1;stroke-width:3}.point-ring{fill:transparent;stroke:transparent;pointer-events:all}.model-note{line-height:1.5}.glossary-intro{font-size:12px;color:var(--muted);margin:0 0 12px}.mini-label{font-size:12px;font-weight:600}.tooltip{pointer-events:none}.footer-note{font-size:12px;color:var(--muted)}@media(max-width:480px){.tabs button{min-width:0;font-size:12px;padding:8px 4px}.slider-card>label{flex-basis:100%}.point-controls .slider-card>label{flex-basis:100%}.range-wrap{min-width:100px}.point-controls{grid-template-columns:1fr}.summary-table{table-layout:auto}}
 @media print{body{max-width:none}.controls,.tabs,.toolbar,.related-widget,.sidebar,.tooltip{display:none!important}.layout{display:block}.diagram-frame{border:0}.diagram-frame svg{width:100%;min-width:0!important}.summary-wrap,.mechanism{break-inside:avoid}}
-</style></head><body>
-<header class="widget-header"><h1>Production Possibility Curve</h1><p>Topic 1 · A-Level Economics · Choices, Trade-offs And Growth</p></header>
+
+/* Centre the canvas and its legend together, with balanced vertical space. */
+.widget-page .diagram-frame {
+ display:flex; flex-direction:column; align-items:center; justify-content:center;
+ box-sizing:border-box; min-height:clamp(280px,85vw,480px); padding-block:16px;
+}
+.widget-page .diagram-frame>svg#diagram { flex-shrink:0; }
+.widget-page .ui-diagram-legends { width:100%; box-sizing:border-box; text-align:center; }
+.widget-page .ui-diagram-legends>.legend,
+.widget-page .ui-diagram-legends>.curve-key,
+.widget-page .ui-diagram-legends>.area-key,
+.widget-page .ui-diagram-legends>.surplus-key,
+.widget-page .ui-diagram-legends>.ban-legend { justify-content:center; }
+
+/* One area-only row. Matching top space centres the canvas independently. */
+.widget-page .diagram-frame{padding:10px 0!important;min-height:0!important;justify-content:center;gap:0;overflow:visible}
+.widget-page .diagram-frame::before{content:"";display:block;flex:0 0 var(--queue-legend-height,0px);width:100%}
+.widget-page .diagram-frame>svg#diagram{width:100%;max-width:560px;height:auto;aspect-ratio:600 / 500}
+.widget-page .ui-diagram-legends{padding:6px 2px 0!important;display:flex;flex-wrap:nowrap;overflow-x:auto;align-items:center;justify-content:safe center;max-width:100%;white-space:nowrap;min-height:26px}
+.widget-page .ui-diagram-legends>.legend,.widget-page .ui-diagram-legends>.curve-key,.widget-page .ui-diagram-legends>.area-key,.widget-page .ui-diagram-legends>.surplus-key,.widget-page .ui-diagram-legends>.ban-legend{display:none!important}
+.widget-page .queue-area-legend{display:flex;flex-wrap:nowrap;align-items:center;gap:14px;margin:0!important;flex:none;font-size:12px;white-space:nowrap}
+.widget-page .ui-diagram-legends>.queue-area-legend{margin:0!important}
+.widget-page .queue-area-item{display:inline-flex;align-items:center;gap:5px;flex:none;white-space:nowrap}
+.widget-page .queue-area-item i{display:inline-block;width:14px;height:11px;border:1px solid #777;flex:none}
+.widget-page .queue-pattern{background:repeating-linear-gradient(135deg,#fff 0 4px,#777 4px 5px)}
+.widget-page .queue-pattern.ps,.widget-page .queue-pattern.other,.widget-page .queue-pattern.quantity{background:repeating-linear-gradient(0deg,#fff 0 4px,#777 4px 5px)}
+.widget-page .queue-pattern.policy{background:repeating-linear-gradient(45deg,transparent 0 4px,#777 4px 5px),repeating-linear-gradient(135deg,#fff 0 4px,#777 4px 5px)}
+.widget-page svg .line-policy,.widget-page svg .line-tax,.widget-page svg .line-quota,.widget-page svg .line-qpoll,.widget-page svg .line-rd,.widget-page svg .line-edu{stroke-dasharray:none!important}
+
+</style><style data-shared-interface="approved">
+/* Approved Collection Interface. Embedded By build.py; No External Dependencies. */
+:root { --radius:8px; --ui-text:14px; }
+.widget-header { text-align:center; border-left:0; border-bottom:3px solid var(--accent); padding:0 0 12px; margin-bottom:10px; }
+.widget-header h1 { font-size:24px; line-height:1.3; }
+.widget-header p { font-size:14px; }
+.controls,.sidebar { border-radius:8px; }
+select,button { font-size:14px; min-height:44px; border-radius:6px; }
+.tabs button { font-size:14px; }
+.control-group>label:not(.toggle-label):not(.checkbox-label),.policy-selector>label,.slider-card>label,
+.checkbox-label,.toggle-label,summary,.elastic-label,.slider-card output,.shift-output { font-size:14px; }
+.checkbox-label,.toggle-label { min-height:44px; }
+.scale-label,.range-ends,.slider-scale,.diagram-help,.model-note,.note-small,.glossary-intro,.case-help,.curve-key,.legend,.area-key,.surplus-key { font-size:13px; }
+details p,.summary-table,.outcomes,.policy-note,.mechanism,.walkthrough-copy,.controls .instruction { font-size:14px; line-height:1.55; }
+.summary-table th,.summary-table td,.outcomes th,.outcomes td { font-size:14px; }
+.glossary-title { font-size:17px; }
+.reset-button,.reset-button strong { color:var(--accent)!important; font-weight:700; }
+.controls label strong { color:inherit!important; }
+.tooltip strong { color:var(--red)!important; }
+.tooltip[data-surplus="cs"] strong { color:var(--blue)!important; }
+.tooltip[data-surplus="ps"] strong { color:var(--green)!important; }
+svg#diagram text { font-size:14px; }
+svg#diagram text[font-size="11"],svg#diagram text[font-size="12"] { font-size:12px; }
+svg#diagram text[style*="font-size:11px"],svg#diagram text[style*="font-size: 11px"] { font-size:12px!important; }
+svg#diagram tspan[baseline-shift="sub"] { font-size:10px; }
+svg#diagram .guide-line { stroke:#9ca3af; stroke-width:1; stroke-dasharray:4,4; }
+svg#diagram .axis,svg#diagram line[marker-end="url(#axis-arrow)"] { stroke:#374151; stroke-width:2; }
+svg#diagram path[data-tip]:not([fill]) { stroke-width:2.5; }
+.widget-nav { margin:0 0 14px; text-align:center; }
+.widget-nav a { padding:8px 12px; font-size:14px; min-height:40px; }
+.ui-actionbar { position:relative; gap:8px; margin:12px 0; }
+.ui-legacy-zoom { display:none!important; }
+.ui-export { padding:0; margin:0; background:#fff; position:relative; border:1px solid #d1d5db; border-radius:6px; }
+.ui-export>summary { padding:8px 12px; min-height:44px; gap:12px; }
+.ui-export-panel { position:absolute; z-index:130; top:calc(100% + 6px); left:0; padding:12px; display:flex; flex-wrap:wrap; gap:10px; width:280px; max-width:calc(100vw - 40px); background:#fff; border:1px solid var(--border); box-shadow:0 8px 22px #0002; border-radius:8px; }
+.ui-export-panel .export-format { width:100%; font-size:14px; }
+.ui-export-panel button { flex:1; }
+.ui-current-policy { margin-bottom:12px; }
+.ui-current-policy>h3 { font-size:14px; color:var(--accent); margin:0 0 8px; }
+.ui-curve-key { display:flex; flex-wrap:wrap; gap:6px 16px; margin:8px 0; }
+.ui-curve-key span { display:inline-flex; align-items:center; gap:6px; }
+.ui-curve-key i { display:inline-block; width:20px; border-top:2.5px solid; }
+.tooltip.ui-tooltip { display:none!important; pointer-events:auto; font-size:14px; line-height:1.55; width:auto; max-width:min(360px,calc(100vw - 24px)); }
+.tooltip.ui-tooltip[data-open="true"] { display:block!important; }
+.tooltip.ui-tooltip .tooltip-close { min-width:40px; min-height:40px; top:0; right:0; }
+.tooltip.ui-tooltip .ui-tooltip-state { display:block; margin-top:8px; font-size:12px; color:var(--muted); }
+.tooltip.ui-tooltip[hidden] { display:none!important; }
+@media(max-width:900px) {
+ .tooltip.ui-tooltip { position:relative; left:auto!important; top:auto!important; width:100%; max-width:none!important; margin:10px 0; }
+}
+@media(max-width:480px) {
+ .widget-header h1 { font-size:21px; }
+ .summary-table,.summary-table th,.summary-table td,.outcomes th,.outcomes td { font-size:14px; }
+ .ui-export-panel { left:auto; right:0; }
+}
+@media print { .ui-actionbar,.widget-nav,.ui-tooltip { display:none!important; } }
+
+/* Compact Sizing: Preserve The Existing Layout, Controls And Teaching Content. */
+body.widget-page { padding:12px; }
+.widget-page .widget-header { padding-bottom:8px; margin-bottom:6px; }
+.widget-page .widget-header h1 { font-size:22px; }
+.widget-page .widget-header p { margin-top:3px; }
+.widget-page .widget-nav { margin-bottom:8px; }
+.widget-page .widget-nav a { padding:6px 10px; }
+.widget-page .layout { grid-template-columns:minmax(0,1fr) clamp(260px,25vw,300px); gap:14px; }
+.widget-page .sidebar { padding:12px; }
+.widget-page .glossary-title { font-size:16px; margin-bottom:8px; padding-bottom:5px; }
+.widget-page .sidebar details { margin-bottom:5px; padding:0 10px; }
+.widget-page .sidebar summary { min-height:44px; padding:6px 0; gap:8px; line-height:1.35; }
+.widget-page .sidebar details p { margin-bottom:9px; }
+.widget-page .ui-current-policy { margin-bottom:8px; }
+.widget-page .ui-current-policy>h3 { margin-bottom:5px; }
+.widget-page .controls { padding:8px 12px; gap:8px; margin-bottom:8px; }
+.widget-page .control-row,.widget-page .control-group,.widget-page .policy-selector,.widget-page .slider-card { gap:6px; }
+.widget-page .checkbox-group,.widget-page .option-row,.widget-page .toggle-grid { gap:0 12px; }
+.widget-page button,.widget-page select { padding:6px 9px; min-height:44px; }
+.widget-page .tabs { gap:6px; margin-bottom:8px; }
+.widget-page .ui-actionbar { gap:6px; margin:8px 0; padding-top:6px; }
+.widget-page .ui-export>summary { padding:6px 10px; min-height:44px; }
+.widget-page svg#diagram { width:100%; max-width:var(--diagram-max-width); height:auto; margin-inline:auto; }
+.widget-page .diagram-help { margin-top:4px; }
+.widget-page .legend,.widget-page .area-key,.widget-page .curve-key,.widget-page .surplus-key,.widget-page .ui-curve-key { margin-top:6px; margin-bottom:6px; gap:6px 12px; }
+.widget-page .summary-wrap,.widget-page .table-wrap { margin-top:10px; }
+.widget-page .summary-table caption { padding:8px 10px; }
+.widget-page .summary-table th,.widget-page .summary-table td,.widget-page .outcomes th,.widget-page .outcomes td { padding:8px 10px; }
+.widget-page .mechanism,.widget-page .policy-note { padding:10px; margin-top:8px; }
+/* Focus View Remains Available At A Larger Size Than The Normal Page. */
+/* Index: The Same Spacing Principles, With All Topic Groups Retained. */
+body.index-page main { width:min(100% - 24px,1060px); padding:24px 0; }
+.index-page header { padding:0 0 12px; margin-bottom:20px; border-bottom-width:3px; }
+.index-page h1 { font-size:clamp(24px,3.2vw,34px); line-height:1.2; }
+.index-page .eyebrow { margin-bottom:5px; }
+.index-page h2 { font-size:18px; margin-bottom:10px; }
+.index-page .grid { gap:10px; }
+.index-page .card { min-height:80px; padding:14px 16px; }
+.index-page .card h3 { font-size:16px; line-height:1.35; }
+.index-page .topic+.topic { margin-top:22px; }
+.index-page footer { margin-top:22px; }
+@media(max-width:900px) {
+ .widget-page .layout { grid-template-columns:minmax(0,1fr); }
+ .widget-page .sidebar { padding:12px; }
+}
+@media(max-width:480px) {
+ body.widget-page { padding:10px 8px; }
+ .widget-page .widget-header h1 { font-size:20px; }
+ .widget-page .controls { padding:8px 10px; }
+ .widget-page .layout { gap:12px; }
+ body.index-page main { padding:18px 0; }
+ .index-page .card { min-height:64px; padding:12px; }
+}
+/* Approved Diagram-First Compact Collection. */
+.widget-page .layout { grid-template-columns:minmax(0,calc(var(--diagram-max-width) + 2px)) clamp(260px,25vw,300px); max-width:calc(var(--diagram-max-width) + 316px); margin-inline:auto; }
+.widget-page .diagram-frame { width:100%; max-width:calc(var(--diagram-max-width) + 2px); margin-inline:auto; }
+.widget-page .controls { flex-direction:row; flex-wrap:wrap; padding:6px 10px; gap:4px 10px; }
+.widget-page .controls>.slider-card { flex:1 1 230px; }
+.widget-page .controls>.slider-card>label { flex-basis:100%; }
+.widget-page .controls>.shift-choice { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
+.widget-page .controls>.guided-top,.widget-page .controls>.case-panel,.widget-page .controls>.tab-panel,.widget-page .controls>[role="tabpanel"] { width:100%; }
+.widget-page .tab-panel { gap:8px; }
+.widget-page .ui-diagram-settings { width:100%; margin:0; padding:0; background:transparent; border:0; }
+.widget-page .ui-diagram-settings>summary { min-height:44px; padding:3px 0; justify-content:flex-start; gap:10px; }
+.widget-page .ui-diagram-settings .toggle-grid,.widget-page .ui-diagram-settings .option-row,.widget-page .ui-diagram-settings .checkbox-group { padding-top:2px; }
+.widget-page .ui-diagram-legends { padding:6px 10px 8px; }
+.widget-page .ui-diagram-legends>.legend,.widget-page .ui-diagram-legends>.curve-key,.widget-page .ui-diagram-legends>.area-key,.widget-page .ui-diagram-legends>.surplus-key,.widget-page .ui-diagram-legends>.ban-legend { margin:0; font-size:13px; gap:6px 14px; }
+.widget-page .ui-diagram-legends>*+* { margin-top:5px!important; }
+.widget-page .ui-teaching-panels { display:grid; grid-template-columns:minmax(0,1fr); gap:8px; align-items:start; margin-top:6px; }
+.widget-page .ui-teaching-disclosure { min-width:0; margin:0; padding:0 10px; }
+.widget-page .ui-teaching-disclosure>summary { min-height:64px; padding:6px 0; flex-wrap:wrap; gap:4px 10px; align-content:center; }
+.widget-page .ui-expand-hint { color:var(--muted); font-size:13px; font-weight:400; flex-basis:100%; }
+.widget-page .ui-teaching-disclosure[open] .ui-expand-hint { display:none; }
+.widget-page .ui-teaching-disclosure .summary-wrap,.widget-page .ui-teaching-disclosure .table-wrap { margin:0 0 8px; }
+.widget-page .ui-teaching-disclosure>.mechanism,.widget-page .ui-teaching-disclosure>.policy-note { padding:8px; margin:0 0 8px; }
+.widget-page .ui-teaching-disclosure>.mechanism>h2 { display:none; }
+.widget-page .ui-teaching-disclosure>.model-note { margin:0 0 8px; }
+.widget-page .ui-teaching-disclosure>.outcomes { display:block; overflow-x:auto; max-width:100%; margin-bottom:8px; }
+.widget-page .ui-teaching-disclosure .summary-table { min-width:340px; }
+.widget-page .diagram-help:empty { display:none; }
+.widget-page svg#diagram text { font-size:17.5px; }
+.widget-page svg#diagram text[font-size="11"],.widget-page svg#diagram text[font-size="12"] { font-size:15px; }
+.widget-page svg#diagram text[style*="font-size:11px"],.widget-page svg#diagram text[style*="font-size: 11px"] { font-size:15px!important; }
+.widget-page svg#diagram tspan[baseline-shift="sub"] { font-size:12.5px; }
+.widget-page [hidden] { display:none!important; }
+@media(max-width:900px) { .widget-page .layout { grid-template-columns:minmax(0,1fr); max-width:calc(var(--diagram-max-width) + 2px); } }
+@media(max-width:480px) { .widget-page .ui-teaching-panels { grid-template-columns:minmax(0,1fr); } }
+
+</style>
+<style>
+/* Shared square diagrams, text sizes and full-width teaching sections. */
+.widget-page .ui-teaching-panels { grid-template-columns:minmax(0,1fr); }
+.widget-page .ui-teaching-disclosure { width:100%; box-sizing:border-box; }
+.widget-page svg#diagram text { font-size:17.5px; }
+.widget-page svg#diagram .queue-leader { stroke:#9ca3af; stroke-width:1; pointer-events:none; }
+</style>
+<style>
+/* Compact controls span the diagram and glossary; narrow screens wrap. */
+.widget-page>.controls{width:100%;max-width:calc(var(--diagram-max-width) + 316px);margin:0 auto 10px;display:flex;flex-flow:row wrap;gap:6px 12px;padding:10px 12px}
+.widget-page>.controls>.control-row,.widget-page>.controls>.control-group,.widget-page>.controls>.slider-card,.widget-page>.controls>.policy-selector{flex:1 1 250px;width:auto;margin:0;min-width:0}
+.widget-page>.controls .slider-card>label{flex-basis:auto}
+.widget-page .ui-diagram-settings{flex:0 0 100%;margin:0!important}
+.widget-page .ui-diagram-settings>summary{min-height:30px!important;padding:2px 0!important;font-size:12px}
+.widget-page .ui-diagram-settings .toggle-grid,.widget-page .ui-diagram-settings .option-row,.widget-page .ui-diagram-settings .checkbox-group{display:flex;flex-flow:row wrap;gap:2px 10px;padding:2px 0!important;width:100%}
+.widget-page .ui-diagram-settings label{font-size:11px!important;font-weight:500;min-height:26px!important;gap:4px;white-space:nowrap}
+.widget-page .ui-diagram-settings input[type=checkbox]{width:14px;height:14px}
+.widget-page svg .queue-leader{stroke:#9ca3af!important;stroke-width:1;stroke-dasharray:none!important;fill:none;pointer-events:none}
+@media(max-width:600px){.widget-page>.controls>.control-row,.widget-page>.controls>.control-group,.widget-page>.controls>.slider-card,.widget-page>.controls>.policy-selector{flex-basis:100%}.widget-page .ui-diagram-settings label{font-size:11px!important}}
+</style></head><body class="widget-page" style="--diagram-max-width:560px">
+<header class="widget-header"><h1>Production Possibility Curve</h1><p>Topic 1 · A-Level Economics · Choices, Trade-Offs And Growth</p></header>
 <div class="layout"><main class="main-content">
 <div class="tabs" role="tablist" aria-label="PPC learning concepts"><button id="tab-points" role="tab" aria-controls="panel-points" aria-selected="true">Production Points</button><button id="tab-growth" role="tab" aria-controls="panel-growth" aria-selected="false" tabindex="-1">Actual &amp; Potential Growth</button></div>
 <div class="controls">
@@ -111,19 +305,19 @@ strong,b{color:#dc2626!important;font-weight:700}
 </section>
 <div class="toggle-grid"><label class="toggle-label"><input id="tooltips" type="checkbox" checked>Tooltips</label></div>
 </div>
-<div class="diagram-frame" id="frame"><svg id="diagram" viewBox="0 -85 700 585" role="group" aria-labelledby="diagram-title diagram-desc"><title id="diagram-title">Production Possibility Curve</title><desc id="diagram-desc"></desc><defs><marker id="axis-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M1 1.5L9 5L1 8.5Z" fill="#111827"/></marker><marker id="change-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M1 1.5L9 5L1 8.5Z" fill="#dc2626"/></marker></defs><g id="drawing"></g><g id="active-point" class="draggable" tabindex="0" role="slider" aria-label="Production point A; arrow keys adjust output" aria-valuemin="0" aria-valuemax="140"><circle class="point-ring" r="18"/><circle r="5" fill="#4169e1" stroke="#fff" stroke-width="1.5" pointer-events="none"/></g><g id="start-point" class="draggable" tabindex="0" role="slider" aria-label="Initial point A"><circle class="point-ring" r="18"/><circle r="5" fill="#6b7280" stroke="#fff" stroke-width="1.5" pointer-events="none"/></g><g id="capacity-handles"></g></svg></div>
+<div class="diagram-frame" id="frame"><svg id="diagram" viewBox="0 0 700 500" role="group" aria-labelledby="diagram-title diagram-desc"><title id="diagram-title">Production Possibility Curve</title><desc id="diagram-desc"></desc><defs><marker id="axis-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M1 1.5L9 5L1 8.5Z" fill="#111827"/></marker><marker id="change-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M1 1.5L9 5L1 8.5Z" fill="#dc2626"/></marker></defs><g id="drawing"></g><g id="active-point" class="draggable" tabindex="0" role="slider" aria-label="Production point A; arrow keys adjust output" aria-valuemin="0" aria-valuemax="140"><circle class="point-ring" r="18"/><circle r="5" fill="#4169e1" stroke="#fff" stroke-width="1.5" pointer-events="none"/></g><g id="start-point" class="draggable" tabindex="0" role="slider" aria-label="Initial point A"><circle class="point-ring" r="18"/><circle r="5" fill="#6b7280" stroke="#fff" stroke-width="1.5" pointer-events="none"/></g><g id="capacity-handles"></g></svg></div>
 <div class="curve-key" id="curve-key"></div>
 <div class="sr-only" id="result" aria-live="polite"></div>
 <div class="toolbar"><button id="zoom" aria-pressed="false">Enlarge diagram</button><button id="reset" class="reset-button">Reset Diagram</button><label class="export-format" for="image-style">Image style <select id="image-style"><option value="colour">Colour</option><option value="grayscale">Grayscale (print)</option></select></label><button id="download">Download diagram</button><button id="copy">Copy diagram</button><span id="export-status" class="hint" role="status"></span></div>
 <p class="model-note" id="model-note"></p>
 <div class="related-widget"><a href="index.html">Back to main index</a></div>
 <div id="tooltip" class="tooltip" hidden></div>
-</main><aside class="sidebar"><h2 class="glossary-title">Key Glossary Terms</h2><p class="glossary-intro">Expand a term for its definition.</p>
+</main><aside class="sidebar"><section class="diagram-assumptions" aria-label="Diagram Assumptions"><details><summary>Diagram Assumptions</summary><p>A two-output economy within a specified period of time. Available resources and the state of technology are fixed for a given PPC. In the actual-growth exploration, movements closer to the frontier are labelled actual growth and movements towards the origin negative actual growth. This is a simplified illustration of resource utilisation, rather than a calculation of real output across different output mixes. Changing curvature compares resource adaptability with fixed intercepts.</p></details></section><h2 class="glossary-title">Glossary</h2><details><summary>Scarcity</summary><p>The condition in which available resources are limited relative to unlimited wants, so not all wants can be satisfied.</p></details><details><summary>Choice</summary><p>The selection between competing alternatives made necessary by scarcity. Choosing one alternative involves forgoing the next best alternative.</p></details><details><summary>Resource Allocation</summary><p>The distribution of scarce resources among competing uses, determining what goods and services are produced and in what quantities. In this PPC diagram, different output combinations represent different allocations of resources.</p></details><p class="glossary-intro">Expand a term for its definition.</p>
 <details><summary>Production Possibility Curve (PPC)</summary><p>A curve showing the various combinations of the maximum quantity of two outputs that an economy can produce within a specified period of time with all its resources fully and efficiently employed, assuming a particular state of technology.</p></details>
 <details><summary>Attainable Output Combinations</summary><p>Output combinations located on or inside the PPC that can be achieved with the available resources and state of technology.</p></details>
 <details><summary>Unattainable Output Combinations</summary><p>Output combinations located outside the PPC that cannot be achieved given the present amount of resources and state of technology, illustrating the concept of scarcity.</p></details>
 <details><summary>Opportunity Cost</summary><p>Refers to the value of (or net benefit that could be derived from) the next best alternative forgone as a result of a decision made.</p></details>
-<details><summary>Rate of Opportunity Cost Incurred</summary><p>Refers to the rate at which one good must be given up per unit of the other good gained. This is represented by the magnitude of the slope of the PPC.</p></details>
+<details><summary>Rate of Opportunity Cost Incurred</summary><p>Refers to the rate at which one good must be given up per unit of the other good gained. This is represented by the absolute size of the slope of the PPC.</p></details>
 <details><summary>Constant Opportunity Cost</summary><p>Occurs when all units of the resource used are equally skilled and adaptable in producing both goods, resulting in a straight-line PPC.</p></details>
 <details><summary>Law of Increasing Opportunity Cost</summary><p>Implies that as an economy produces more of one good, it has to sacrifice ever-increasing amounts of the other good because resources are usually not perfectly transferable, resulting in a PPC concave to the origin.</p></details>
 <details><summary>Unemployment</summary><p>Refers to a condition in which some available resources are not being used in the production of goods and services, placing the economy at a point inside the PPC.</p></details>
@@ -138,7 +332,7 @@ strong,b{color:#dc2626!important;font-weight:700}
 <details><summary>Productive Capacity</summary><p>The maximum output combinations that an economy can produce with its available resources and state of technology, within a specified period of time.</p></details>
 <details><summary>Capital Goods (Producer Goods)</summary><p>Man-made aids to production that increase the potential to produce more goods and services in the future.</p></details>
 <details><summary>Consumer Goods</summary><p>Goods bought for final consumption, usually by individual households.</p></details>
-<details><summary>Diagram Assumptions</summary><p>A two-output economy within a specified period of time. Available resources and the state of technology are fixed for a given PPC. In the actual-growth exploration, movements closer to the frontier are labelled actual growth and movements towards the origin negative actual growth. This is a simplified illustration of resource utilisation, rather than a calculation of real output across different output mixes. Changing curvature compares resource adaptability with fixed intercepts.</p></details>
+
 </aside></div>
 <script>
 'use strict';
@@ -146,7 +340,7 @@ const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg',svg=$('d
 const C={curve:'#2563eb',old:'#a8bde9',point:'#4169e1',reference:'#6b7280',change:'#dc2626',ink:'#111827',guide:'#9ca3af'};
 let mode='points',free={x:35,y:35},k=.85,pointA={x:25,y:25},pointB={x:40,y:40},potA=100,potB=100,growthCase='actual',dragging=false,selectedHandle=1;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),fmt=v=>String(Math.round(v));
-const X=q=>86+q/150*540,Y=q=>416-q/150*370;
+const X=q=>90+q/150*380,Y=q=>410-q/150*380;
 function frontier(x,a=100,b=100){const u=x/a;if(u<0||u>1)return 0;const power=1+(k/.85);return b*Math.pow(Math.max(0,1-Math.pow(u,power)),1/power);}
 function potential(){return mode==='growth'&&growthCase==='potential';}
 function point(){return mode==='points'?{...free}:{...pointB};}
@@ -165,11 +359,11 @@ function text(x,y,s,col=C.ink,attrs={}){return node('text',{x,y,fill:col,'text-a
 function line(x1,y1,x2,y2,col=C.ink,attrs={}){return node('line',{x1,y1,x2,y2,stroke:col,'stroke-width':1.6,...attrs});}
 function tip(n,s){n.dataset.tip=s;const title=document.createElementNS(NS,'title');title.textContent=s;n.append(title);return n;}
 function curve(a,b,col,label){let d='';for(let i=0;i<=120;i++){const x=a*i/120;d+=(i?'L':'M')+X(x)+' '+Y(frontier(x,a,b))+' ';}tip(node('path',{d,fill:'none',stroke:col,'stroke-width':2}),label+': maximum attainable output combinations.');text(X(a*.82)+8,Y(frontier(a*.82,a,b))-14,label,col,{'text-anchor':'start'});}
-function guides(p,label,col){line(X(p.x),Y(p.y),X(p.x),416,C.guide,{'stroke-width':.9,'stroke-dasharray':'4 4'});line(86,Y(p.y),X(p.x),Y(p.y),C.guide,{'stroke-width':.9,'stroke-dasharray':'4 4'});text(X(p.x),435,fmt(p.x),col);text(75,Y(p.y)+4,fmt(p.y),col,{'text-anchor':'end'});}
+function guides(p,label,col){line(X(p.x),Y(p.y),X(p.x),410,C.guide,{'stroke-width':.9,'stroke-dasharray':'4 4'});line(90,Y(p.y),X(p.x),Y(p.y),C.guide,{'stroke-width':.9,'stroke-dasharray':'4 4'});text(X(p.x),435,fmt(p.x),col);text(78,Y(p.y)+4,fmt(p.y),col,{'text-anchor':'end'});}
 function arrow(x1,y1,x2,y2,label){if(Math.hypot(x2-x1,y2-y1)<1)return;line(x1,y1,x2,y2,C.change,{'marker-end':'url(#change-arrow)','stroke-width':1.4});if(label)tip(text((x1+x2)/2,(y1+y2)/2-9,label,C.change),label);}
 function render(){hideTip();drawing.replaceChildren();const a=potential()?potA:100,b=potential()?potB:100,p=point(),status=classification(p,a,b),change=transition();
-line(86,416,640,416,C.ink,{'marker-end':'url(#axis-arrow)'});line(86,416,86,31,C.ink,{'marker-end':'url(#axis-arrow)'});text(350,489,'Quantity of Good X');text(18,227,'Quantity of Good Y',C.ink,{transform:'rotate(-90 18 227)'});text(73,434,'0');
-const shifted=potential()&&(Math.abs(a-100)>.05||Math.abs(b-100)>.05);if(shifted)curve(100,100,C.old,'PPC₀');curve(a,b,C.curve,shifted?'PPC₁':'PPC');text(X(a),435,fmt(a),C.curve);text(75,Y(b)+4,fmt(b),C.curve,{'text-anchor':'end'});
+line(90,410,470,410,C.ink,{'marker-end':'url(#axis-arrow)'});line(90,410,90,30,C.ink,{'marker-end':'url(#axis-arrow)'});text(350,480,'Quantity of Good X');text(18,227,'Quantity of Good Y',C.ink,{transform:'rotate(-90 18 227)'});text(78,434,'0');
+const shifted=potential()&&(Math.abs(a-100)>.05||Math.abs(b-100)>.05);if(shifted)curve(100,100,C.old,'PPC₀');curve(a,b,C.curve,shifted?'PPC₁':'PPC');text(X(a),435,fmt(a),C.curve);text(78,Y(b)+4,fmt(b),C.curve,{'text-anchor':'end'});
 const active=$('active-point'),startEl=$('start-point');active.style.display=potential()?'none':'';startEl.style.display=mode==='growth'&&!potential()?'':'none';$('capacity-handles').style.display=potential()?'':'none';
 if(!potential()){
 if(mode==='growth'){const dist=Math.hypot(pointA.x-p.x,pointA.y-p.y);if(dist>.1){guides(pointA,'A',C.reference);text(X(pointA.x)-12,Y(pointA.y)+21,`A (${fmt(pointA.x)}, ${fmt(pointA.y)})`,C.reference,{'text-anchor':'end'});if(change.type==='reallocation'){let d='';const samples=60;for(let i=0;i<=samples;i++){const x=i===samples?p.x:pointA.x+(p.x-pointA.x)*(i/samples);d+=(i?'L':'M')+X(x)+' '+Y(frontier(x))+' ';}tip(node('path',{d,fill:'none',stroke:C.change,'stroke-width':2.4,'marker-end':'url(#change-arrow)'}),'A → B along the same PPC: pure reallocation.');}else arrow(X(pointA.x),Y(pointA.y),X(p.x),Y(p.y));}else text(X(p.x)-12,Y(p.y)+22,'A = B',C.reference,{'text-anchor':'end'});
@@ -185,7 +379,7 @@ outcome=[kind==='expansion'?'Potential Growth':kind==='contraction'?'Potential C
 else{const pos=q=>classification(q,100,100)==='frontier'?'On PPC':'Inside PPC';
 const sub={none:'A and B show the same output combination',positive:'A → B moves closer to or onto the PPC',negative:'A → B moves towards the origin',reallocation:'Both points on the same PPC · Productively efficient',mixed:'Output mix changes without moving closer to the PPC'};outcome=[change.heading,sub[change.type],'Same PPC · Direction of change: A → B'];
 const details={none:'A and B coincide, so there is no output change.',positive:'An increase in the real output of a country is represented here by a movement from A inside the PPC to B closer to or on the PPC, with available resources and the state of technology unchanged.',negative:'A movement from A to B towards the origin is labelled negative actual growth here. Productive capacity remains unchanged.',reallocation:'A and B are both on the same PPC. The move changes the output mix: producing more of one good requires sacrificing the other. It illustrates pure reallocation rather than an expansion in capacity.',mixed:'The output mix changes without moving closer to or further from the frontier. This is labelled reallocation.'};explanation=details[change.type]+' The comparison always runs from A to B; either point can be moved.';model='A and B are attainable output combinations. The change is always A → B: towards the PPC shows actual growth; towards the origin shows negative actual growth. Both on the PPC shows pure reallocation. This is a simplified resource-utilisation illustration, not a calculation of real output. '+tradeoff;}
-node('rect',{x:100,y:-80,width:520,height:70,rx:8,fill:mode==='points'&&status==='outside'?'#fff7ed':'#f0f4ff',stroke:'#cbd7fa','stroke-width':1});text(360,-58,outcome[0],C.ink,{style:'font-size:16px;font-weight:700;stroke:none'});text(360,-38,outcome[1],C.ink,{style:'font-size:14px;stroke:none'});text(360,-20,outcome[2],C.ink,{style:'font-size:12px;stroke:none'});$('result').textContent=outcome.join('. ');$('model-note').textContent=model;$('diagram-desc').textContent=outcome.join('. ')+'. '+explanation;
+$('result').textContent=outcome.join('. ');$('model-note').textContent=model;$('diagram-desc').textContent=outcome.join('. ')+'. '+explanation;
 for(const c of ['actual','potential']){$(c+'-controls').hidden=growthCase!==c;$('case-'+c).setAttribute('aria-pressed',String(growthCase===c));}
 window.widgetState={mode,k,point:p,status,a,b,growthCase,pointA:{...pointA},pointB:{...pointB},transition:change.type};}
 function switchMode(next){mode=next;for(const m of ['points','growth']){$('panel-'+m).hidden=m!==mode;$('tab-'+m).setAttribute('aria-selected',String(m===mode));$('tab-'+m).tabIndex=m===mode?0:-1;}render();}
@@ -193,7 +387,7 @@ for(const m of ['points','growth']){$('tab-'+m).onclick=()=>switchMode(m);$('tab
 for(const c of ['actual','potential'])$('case-'+c).onclick=()=>{growthCase=c;render();};
 $('curvature').oninput=()=>{const aOn=classification(pointA,100,100)==='frontier',bOn=classification(pointB,100,100)==='frontier';k=+$('curvature').value/100;pointA=aOn?{x:pointA.x,y:frontier(pointA.x)}:boundPoint(pointA.x,pointA.y);pointB=bOn?{x:pointB.x,y:frontier(pointB.x)}:boundPoint(pointB.x,pointB.y);render();};
 function movePoint(x,y,target='B'){if(potential())return;if(mode==='growth'){if(target==='A')pointA=boundPoint(x,y);else pointB=boundPoint(x,y);}else{free={x:clamp(x,0,140),y:clamp(y,0,140)};const edge=frontier(free.x);if(free.x<=100&&Math.abs(Y(free.y)-Y(edge))<8)free.y=edge;}render();}
-function pointerCoords(e){const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;const pos=p.matrixTransform(svg.getScreenCTM().inverse());return {x:(pos.x-86)/540*150,y:(416-pos.y)/370*150};}
+function pointerCoords(e){const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;const pos=p.matrixTransform((document.getElementById('queue-stage')?.getScreenCTM()||svg.getScreenCTM()).inverse());return {x:(pos.x-90)/380*150,y:(410-pos.y)/380*150};}
 function bindPoint(el,target){el.onpointerdown=e=>{if(potential())return;e.preventDefault();hideTip();dragging=true;el.setPointerCapture(e.pointerId);};el.onpointermove=e=>{if(dragging){const q=pointerCoords(e);movePoint(q.x,q.y,target);}};el.onpointerup=e=>{if(dragging){const q=pointerCoords(e);movePoint(q.x,q.y,target);dragging=false;el.releasePointerCapture(e.pointerId);}};el.onpointercancel=()=>dragging=false;el.onkeydown=e=>{if(!['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)||potential())return;e.preventDefault();const p=mode==='points'?free:target==='A'?pointA:pointB,s=e.shiftKey?5:1;movePoint(p.x+(e.key==='ArrowRight'?s:e.key==='ArrowLeft'?-s:0),p.y+(e.key==='ArrowUp'?s:e.key==='ArrowDown'?-s:0),target);};}
 bindPoint($('active-point'),'B');bindPoint($('start-point'),'A');
 function adjustCapacity(index,q,base){selectedHandle=index;if(index===0)potB=clamp(q.y,40,140);else if(index===2)potA=clamp(q.x,40,140);else{const scale=clamp((q.x*base.x+q.y*base.y)/(base.x*base.x+base.y*base.y),Math.max(40/base.a,40/base.b),Math.min(140/base.a,140/base.b));potA=base.a*scale;potB=base.b*scale;}render();}
@@ -212,4 +406,509 @@ const url=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(cl
 $('download').onclick=async()=>{try{const blob=await png(),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='Production_Possibility_Curve_'+mode+($('image-style').value==='grayscale'?'_Grayscale':'')+'.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);$('export-status').textContent='Diagram downloaded.';}catch(e){$('export-status').textContent='Could not generate the diagram image.';}};
 $('copy').onclick=async()=>{try{await navigator.clipboard.write([new ClipboardItem({'image/png':png()})]);$('export-status').textContent='Diagram copied.';}catch(e){$('export-status').textContent='Copying is unavailable in this browser or embed. Use Download diagram.';}};
 render();
-</script></body></html>
+</script><script data-shared-interface="approved">
+/* Shared Collection Interface. Economic Models Remain In Their Original Scripts. */
+(() => {
+ 'use strict';
+ const svg=document.getElementById('diagram');
+ const titleCase=s=>s.replace(/(^|[\s/·:–—(\-])([a-z])/g,(_,a,b)=>a+b.toUpperCase());
+ function visible(el) { for(let n=el;n&&n.nodeType===1;n=n.parentElement) if(n.hidden||getComputedStyle(n).display==='none'||getComputedStyle(n).visibility==='hidden')return false; return true; }
+ const chromeSelector='h1,h2,h3,summary,button,label,option,output,.scale-label,.range-ends,.slider-scale,.elastic-label,.curve-key,.legend,.surplus-key,.area-key,.step-number,.case-current,caption,th,.summary-table td,.outcomes td,.result-banner,svg text';
+ let normalising=false;
+ function normalise(root=document) {
+  if(normalising)return; normalising=true;
+  const nodes=[...(root.matches?.(chromeSelector)?[root]:[]),...root.querySelectorAll(chromeSelector)];
+  for(const el of nodes) {
+   if(el.closest('.tooltip')||el.matches('tspan'))continue;
+   const walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);
+   while(walker.nextNode()) {
+    const n=walker.currentNode;
+    if(n.parentElement?.closest('tspan[baseline-shift="sub"],script,style,.tooltip'))continue;
+    // Preserve Curve Symbols, Mathematical Subscripts And Coordinates.
+    if(el.closest('svg')&&/^[QPESWL][a-z0-9₀-₉]+(?:\s*=.*)?$/.test(n.nodeValue.trim()))continue;
+    const wording=n.nodeValue.replace(/shift magnitude/gi,'Size Of Shift').replace(/magnitude of ([a-z ]+)/gi,(_,x)=>'Size Of '+x).replace(/magnitude/gi,'Size');
+    const next=titleCase(wording); if(next!==n.nodeValue)n.nodeValue=next;
+   }
+  }
+  normalising=false;
+ }
+ normalise();
+ if(!svg) { new MutationObserver(()=>normalise()).observe(document.body,{childList:true,subtree:true,characterData:true}); return; }
+ const main=document.querySelector('.main-content'),controls=document.querySelector('.controls'),frame=svg.closest('.diagram-frame');
+ svg.setAttribute('role','group');
+ const nav=document.querySelector('.related-widget');
+ if(nav) { nav.classList.add('widget-nav'); document.querySelector('.widget-header').after(nav); nav.querySelector('a').textContent='Back To Main Index'; }
+
+ // Place Economic Adjustments Before Presentation Options.
+ const options=controls?.querySelector(':scope>.toggle-grid,:scope>.option-row,:scope>.checkbox-group');
+ const banControls=document.getElementById('ban-controls');
+ if(banControls&&controls)controls.append(banControls);
+ if(options)controls.append(options);
+
+ // A Fixed Glossary Order, With A Separate Current-Policy Entry.
+ const sidebar=document.querySelector('.sidebar'),glossaryContainer=document.getElementById('glossary')||sidebar;
+ const glossaryItems=glossaryContainer?[...glossaryContainer.children].filter(n=>n.tagName==='DETAILS'):[];
+ if(sidebar)sidebar.querySelector('.glossary-title').textContent='Glossary';
+ const policySelect=document.getElementById('policy-select');
+ let currentPolicy=null;
+ const policyNames={ceiling:'ceiling',floor:'floor',wage:'wage',quota:'Quota On Output',tax:'Tax',ban:'Ban (A Quota Of Zero)',qpoll:'Quota On Pollutant',rd:'Research & Development (R&D)',edu:'Education & Campaigns',indirect_subsidy:'Indirect Subsidy',direct_subsidy:'Direct Subsidy',free_provision:'Free Provision',joint_provision:'Joint Provision',education:'Education & Campaigns'};
+ if(policySelect&&sidebar) {
+  // Disable Only The Old Reordering Pass. Preserve Its Area-Key Updates.
+  if(typeof approvedUX==='function') {
+   const oldApproved=approvedUX;
+   approvedUX=function(){oldApproved();stabiliseGlossary();};
+  }
+  currentPolicy=document.createElement('section');currentPolicy.className='ui-current-policy';
+  currentPolicy.innerHTML='<h3>Current Policy</h3><details><summary></summary><div class="ui-policy-definition"></div></details>';
+  sidebar.querySelector('.glossary-title').after(currentPolicy);
+ }
+ function stabiliseGlossary() {
+  if(!policySelect||!glossaryContainer)return;
+  const existing=[...glossaryContainer.children].filter(n=>glossaryItems.includes(n));
+  if(existing.some((n,i)=>n!==glossaryItems[i]))glossaryItems.forEach(n=>glossaryContainer.append(n));
+  const k=policySelect.value;
+  let selected=document.getElementById('glossary-'+k);
+  if(!selected) {
+   const name=titleCase(policyNames[k]||'');
+   selected=glossaryItems.find(n=>titleCase(n.querySelector('summary')?.textContent.replace(/\s+/g,' ').trim()||'')===name);
+  }
+  currentPolicy.hidden=!selected||k==='none';
+  if(selected) {
+   const text=selected.querySelector('summary').textContent;
+   const html=[...selected.children].filter(n=>n.tagName!=='SUMMARY').map(n=>n.outerHTML).join('');
+   const term=currentPolicy.querySelector('summary'),definition=currentPolicy.querySelector('.ui-policy-definition');
+   if(term.textContent!==text){term.textContent=text;currentPolicy.querySelector('details').open=false;}
+   if(definition.innerHTML!==html)definition.innerHTML=html;
+  }
+ }
+
+ // One Action Bar. Keep Hidden Legacy Zoom Buttons For Existing Reset Handlers.
+ const bars=[...main.querySelectorAll('.toolbar')],bar=bars[0]||document.createElement('div');
+ const reset=main.querySelector('#reset,.reset-button'),oldZoom=main.querySelector('#zoom,.zoom-button');
+ const download=main.querySelector('#download')||[...main.querySelectorAll('button')].find(b=>/^Download Diagram$/i.test(b.textContent.trim()));
+ const copy=main.querySelector('#copy')||[...main.querySelectorAll('button')].find(b=>/^Copy Diagram$/i.test(b.textContent.trim()));
+ const style=main.querySelector('#image-style,#export-style,.export-format select');
+ const exportLabel=style?.closest('label');
+ const oldHint=bar.querySelector('.hint:not([role="status"])');if(oldHint)oldHint.remove();
+ bar.className='toolbar ui-actionbar';bar.setAttribute('aria-label','Diagram Actions');
+ if(oldZoom){oldZoom.classList.add('ui-legacy-zoom');oldZoom.tabIndex=-1;oldZoom.setAttribute('aria-hidden','true');bar.append(oldZoom);}
+ if(reset){reset.textContent='Reset Diagram';bar.append(reset);}
+
+ const exportMenu=document.createElement('details');exportMenu.className='ui-export';exportMenu.innerHTML='<summary>Export Diagram</summary><div class="ui-export-panel"></div>';
+ const exportPanel=exportMenu.querySelector('div');
+ if(exportLabel)exportPanel.append(exportLabel);if(download)exportPanel.append(download);if(copy)exportPanel.append(copy);
+ bar.append(exportMenu);frame.after(bar);
+ bars.filter(n=>n!==bar).forEach(n=>{if(!n.children.length)n.remove();});
+ let status=main.querySelector('#export-status,[role="status"]');
+ if(!status){status=document.createElement('p');status.className='diagram-help';status.setAttribute('role','status');bar.after(status);}
+ if(bar.contains(status)){status.classList.add('diagram-help');bar.after(status);}
+
+ document.addEventListener('click',e=>{if(!exportMenu.contains(e.target))exportMenu.open=false;});
+
+ // Compact Curve Keys For Multi-Curve Externality Policy Diagrams.
+ let curveKey=null;
+ if(document.querySelector('.line-mpb')&&policySelect) {curveKey=document.createElement('div');curveKey.className='curve-key ui-curve-key';frame.after(curveKey);}
+ function updateCurveKey() {
+  if(!curveKey)return;
+  const has=selector=>[...svg.querySelectorAll(selector)].some(visible);
+  const entries=[];
+  if(policySelect.value!=='none') {
+   if(has('.line-mpb'))entries.push(['#2563eb','Private Benefit']);
+   if(has('.line-mpc'))entries.push(['#16a34a','Private Cost']);
+   if(has('.line-msb,.line-msc'))entries.push(['#dc2626','Social Benefit / Cost']);
+   if(has('.line-policy,.line-tax,.line-quota,.line-qpoll,.line-rd,.line-edu'))entries.push(['#4169e1','Policy / Restriction']);
+  }
+  const html=entries.map(([c,t])=>'<span><i style="border-color:'+c+'"></i>'+t+'</span>').join('');
+  curveKey.hidden=!entries.length;if(curveKey.innerHTML!==html)curveKey.innerHTML=html;
+ }
+
+ // Unified Explanations: Hover Preview, Tap/Click/Keyboard Pin, Explicit Dismissal.
+ const tip=document.getElementById('diagram-tooltip')||document.getElementById('tooltip');
+ tip.classList.add('ui-tooltip');tip.setAttribute('role','note');tip.setAttribute('aria-live','polite');
+ frame.after(tip);
+ let pinned=false,activeTarget=null,collecting=false,collected='',timer=null,suppressFocus=false;
+ const enabled=()=>!document.querySelector('#tooltips,#toggle-tooltips,#show-tooltips')||document.querySelector('#tooltips,#toggle-tooltips,#show-tooltips').checked;
+ function closeTip(returnFocus=false) {
+  clearTimeout(timer);pinned=false;window.widgetTipPinned=false;
+  const target=activeTarget;if(target)target.removeAttribute('aria-describedby');
+  activeTarget=null;tip.hidden=true;tip.dataset.open='false';tip.style.display='none';
+  if(returnFocus&&target?.isConnected){suppressFocus=true;target.focus();suppressFocus=false;}
+ }
+ if(typeof showTooltip==='function')showTooltip=(html)=>{if(collecting)collected=html;};
+ if(typeof hideTooltip==='function')hideTooltip=()=>{if(!pinned)closeTip();};
+ if(typeof dismissTooltip==='function')dismissTooltip=()=>closeTip();
+ // Models Call These When Their State Changes. Pinning Does Not Survive A Redraw.
+ if(typeof hideTip==='function')hideTip=()=>closeTip();
+ function targetOf(event){return event.target.closest('[data-tip],[data-tooltip-target],.has-tooltip,.touch-target');}
+ function message(target) {
+  if(target.dataset.tipHtml)return target.dataset.tipHtml;
+  if(target.dataset.tip){const span=document.createElement('span');span.textContent=target.dataset.tip;return span.outerHTML;}
+  collecting=true;collected='';
+  const r=target.getBoundingClientRect();
+  target.dispatchEvent(new MouseEvent('mousemove',{bubbles:false,clientX:r.left+r.width/2,clientY:r.top+r.height/2}));
+  collecting=false;
+  return collected;
+ }
+ function show(target,pin,event) {
+  clearTimeout(timer);if(!enabled()||!target||!visible(target))return;
+  if(pinned&&!pin)return;
+  const html=message(target);if(!html)return;
+  if(activeTarget&&activeTarget!==target)activeTarget.removeAttribute('aria-describedby');
+  activeTarget=target;pinned=pin;window.widgetTipPinned=pin;
+  tip.dataset.surplus=target.id==='cs-area'?'cs':target.id==='ps-area'?'ps':'';
+  tip.innerHTML='<button type="button" class="tooltip-close" aria-label="Close Explanation">×</button><div class="ui-tooltip-content">'+html+'</div><span class="ui-tooltip-state">'+(pin?'Pinned Explanation':'Tap Or Press Enter To Pin')+'</span>';
+  tip.querySelector('button').onclick=()=>closeTip(true);
+  tip.hidden=false;tip.style.display='block';tip.dataset.open='true';
+  target.setAttribute('aria-describedby',tip.id);
+  if(innerWidth>900) {
+   const r=target.getBoundingClientRect(),box=tip.getBoundingClientRect();
+   tip.style.left=Math.max(12,Math.min(event?.clientX??r.left,innerWidth-box.width-12))+'px';
+   tip.style.top=Math.max(12,Math.min((event?.clientY??r.bottom)+12,innerHeight-box.height-12))+'px';
+  }
+ }
+ for(const type of ['pointerover','pointerout','click','focusin','focusout','keydown'])svg.addEventListener(type,e=>{
+  const target=targetOf(e);if(!target)return;
+  // Retain PPC Dragging And Arrow-Key Movement.
+  if(type==='keydown'&&!['Enter',' ','Escape'].includes(e.key))return;
+  e.stopImmediatePropagation();
+  if(type==='pointerover'&&e.pointerType==='mouse')show(target,false,e);
+  if(type==='pointerout'&&e.pointerType==='mouse'&&!pinned&&!tip.contains(e.relatedTarget))timer=setTimeout(()=>closeTip(),160);
+  if(type==='click')show(target,true,e);
+  if(type==='focusin'&&!suppressFocus)show(target,true);
+  if(type==='focusout'&&!pinned&&!tip.contains(e.relatedTarget))closeTip();
+  if(type==='keydown') { e.preventDefault();if(e.key==='Escape')closeTip(true);else show(target,true); }
+ },true);
+ tip.addEventListener('pointerenter',()=>clearTimeout(timer));
+ tip.addEventListener('pointerleave',()=>{if(!pinned)timer=setTimeout(()=>closeTip(),160);});
+ document.addEventListener('pointerdown',e=>{if(!tip.contains(e.target)&&!e.target.closest('[data-tip],[data-tooltip-target],.has-tooltip,.touch-target'))closeTip();},true);
+ controls?.addEventListener('input',()=>closeTip(),true);controls?.addEventListener('change',()=>closeTip(),true);
+ svg.addEventListener('pointerdown',e=>{if(e.target.closest('.draggable'))closeTip();},true);
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&tip.dataset.open==='true'){e.stopImmediatePropagation();e.preventDefault();closeTip(true);}},true);
+ window.addEventListener('resize',()=>closeTip());
+
+ // One Export Frame: Heading, Current Context, Diagram And Visible Legends.
+ function exportContext() {
+  const items=[];
+  if(policySelect)items.push(policySelect.selectedOptions[0].textContent);
+  for(const id of ['step-count','case-current','elasticity-label']){const n=document.getElementById(id);if(n&&visible(n)&&n.textContent.trim())items.push(n.textContent.trim());}
+  if(document.getElementById('curvature')) {
+   const state=window.widgetState;
+   if(state)items.push(state.mode==='points'?'Production Points':state.growthCase==='potential'?'Potential Growth':'Actual Growth & Reallocation');
+  }
+  const outputs=[...controls.querySelectorAll('output')].filter(visible).map(n=>n.textContent.trim()).filter(Boolean);
+  items.push(...outputs);return [...new Set(items)].map(titleCase).join(' · ');
+ }
+ async function exportPNG() {
+  const ns='http://www.w3.org/2000/svg',vb=svg.viewBox.baseVal,clone=svg.cloneNode(true),out=document.createElementNS(ns,'svg');
+  const live=[svg,...svg.querySelectorAll('*')],copies=[clone,...clone.querySelectorAll('*')];
+  const props=['display','visibility','fill','fill-opacity','stroke','stroke-width','stroke-opacity','stroke-dasharray','stroke-linecap','stroke-linejoin','paint-order','opacity','font-family','font-size','font-weight','font-style','text-anchor','dominant-baseline','baseline-shift','marker-start','marker-end'];
+  live.forEach((n,i)=>{const cs=getComputedStyle(n);for(const p of props){let value=cs.getPropertyValue(p);if(p.startsWith('marker'))value=value.replace(/url\(["']?[^#)]*#([^)'" ]+)["']?\)/g,'url(#$1)');copies[i].style.setProperty(p,value);}
+   copies[i].removeAttribute('tabindex');copies[i].removeAttribute('aria-describedby');copies[i].removeAttribute('role');});
+  clone.querySelectorAll('.touch-target,.point-ring').forEach(n=>n.remove());
+  const add=(tag,attrs,text,parent=out)=>{const n=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,v));if(text!==undefined)n.textContent=text;parent.append(n);return n;};
+  const width=vb.width,padding=20;
+  const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');ctx.font='14px system-ui';
+  function wrap(s){const lines=[];let line='';for(const word of s.split(/\s+/)){const next=line?line+' '+word:word;if(line&&ctx.measureText(next).width>width-padding*2){lines.push(line);line=word;}else line=next;}if(line)lines.push(line);return lines;}
+  const heading=wrap(document.querySelector('h1').textContent),context=wrap(exportContext());
+  let y=26;for(const s of heading){add('text',{x:padding,y,style:'font:700 17px system-ui;fill:#1f2937'},s);y+=24;}
+  for(const s of context){add('text',{x:padding,y,style:'font:14px system-ui;fill:#4b5563'},s);y+=20;}
+  const diagramTop=y+8;clone.setAttribute('x',0);clone.setAttribute('y',diagramTop);clone.setAttribute('width',width);clone.setAttribute('height',vb.height);clone.style.width=width+'px';clone.style.height=vb.height+'px';out.append(clone);
+  y=diagramTop+vb.height+22;
+  const gray=style?.value==='grayscale',entries=window.WidgetDiagramLayout?.legendEntries()||[];
+  if(entries.length){
+   ctx.font='13px system-ui';const widths=entries.map(e=>ctx.measureText(e.label).width+34),factor=Math.min(1,(width-2*padding)/widths.reduce((a,b)=>a+b,0));
+   const row=add('g',{transform:`translate(${padding} ${y-12}) scale(${factor})`});let x=0;
+   for(const e of entries){add('rect',{x,y:0,width:14,height:11,fill:gray?'url(#ui-hatch-'+e.kind+')':e.colour,stroke:'#777'},undefined,row);add('text',{x:x+19,y:10,style:'font:13px system-ui;fill:#374151'},e.label,row);x+=ctx.measureText(e.label).width+34;}y+=19;
+  }
+  if(gray) {
+   const defs=add('defs',{},undefined,out);
+   for(const kind of ['social','other','policy','cs','ps','price','quantity']){
+    const pattern=add('pattern',{id:'ui-hatch-'+kind,width:8,height:8,patternUnits:'userSpaceOnUse'},undefined,defs);
+    add('rect',{width:8,height:8,fill:'#fff'},undefined,pattern);
+    add('path',{d:['social','cs','price'].includes(kind)?'M-2,2 L2,-2 M0,8 L8,0 M6,10 L10,6':kind==='policy'?'M0,0 L8,8 M0,8 L8,0':'M0,4 L8,4',stroke:'#777','stroke-width':1,fill:'none'},undefined,pattern);
+   }
+   const ids={'dwl':'social','area-dwl':'social','ban-loss-area':'social','free-policy-loss':'social','ban-free-area':'other','free-market-loss':'other','area-tax-rev':'policy','subsidy-cost-rect':'policy','cs-area':'cs','ps-area':'ps'};
+   for(const n of clone.querySelectorAll('*')){
+    for(const p of ['fill','stroke']){
+     const raw=n.style.getPropertyValue(p)||n.getAttribute(p)||'',rgb=raw.match(/^rgba?\(([^)]+)\)$/),hex=raw.match(/^#([0-9a-f]{6})$/i);
+     const c=rgb?rgb[1].split(/[, ]+/).filter(Boolean).map(Number):hex?[0,2,4].map(i=>parseInt(hex[1].slice(i,i+2),16)):null;
+     if(c){const g=Math.round(.2126*c[0]+.7152*c[1]+.0722*c[2]);n.style.setProperty(p,`rgba(${g},${g},${g},${c[3]??1})`);}
+    }
+    let kind=ids[n.id]||n.dataset.area;
+    if(kind==='g')kind='policy';if(kind==='dwl')kind='social';
+    if(!kind&&n.matches('.subsidy-rect,.tax-poly'))kind='policy';
+    if(kind&&['social','other','policy','cs','ps','price','quantity'].includes(kind)){n.style.fill='url(#ui-hatch-'+kind+')';n.style.fillOpacity='1';}
+    if(n.matches('.curve,.line-mpb,.line-mpc,.line-msb,.line-msc,.line-policy,.line-tax,.line-quota,.line-qpoll,.line-rd,.line-edu')){n.style.stroke='#333';n.style.strokeDasharray='none';}
+   }
+  }
+  const height=y+12;out.setAttribute('xmlns',ns);out.setAttribute('viewBox',`0 0 ${width} ${height}`);out.setAttribute('width',width*2);out.setAttribute('height',height*2);
+  const background=add('rect',{width,height,fill:'#fff'});out.prepend(background);
+  const url=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(out)],{type:'image/svg+xml'}));
+  try {const image=new Image();await new Promise((ok,bad)=>{image.onload=ok;image.onerror=bad;image.src=url;});canvas.width=width*2;canvas.height=Math.ceil(height*2);canvas.getContext('2d').drawImage(image,0,0);return await new Promise((ok,bad)=>canvas.toBlob(b=>b?ok(b):bad(Error('Image Export Failed')),'image/png'));}
+  finally{URL.revokeObjectURL(url);}
+ }
+ if(download)download.onclick=async()=>{
+  try{const blob=await exportPNG(),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=location.pathname.split('/').at(-1).replace(/\.html$/i,'')+(style?.value==='grayscale'?'_Grayscale':'')+'.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);status.textContent='Diagram Downloaded.';exportMenu.open=false;}
+  catch(e){status.textContent='Unable To Export. Open The Widget In Its Own Browser Tab And Try Again.';}
+ };
+ if(copy)copy.onclick=async()=>{
+  try{if(!navigator.clipboard?.write||!window.ClipboardItem)throw Error('Unavailable');await navigator.clipboard.write([new ClipboardItem({'image/png':exportPNG()})]);status.textContent='Diagram Copied.';exportMenu.open=false;}
+  catch(e){status.textContent='Copying Is Unavailable In This Browser Or Embed. Use Download Diagram.';}
+ };
+ function prepareExplanationTargets(){
+  for(const target of svg.querySelectorAll('[data-tip],[data-tooltip-target],.has-tooltip')){
+   if(target.matches('.draggable,.touch-target')||target.getAttribute('role')==='slider')continue;
+   target.setAttribute('role','button');target.setAttribute('tabindex','0');
+   if(!target.hasAttribute('aria-label')&&target.dataset.tip)target.setAttribute('aria-label',target.dataset.tip);
+  }
+ }
+
+ // Compact Controls: Keep Scenario Controls Visible; Group Display Options.
+ if(options){
+  const settings=document.createElement('details');settings.className='ui-diagram-settings';
+  settings.innerHTML='<summary>Diagram Options</summary>';options.before(settings);settings.append(options);
+ }
+ // Legends Live Inside The Diagram Card. Exclude Descriptive Styling Notes.
+ const legends=[...main.querySelectorAll('.legend,.curve-key,.area-key,.surplus-key,.ban-legend')];
+ const legendBox=document.createElement('div');legendBox.className='ui-diagram-legends';frame.append(legendBox);
+ for(const legend of legends)legendBox.append(legend);
+ function cleanLegends(){
+  for(const legend of legends){
+   for(const span of [...legend.children]){
+    if(span.matches('span')&&!span.querySelector('i')&&/lighter|all curves|coordinates:|drag |arrow keys|hollow circles|direction of change:/i.test(span.textContent))span.remove();
+   }
+  }
+  const any=legends.some(n=>!n.hidden&&getComputedStyle(n).display!=='none'&&n.textContent.trim());
+  // Area-only legend visibility is managed by WidgetDiagramLayout.
+ }
+ // Remove Small Interface Instructions; Preserve Status Messages And Model Notes.
+ for(const help of main.querySelectorAll('.diagram-help,.case-help')){
+  if(help.id==='export-status'||help.getAttribute('role')==='status')continue;
+  help.remove();
+ }
+ function normaliseAccessibleLabels(){for(const input of document.querySelectorAll('[aria-label]')){
+  const text=input.getAttribute('aria-label');if(/magnitude/i.test(text))input.setAttribute('aria-label',text.replace(/shift magnitude/gi,'Size Of Shift').replace(/magnitude/gi,'Size'));
+ }
+ }
+ normaliseAccessibleLabels();
+ // Side-By-Side Disclosures For Summaries And Teaching Explanations.
+ const panels=document.createElement('div');panels.className='ui-teaching-panels';
+ bar.after(panels);
+ const disclosurePairs=[];
+ function wrapTeaching(node,title){
+  if(!node||node.closest('.controls,.sidebar,.ui-teaching-panels'))return null;
+  const disclosure=document.createElement('details');disclosure.className='ui-teaching-disclosure';
+  const heading=document.createElement('summary');heading.innerHTML='<span></span><span class="ui-expand-hint">Click To Expand</span>';
+  heading.firstElementChild.textContent=title;disclosure.append(heading);panels.append(disclosure);disclosure.append(node);
+  disclosurePairs.push([disclosure,node]);return disclosure;
+ }
+ const summaryNode=main.querySelector('.summary-wrap,.table-wrap')||main.querySelector('table.outcomes');
+ const summaryHeading=summaryNode?.querySelector('caption')?.textContent||summaryNode?.closest('section')?.querySelector('h2')?.textContent;
+ wrapTeaching(summaryNode,/Equilibrium/i.test(summaryHeading||'')?'Equilibrium Summary':summaryHeading||'Outcome Summary');
+ const mechanism=main.querySelector('#mechanism');
+ const explanation=wrapTeaching(mechanism,mechanism?.querySelector('h2')?.textContent||'Detailed Explanation');
+ const modelNote=main.querySelector('.model-note');
+ if(modelNote){if(explanation)explanation.append(modelNote);else wrapTeaching(modelNote,'Detailed Explanation');}
+ // Policy Limitations And Conditional Policy Results Remain Available In Their Own Panels.
+ for(const node of [...main.querySelectorAll(':scope>.policy-note')])wrapTeaching(node,node.querySelector('h2,h3')?.textContent||'Policy Explanation');
+ if(!panels.children.length)panels.remove();
+ function syncTeachingPanels(){
+  for(const [disclosure,node] of disclosurePairs){
+   const hidden=node.hidden||node.style.display==='none';
+   if(disclosure.hidden!==hidden)disclosure.hidden=hidden;
+   if(node===mechanism&&explanation){const heading=node.querySelector('h2');if(heading&&explanation.querySelector('summary span').textContent!==heading.textContent)explanation.querySelector('summary span').textContent=heading.textContent;}
+  }
+  if(panels.isConnected){const hidden=[...panels.children].every(n=>n.hidden);if(panels.hidden!==hidden)panels.hidden=hidden;}
+ }
+ for(const [,node] of disclosurePairs)new MutationObserver(syncTeachingPanels).observe(node,{attributes:true,attributeFilter:['hidden','style']});
+ cleanLegends();syncTeachingPanels();
+ const refresh=()=>{normalise();normaliseAccessibleLabels();stabiliseGlossary();updateCurveKey();prepareExplanationTargets();cleanLegends();syncTeachingPanels();};
+ refresh();
+ let pending=false;
+ new MutationObserver(()=>{if(!pending){pending=true;queueMicrotask(()=>{pending=false;refresh();});}}).observe(document.body,{childList:true,subtree:true,characterData:true});
+ window.WidgetInterface={closeExplanation:closeTip,exportPNG};
+})();
+
+</script>
+<script>
+(()=>{
+ const svg=document.getElementById('diagram');if(!svg)return;
+ const NS='http://www.w3.org/2000/svg',isGov=document.title==='Government Intervention',isTopic5=!!svg.querySelector('.line-mpb');
+ const stage=document.createElementNS(NS,'g');stage.id='queue-stage';stage.setAttribute('transform','translate(70 0)');for(const e of [...svg.children])if(!['defs','title','desc','style'].includes(e.tagName))stage.append(e);svg.append(stage);
+ const pageLayout=document.querySelector('.layout'),pageControls=document.querySelector('.controls');if(pageLayout&&pageControls)pageLayout.before(pageControls);
+ svg.setAttribute('viewBox','50 0 600 500');
+ const visible=e=>!e.closest('defs')&&getComputedStyle(e).display!=='none'&&e.getClientRects().length>0;
+ let pending=false,running=false;
+ const rootPoint=(e,x,y)=>{const m=svg.getScreenCTM().inverse().multiply(e.getScreenCTM());return new DOMPoint(x,y).matrixTransform(m);};
+ const box=e=>{const b=e.getBBox(),corners=[[b.x,b.y],[b.x+b.width,b.y],[b.x,b.y+b.height],[b.x+b.width,b.y+b.height]].map(([x,y])=>rootPoint(e,x,y));return {x:Math.min(...corners.map(p=>p.x)),y:Math.min(...corners.map(p=>p.y)),r:Math.max(...corners.map(p=>p.x)),b:Math.max(...corners.map(p=>p.y))};};
+ const overlaps=(a,b,pad=3)=>a.x<b.r+pad&&a.r>b.x-pad&&a.y<b.b+pad&&a.b>b.y-pad;
+ const inBox=(p,b,pad=3)=>p.x>=b.x-pad&&p.x<=b.r+pad&&p.y>=b.y-pad&&p.y<=b.b+pad;
+ function extendLine(e){
+  const a={x:+e.getAttribute('x1'),y:+e.getAttribute('y1')},d={x:+e.getAttribute('x2')-a.x,y:+e.getAttribute('y2')-a.y};
+  if(!Number.isFinite(d.x+d.y)||Math.hypot(d.x,d.y)<.01)return;
+  let lo=-1e6,hi=1e6;
+  for(const [v,delta,min,max] of [[a.x,d.x,70,425],[a.y,d.y,25,380]]){if(Math.abs(delta)<1e-8){if(v<min-.01||v>max+.01)return;continue;}const t1=(min-v)/delta,t2=(max-v)/delta;lo=Math.max(lo,Math.min(t1,t2));hi=Math.min(hi,Math.max(t1,t2));}
+  if(lo>hi)return;
+  e.setAttribute('x1',a.x+lo*d.x);e.setAttribute('y1',a.y+lo*d.y);e.setAttribute('x2',a.x+hi*d.x);e.setAttribute('y2',a.y+hi*d.y);
+ }
+
+ // The private baseline pair has the same drawn length. Social/policy shifts
+ // keep their own intercepts and remain clipped at the nonnegative boundary.
+ function equalPrivatePair(){
+  for(const scope of [svg.querySelector('#diagram-plot'),svg.querySelector('#ban-scene'),svg.querySelector('#free-scene')].filter(Boolean)){
+   const pair=['mpb','mpc'].map(k=>[...scope.querySelectorAll('line.line-'+k)].find(visible));
+   if(pair.some(e=>!e))continue;
+   const length=e=>Math.hypot(+e.getAttribute('x2')-+e.getAttribute('x1'),+e.getAttribute('y2')-+e.getAttribute('y1'));
+   const target=Math.min(...pair.map(length));
+   for(const e of pair){const n=length(e);if(n<=target+.01)continue;const t=target/n;e.setAttribute('x2',+e.getAttribute('x1')+t*(+e.getAttribute('x2')-+e.getAttribute('x1')));e.setAttribute('y2',+e.getAttribute('y1')+t*(+e.getAttribute('y2')-+e.getAttribute('y1')));}
+  }
+ }
+ const frame=svg.closest('.diagram-frame'),legendBox=frame?.querySelector('.ui-diagram-legends');
+ const legend=document.createElement('div');legend.className='queue-area-legend';legend.setAttribute('aria-label','Shaded areas: colour and grayscale patterns');legendBox?.append(legend);
+ let legendEntries=[];
+ const areaNames={cs:'Consumer surplus',ps:'Producer surplus',g:'Government revenue / expenditure',dwl:'Deadweight loss',price:'Price effect',quantity:'Quantity effect'};
+ const areaIds={'dwl':['Deadweight loss','social'],'area-dwl':['Deadweight loss','social'],'ban-loss-area':['DWL under ban','social'],'free-policy-loss':['Free-provision DWL','social'],'ban-free-area':['Free-market DWL','other'],'free-market-loss':['Free-market DWL','other'],'area-tax-rev':['Tax revenue','policy'],'subsidy-cost-rect':['Subsidy expenditure','policy'],'cs-area':['Consumer surplus','cs'],'ps-area':['Producer surplus','ps']};
+ function refreshLegend(){
+  const entries=[];
+  for(const e of svg.querySelectorAll('polygon,rect,path')){
+   if(!visible(e)||e.closest('defs'))continue;
+   const b=e.getBBox();if(b.width<.01||b.height<.01)continue;
+   let info=areaIds[e.id],kind=e.dataset.area;
+   if(!info&&kind&&areaNames[kind])info=[areaNames[kind],kind==='g'?'policy':kind==='dwl'?'social':kind];
+   if(!info&&e.matches('.subsidy-rect'))info=['Subsidy expenditure','policy'];
+   if(!info||entries.some(n=>n.label===info[0]))continue;
+   if(kind==='g')info=[['indirect','direct'].includes(document.getElementById('policy-select')?.value)?'Subsidy expenditure':'Government revenue','policy'];
+   entries.push({label:info[0],kind:info[1],colour:getComputedStyle(e).fill});
+  }
+  legendEntries=entries;legend.replaceChildren();
+  for(const entry of entries){const item=document.createElement('span'),colour=document.createElement('i'),pattern=document.createElement('i');item.className='queue-area-item';colour.className='queue-colour';colour.style.background=entry.colour;pattern.className='queue-pattern '+entry.kind;colour.setAttribute('aria-hidden','true');pattern.setAttribute('aria-hidden','true');item.append(colour,pattern,document.createTextNode(entry.label));legend.append(item);}
+  legend.hidden=!entries.length;
+  if(legendBox){legendBox.hidden=!entries.length;const h=entries.length?legendBox.getBoundingClientRect().height:0;frame.style.setProperty('--queue-legend-height',h+'px');}
+ }
+
+ // Lay out measured intervals on one axis, preserving their economic order.
+ function separateIntervals(items,min,max,gap=7){
+  items.sort((a,b)=>a.target-b.target);let edge=min;
+  for(const item of items){item.position=Math.max(item.target-item.size/2,edge);edge=item.position+item.size+gap;}
+  let overflow=Math.max(0,edge-gap-max);
+  for(let i=items.length-1;i>=0;i--){const item=items[i],ceiling=i===items.length-1?max:items[i+1].position-gap;item.position=Math.min(item.position,ceiling-item.size);}
+  if(items[0]?.position<min){const delta=min-items[0].position;for(const item of items)item.position+=delta;}
+  if(items.length){const desired=items.reduce((s,i)=>s+i.target-i.position-i.size/2,0)/items.length,first=items[0],last=items[items.length-1],shift=Math.max(min-first.position,Math.min(max-last.position-last.size,desired));for(const item of items)item.position+=shift;}
+  return items;
+ }
+ function localPoint(e,p){return new DOMPoint(p.x,p.y).matrixTransform(e.getScreenCTM().inverse().multiply(svg.getScreenCTM()));}
+ function setRootPosition(e,p){const v=localPoint(e,p);e.setAttribute('x',v.x);e.setAttribute('y',v.y);}
+ function leader(e,anchor){
+  const b=box(e),end={x:Math.max(b.x,Math.min(b.r,anchor.x)),y:Math.max(b.y,Math.min(b.b,anchor.y))};
+  const a=localPoint(e,anchor),z=localPoint(e,end),l=document.createElementNS(NS,'line');
+  for(const [k,v] of Object.entries({class:'queue-leader',x1:a.x,y1:a.y,x2:z.x,y2:z.y,stroke:'#9ca3af','stroke-width':1,'stroke-dasharray':'none','vector-effect':'non-scaling-stroke','pointer-events':'none'}))l.setAttribute(k,v);
+  e.parentNode.insertBefore(l,e);
+ }
+ function axisLayout(texts){
+  const axes=texts.filter(e=>e.dataset.axisKind),groups=new Map();
+  for(const e of axes){const k=e.dataset.axisKind;if(!groups.has(k))groups.set(k,[]);groups.get(k).push(e);}
+  for(const [kind,labels] of groups){
+   const q=kind==='q';
+   if(!q)for(const e of labels){const p=rootPoint(e,+e.dataset.axisX,+e.dataset.axisY),b=box(e),available=p.x-12-54;if(b.r-b.x>available&&available>0)e.style.setProperty('font-size',(parseFloat(e.style.fontSize)*available/(b.r-b.x))+'px','important');}
+   const items=labels.map(e=>{const p=rootPoint(e,+e.dataset.axisX,+e.dataset.axisY),b=box(e);return {e,anchor:p,target:q?p.x:p.y,size:q?b.r-b.x:b.b-b.y};});
+   const baseline=q?Math.max(...items.map(i=>i.anchor.y))+23:Math.min(...items.map(i=>i.anchor.x))-12;
+   separateIntervals(items,q?140:50,q?620:400,7);
+   for(const item of items){const e=item.e;e.setAttribute('text-anchor',q?'middle':'end');const center=item.position+item.size/2;setRootPosition(e,q?{x:center,y:baseline}:{x:baseline,y:center+4});
+    const b=box(e),dx=q?Math.abs((b.x+b.r)/2-item.anchor.x):Math.abs((b.y+b.b)/2-item.anchor.y);
+    if(dx>2)leader(e,item.anchor);
+   }
+  }
+  return axes;
+ }
+ function orderCurveLabels(texts){
+  const groups=new Map();
+  for(const e of texts.filter(e=>e.dataset.queueCurveLabel==='true'&&e.textContent.trim()!=='Quota')){
+   const group=e.dataset.queueCurveGroup;if(!groups.has(group))groups.set(group,[]);
+   const p=rootPoint(e,+e.getAttribute('x'),+e.getAttribute('y')),b=box(e);groups.get(group).push({e,target:+e.dataset.queueCurveRank,size:b.b-b.y,desired:p.y});
+  }
+  for(const items of groups.values()){
+   items.sort((a,b)=>a.target-b.target);let last=14;
+   for(const i of items){i.position=Math.max(i.desired,last+i.size+6);last=i.position;}
+   const overflow=Math.max(0,last-398);if(overflow)for(const i of items)i.position-=overflow;
+   for(let j=0;j<items.length;j++){const i=items[j],p=rootPoint(i.e,+i.e.getAttribute('x'),+i.e.getAttribute('y'));setRootPosition(i.e,{x:p.x,y:i.position});i.e.dataset.queueOrderMin=j?(items[j-1].position+i.position)/2:10;i.e.dataset.queueOrderMax=j<items.length-1?(i.position+items[j+1].position)/2:405;}
+  }
+ }
+
+ function refresh(){
+  if(running||!svg.getScreenCTM())return;running=true;observer.disconnect();
+  try{
+   svg.querySelectorAll('.queue-leader').forEach(e=>e.remove());
+   if(isTopic5)svg.querySelectorAll('.label-leader,.collision-leader').forEach(e=>e.remove());
+   // The same economic scale is used on both axes. Extend the social/private
+   // straight curves to the square boundary, while keeping model values intact.
+   const plot=svg.querySelector('#diagram-plot');
+   if(plot&&!plot.querySelector('#queue-square-clip')){const defs=document.createElementNS(NS,'defs'),clip=document.createElementNS(NS,'clipPath'),rect=document.createElementNS(NS,'rect');clip.id='queue-square-clip';for(const [k,v] of Object.entries({x:70,y:25,width:355,height:355}))rect.setAttribute(k,v);clip.append(rect);defs.append(clip);plot.prepend(defs);}
+   if(plot)for(const e of plot.querySelectorAll('polygon.dwl-poly,polygon.ban-free-area,polygon#dwl,polygon#area-dwl,polygon#area-tax-rev'))e.setAttribute('clip-path','url(#queue-square-clip)');
+   for(const e of svg.querySelectorAll('line.line-mpb,line.line-mpc,line.line-msb,line.line-msc,line.line-policy,line.line-tax,line.line-qpoll,line.line-rd,line.line-edu'))if(visible(e))extendLine(e);
+   equalPrivatePair();
+   for(const label of svg.querySelectorAll('#label-mpb,#label-mpc,#label-msb,#label-msc,#label-policy-curve,#group-dynamic-curve-labels text,#free-scene text,#ban-scene text')){
+    if(!visible(label))continue;
+    const name=label.textContent.trim();let e=label.dataset.curveTarget?svg.querySelector('#'+label.dataset.curveTarget):null;
+    if(!e&&label.id==='label-policy-curve')e=svg.querySelector('#line-policy-curve');
+    if(!e&&label.id)e=svg.querySelector('#'+label.id.replace('label-','curve-'));
+    const scope=label.closest('#free-scene,#ban-scene')||svg;
+    if(!e&&/^MPC\*/.test(name))e=[...scope.querySelectorAll('line.line-policy')].find(visible);
+    if(!e&&/^Quota$/.test(name))e=svg.querySelector('#line-quota');
+    if(!e){const kind=/^MPB/.test(name)?'mpb':/^MSB/.test(name)?'msb':/^MPC/.test(name)?'mpc':/^MSC/.test(name)?'msc':null;if(kind)e=[...scope.querySelectorAll('line.line-'+kind)].find(visible);}
+    if(e?.tagName==='line'&&visible(e)){
+     const a={x:+e.getAttribute('x1'),y:+e.getAttribute('y1')},b={x:+e.getAttribute('x2'),y:+e.getAttribute('y2')},p=Math.abs(a.x-b.x)<.01?(a.y<b.y?a:b):(a.x>b.x?a:b);
+     label.dataset.queueCurveLabel='true';label.dataset.queueAnchorX=p.x;label.dataset.queueAnchorY=p.y;
+     const referenceX=70+355*50/120,rankY=Math.abs(b.x-a.x)<.01?p.y:a.y+(b.y-a.y)*(referenceX-a.x)/(b.x-a.x);
+     label.dataset.queueCurveRank=rootPoint(e,referenceX,rankY).y;label.dataset.queueCurveGroup=(scope.id||'main')+':' +(b.y-a.y<0?'up':'down');
+     label.setAttribute('x',p.x+10);label.setAttribute('y',p.y+4);label.setAttribute('text-anchor','start');
+     if(name==='Quota'){label.setAttribute('x',p.x);label.setAttribute('y',p.y-10);label.setAttribute('text-anchor','middle');}
+    }
+   }
+   const texts=[...svg.querySelectorAll('text')].filter(visible);
+   for(const e of texts){
+    if(!e.dataset.queueCategory){const small=!e.matches('.axis-title')&&(e.matches('[font-size="11"],[font-size="12"],.area-label')||/font-size:\s*(?:10|11|12|13)(?:px)?/.test(e.getAttribute('style')||''));e.dataset.queueCategory=small?'small':'main';}
+    const m=e.getScreenCTM(),scale=Math.hypot(m.a,m.b);e.style.setProperty('font-size',((isTopic5&&e.dataset.queueCurveLabel==='true'?12:e.dataset.queueCategory==='small'?12:14)/scale)+'px','important');
+    for(const sub of e.querySelectorAll('tspan[baseline-shift="sub"]'))sub.style.setProperty('font-size',(10/scale)+'px','important');
+   }
+   const axisTexts=axisLayout(texts);orderCurveLabels(texts);
+   for(const e of texts.filter(e=>e.dataset.pointX!==undefined)){
+    const p=rootPoint(e,+e.dataset.pointX,+e.dataset.pointY);setRootPosition(e,{x:p.x+14,y:p.y-13});e.setAttribute('text-anchor','start');
+   }
+   // Check all sampled curve segments and point markers, not only other labels.
+   const curves=[...svg.querySelectorAll('line,polyline,path')].filter(e=>visible(e)&&!e.closest('marker,defs')&&!e.matches('.axis,.guide-line,.label-leader,.collision-leader,.queue-leader')&&((e.matches('.curve,.line-mpb,.line-mpc,.line-msb,.line-msc,.line-policy,.line-tax,.line-qpoll,.line-rd,.line-edu'))||(e.tagName==='polyline'&&getComputedStyle(e).fill==='none')||(e.tagName==='path'&&e.getAttribute('fill')==='none'&&+e.getAttribute('stroke-width')>=2)||(e.tagName==='line'&&+e.getAttribute('stroke-width')>=2.4)));
+   const samples=curves.flatMap(e=>{try{const len=e.getTotalLength(),n=Math.max(2,Math.ceil(len/3)),points=[];for(let i=0;i<=n;i++){const p=e.getPointAtLength(len*i/n);points.push(rootPoint(e,p.x,p.y));}return points;}catch{return [];}});
+   const pointBoxes=[...svg.querySelectorAll('circle')].filter(e=>visible(e)&&+e.getAttribute('r')<=6).map(box);
+   const movable=texts.filter(e=>!axisTexts.includes(e)&&!e.matches('.area-label,#label-dwl-text,#label-subsidy-cost-text')&& (e.dataset.pointX!==undefined||e.dataset.queueCurveLabel==='true'||e.hasAttribute('data-curve-label')||e.hasAttribute('data-movable')||e.hasAttribute('data-policy-label')||/^(?:(?:DD|SS|[DESAB])(?:[₀₁₂]|\d|\s|$)|M(?:P|S|E)[BC]|PPC|Ceiling|Floor|Minimum wage|Quota)/.test(e.textContent.trim())));
+   const fixed=texts.filter(e=>!movable.includes(e)).map(box),placed=[...fixed];let unresolved=0;
+   for(const e of movable){
+    let ox=+e.getAttribute('x'),oy=+e.getAttribute('y');
+    // Repeated refreshes start from a stable point; rerenders replace the node
+    // or change its position, so slider changes retain their new anchor.
+    if(e.dataset.pointX===undefined&&e.dataset.queueCurveLabel!=='true'&&e.dataset.queueLastX===String(ox)&&e.dataset.queueLastY===String(oy)){ox=+e.dataset.queueBaseX;oy=+e.dataset.queueBaseY;}
+    e.dataset.queueBaseX=ox;e.dataset.queueBaseY=oy;
+    const candidateGood=b=>(!e.dataset.queueOrderMin||((b.y+b.b)/2>=+e.dataset.queueOrderMin&&(b.y+b.b)/2<=+e.dataset.queueOrderMax))&&b.x>=54&&b.r<=646&&b.y>=4&&b.b<=496&&!placed.some(p=>overlaps(b,p))&&!samples.some(p=>inBox(p,b,3))&&!pointBoxes.some(p=>overlaps(b,p,3));
+    let good=false,chosen;
+    const offsets=[[0,0]];for(let r=10;r<=220;r+=10)offsets.push([0,-r],[r,0],[0,r],[-r,0],[r,-r],[-r,-r],[r,r],[-r,r]);
+    for(const [dx,dy] of offsets){
+     // Keep the four price-control/quota labels at the requested end.
+     if((e.hasAttribute('data-policy-label')||e.dataset.queueCurveLabel==='true')&&dx!==0)continue;
+     e.setAttribute('x',ox+dx);e.setAttribute('y',oy+dy);const b=box(e);if(candidateGood(b)){good=true;chosen=b;break;}
+    }
+    if(!good){e.setAttribute('x',ox);e.setAttribute('y',oy);chosen=box(e);unresolved++;}
+    e.dataset.queueLastX=e.getAttribute('x');e.dataset.queueLastY=e.getAttribute('y');placed.push(chosen);
+    if(e.dataset.pointX!==undefined){const anchor=rootPoint(e,+e.dataset.pointX,+e.dataset.pointY),b=box(e),distance=Math.hypot(Math.max(b.x-anchor.x,0,anchor.x-b.r),Math.max(b.y-anchor.y,0,anchor.y-b.b));if(distance>24)leader(e,anchor);}
+    else if(e.dataset.queueCurveLabel==='true'){const anchor=rootPoint(e,+e.dataset.queueAnchorX,+e.dataset.queueAnchorY),b=box(e);if(Math.hypot(Math.max(b.x-anchor.x,0,anchor.x-b.r),Math.max(b.y-anchor.y,0,anchor.y-b.b))>12)leader(e,anchor);}
+    else if(good&&Math.hypot(+e.getAttribute('x')-ox,+e.getAttribute('y')-oy)>25)leader(e,rootPoint(e,ox,oy-4));
+   }
+   refreshLegend();
+   svg.dataset.queueUnresolved=String(unresolved);svg.dataset.queueCheckedLabels=String(movable.length);
+  }finally{observer.observe(svg,{childList:true,subtree:true});running=false;}
+ }
+ const schedule=()=>{if(!pending){pending=true;requestAnimationFrame(()=>{pending=false;refresh();});}};
+ const observer=new MutationObserver(schedule);observer.observe(svg,{childList:true,subtree:true});
+ document.addEventListener('input',schedule);document.addEventListener('change',schedule);document.addEventListener('click',schedule);window.addEventListener('resize',schedule);
+ window.WidgetDiagramLayout={refresh,separateIntervals,legendEntries:()=>legendEntries};refresh();
+})();
+
+</script>
+</body></html>

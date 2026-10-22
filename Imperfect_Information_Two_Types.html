@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Imperfect Information — Two-Type Comparison</title>
+<style>
+:root{--accent:#4169e1;--ink:#1f2937;--muted:#6b7280;--border:#e5e7eb;--red:#dc2626;--blue:#2563eb;--green:#16a34a}
+*{box-sizing:border-box}body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:white;max-width:1240px;margin:auto;padding:12px;line-height:1.5}.widget-header{text-align:center;border-bottom:3px solid var(--accent);padding-bottom:8px;margin-bottom:6px}h1{font-size:22px;margin:0}.widget-header p{font-size:14px;color:var(--muted);margin:3px 0 0}.widget-nav{text-align:center;margin:6px 0 10px}.widget-nav a{font-size:14px;color:var(--accent);padding:6px 10px}strong,b{color:var(--red)}
+.controls{background:#f3f4f6;border-radius:8px;padding:8px 12px;margin-bottom:8px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 20px}.control-group{display:flex;flex:1 1 380px;align-items:center;gap:8px;min-width:0}.control-group label{font-size:14px;font-weight:600;white-space:nowrap}select,button{font:600 14px/1.4 system-ui;color:var(--ink);background:white;border:1px solid #d1d5db;border-radius:6px;min-height:44px;padding:6px 9px;cursor:pointer}select{flex:1;min-width:0}button:hover{border-color:var(--accent);background:#f0f4ff}input{accent-color:var(--accent)}input[type=range]{flex:1;min-width:70px;height:34px}.scale-label{font-size:12px;color:var(--muted)}:focus-visible{outline:3px solid #819bea;outline-offset:3px}
+details{border:1px solid var(--border);border-radius:6px;background:white;padding:0 10px;margin-bottom:6px}summary{font-size:14px;font-weight:600;cursor:pointer;min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:10px;list-style:none}summary::-webkit-details-marker{display:none}summary:after{content:'▸';color:#9ca3af}details[open]>summary:after{transform:rotate(90deg);color:var(--accent)}details[open]{border-color:var(--accent)}details p{font-size:14px;margin:0 0 10px;color:#4b5563}.diagram-options{flex-basis:100%;background:transparent;border:0;margin:0;padding:0}.diagram-options summary{font-size:12px;min-height:28px;justify-content:flex-start}.option-row{display:flex;gap:4px 20px;flex-wrap:wrap}.option-row label{display:flex;align-items:center;gap:5px;min-height:28px;font-size:11px;cursor:pointer;white-space:nowrap}.option-row input{width:16px;height:16px;margin:0}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) clamp(260px,25vw,300px);gap:14px;align-items:start}.main-content{min-width:0}.sidebar{background:#f9fafb;border:1px solid var(--border);border-radius:8px;padding:12px}.sidebar h2{font-size:16px;margin:0 0 8px;border-bottom:2px solid var(--border);padding-bottom:5px}.sidebar details p{font-size:13px}.sidebar summary{font-size:13px}.diagram-frame{border:1px solid var(--border);border-radius:8px;padding:8px 0;background:white;display:flex;flex-direction:column;align-items:center;overflow:hidden}.legend-space{height:28px;flex:none}svg#diagram{display:block;width:100%;max-width:560px;height:auto;background:white;aspect-ratio:600/500}.legend{display:flex;align-items:center;justify-content:safe center;gap:6px;white-space:nowrap;overflow-x:auto;max-width:100%;height:28px;font-size:12px;padding:0 6px}.legend[hidden]{visibility:hidden;display:flex}.swatch{width:15px;height:11px;border:1px solid #777;background:#dc262640;flex:none}.pattern{background:repeating-linear-gradient(135deg,#fff 0 4px,#777 4px 5px);margin-left:5px}.toolbar{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;align-items:center}.reset{color:var(--accent);border-color:#b6c6f5}.export{position:relative;margin:0}.export>summary{padding:0 4px}.export-panel{position:absolute;z-index:5;top:48px;left:0;background:white;box-shadow:0 8px 22px #0002;border:1px solid var(--border);border-radius:6px;width:270px;padding:12px;display:flex;gap:8px;flex-wrap:wrap}.export-panel label{font-size:13px;width:100%;display:flex;align-items:center;gap:8px}.export-panel button{flex:1}.status{font-size:12px;color:var(--muted)}.summary-table{border-collapse:collapse;width:100%;font-size:14px;margin-bottom:10px}.summary-table th,.summary-table td{padding:8px;text-align:left;border-bottom:1px solid var(--border)}.summary-table th{width:35%;font-weight:600}.mechanism p{margin:0 0 10px;font-size:14px}.diagram-text{font-family:system-ui,sans-serif;fill:#1f2937;font-size:15px;paint-order:stroke;stroke:white;stroke-width:3px;stroke-linejoin:round}.curve-label{font-size:12.86px}.small-label{font-size:12.86px}.diagram-text tspan{font-size:10.71px;stroke-width:1px}.tip-target{cursor:pointer}.tip-target:focus{outline:none;filter:drop-shadow(0 0 2px #4169e1)}.tooltip{position:fixed;z-index:20;background:white;border:1px solid #b6c6f5;border-radius:6px;box-shadow:0 8px 22px #0003;padding:12px 40px 12px 14px;font-size:14px;max-width:min(350px,calc(100vw - 24px))}.tooltip[hidden]{display:none}.tooltip button{position:absolute;right:2px;top:2px;border:0;padding:3px 9px;min-height:30px;background:transparent;font-size:20px}.tooltip p{margin:0}.diagram-help{color:var(--muted);font-size:12px;margin:4px 2px 8px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}@media(max-width:600px){body{padding:8px}h1{font-size:21px}.control-group{flex-basis:100%}.control-group label{font-size:13px}.scale-label{font-size:11px}.summary-table{font-size:13px}.export-panel{left:auto;right:0}}
+@media print{.controls,.toolbar,.widget-nav,.tooltip{display:none}.layout{display:block}.sidebar{display:none}}
+.signed-range{flex:1;min-width:170px;position:relative}.signed-range input{display:block;width:100%;margin:0}.midpoint-marker{position:absolute;left:50%;top:28px;height:8px;width:1px;background:#9ca3af;pointer-events:none}.slider-captions{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);gap:5px}.slider-captions span:nth-child(2){position:absolute;left:50%;transform:translateX(-50%)}
+.information-type{flex-wrap:wrap}.information-type>span{font-size:14px;font-weight:600}.information-type button{min-width:66px}.information-type button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:white}
+</style></head>
+<body class="widget-page">
+<header class="widget-header"><h1>Imperfect Information</h1><p>Topic 5 · A-Level Economics · Two-Type Comparison</p></header>
+<nav class="widget-nav"><a href="index.html">← Back To Index</a></nav>
+<section class="controls" aria-label="Widget Controls">
+<div class="control-group information-type" role="group" aria-labelledby="type-label"><span id="type-label">Imperfect Information About:</span><button id="type-mpc" type="button" aria-pressed="true">MPC</button><button id="type-mpb" type="button" aria-pressed="false">MPB</button></div>
+<div class="control-group"><label for="magnitude">Size Of Mis-estimation</label><div class="signed-range"><input id="magnitude" type="range" min="-80" max="80" step="1" value="0" aria-valuetext="No Mis-estimation"><span class="midpoint-marker" aria-hidden="true"></span><div class="slider-captions" aria-hidden="true"><span>Underestimate</span><span>None</span><span>Overestimate</span></div></div></div>
+<details class="diagram-options"><summary>Diagram Options</summary><div class="option-row"><label><input id="dwl" type="checkbox" checked>Deadweight Loss</label><label><input id="gap" type="checkbox" checked>Over-/Underconsumption</label><label><input id="divergence" type="checkbox" checked>Mis-estimation Gap</label></div></details>
+</section>
+<div class="layout"><main class="main-content">
+<div class="diagram-frame"><div class="legend-space" aria-hidden="true"></div><svg id="diagram" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 500" role="img" aria-labelledby="svg-title svg-description"><title id="svg-title">Imperfect Information</title><desc id="svg-description"></desc><defs><marker id="axis-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#374151"/></marker><marker id="gap-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#dc2626"/></marker><pattern id="dwl-hatch" width="7" height="7" patternUnits="userSpaceOnUse"><rect width="7" height="7" fill="white"/><path d="M-2 2 L2 -2 M0 7 L7 0 M5 9 L9 5" stroke="#555" stroke-width="1"/></pattern></defs><g id="drawing"></g></svg><div id="legend" class="legend"><i class="swatch"></i>Deadweight Loss<i class="swatch pattern"></i><span>Grayscale Pattern</span></div></div>
+<p class="diagram-help">Select equilibrium points or shaded areas for explanations.</p>
+<div class="toolbar"><button id="reset" class="reset" type="button">Reset</button><button id="copy" type="button">Copy Diagram</button><details class="export"><summary>Export Diagram</summary><div class="export-panel"><label for="format">Appearance<select id="format"><option value="colour">Colour</option><option value="grayscale">Grayscale</option></select></label><button id="svg-export" type="button">Save SVG</button><button id="png-export" type="button">Save PNG</button></div></details><span id="status" class="status" role="status"></span></div>
+<details id="outcome"><summary>Equilibrium Summary</summary><table class="summary-table"><tbody id="summary-body"></tbody></table></details>
+<details class="mechanism"><summary>How Imperfect Information Causes Market Failure</summary><div id="explanation"></div></details>
+</main><aside class="sidebar"><h2>Glossary</h2>
+<details><summary>Imperfect Information</summary><p>When buyers or sellers have incomplete or inaccurate information relevant to their decisions. Here, they mis-estimate private costs or benefits.</p></details>
+<details><summary>Marginal Private Benefit (MPB)</summary><p>The additional benefit to the consumer from consuming one more unit of a good or service.</p></details>
+<details><summary>Marginal Private Cost (MPC)</summary><p>The additional cost to the producer from producing one more unit of a good or service.</p></details>
+<details><summary>Actual And Perceived Values</summary><p><strong>Actual</strong> values reflect the true costs or benefits. <strong>Perceived</strong> values are those decision-makers believe they face and use when making choices.</p></details>
+<details><summary>Marginal Social Benefit (MSB)</summary><p>The additional benefit to society from one more unit of consumption. With no external benefits in this model, MSB equals actual MPB.</p></details>
+<details><summary>Marginal Social Cost (MSC)</summary><p>The additional cost to society from one more unit of production. With no external costs in this model, MSC equals actual MPC.</p></details>
+<details><summary>Market Equilibrium</summary><p>The outcome where perceived marginal private benefit equals perceived marginal private cost. The curve which is correctly estimated has identical actual and perceived values.</p></details>
+<details><summary>Socially Efficient Output</summary><p>The output where <strong>MSB = MSC</strong>, maximising society’s net benefit. It is determined by actual costs and benefits.</p></details>
+<details><summary>Overconsumption And Underconsumption</summary><p><strong>Overconsumption</strong> occurs when market output exceeds socially efficient output. <strong>Underconsumption</strong> occurs when market output is below socially efficient output.</p></details>
+<details><summary>Deadweight Loss (DWL)</summary><p>The loss of society’s net benefit from consuming above or below the socially efficient quantity. It is measured between actual MSB and MSC over the misallocated units.</p></details>
+<details><summary>Diagram Assumptions</summary><p>No externalities, market power or other distortions. Only one private curve is mis-estimated at a time. The information error is a constant vertical gap, so curves shift in parallel. Curves are straight lines with equal axis scales. Output is traded at the perceived market equilibrium.</p></details>
+</aside></div>
+<div id="tooltip" class="tooltip" role="dialog" aria-label="Diagram Explanation" hidden><button id="close-tip" type="button" aria-label="Close Explanation">×</button><p id="tip-text"></p></div>
+<script>
+'use strict';
+const $=id=>document.getElementById(id), NS='http://www.w3.org/2000/svg';
+const BLUE='#2563eb',GREEN='#16a34a',RED='#dc2626',MUTED='#9ca3af';
+// Equal scales and equal-length actual curves: MPB=100-Q, MPC=Q.
+const PLOT={left:100,right:480,top:40,bottom:420,max:120};
+const X=q=>100+q*380/PLOT.max,Y=p=>420-p*380/PLOT.max;
+function model(type,signedMagnitude){
+ const cost=type==='mpc',under=signedMagnitude<0,magnitude=Math.abs(signedMagnitude),shift=signedMagnitude;
+ const q=50+(cost?-shift:shift)/2,p=cost?100-q:q;
+ const caseTitle=magnitude===0?'No Mis-estimation':`${under?'Underestimating':'Overestimating'} ${cost?'MPC':'MPB'}`;
+ return {type,magnitude,signedMagnitude,cost,under,shift,q,p,qs:50,ps:50,over:q>50,zero:magnitude===0,dwl:(q-50)**2,caseTitle};
+}
+window.imperfectInformationModel=model;
+const tips={};let segments=[],occupied=[],tipAnchor=null;let selectedType='mpc';
+function el(tag,attrs={},parent=$('drawing')){let e=document.createElementNS(NS,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);parent.append(e);return e;}
+function tip(e,id,content){tips[id]=content;e.dataset.tip=id;e.classList.add('tip-target');e.setAttribute('tabindex','0');e.setAttribute('role','button');e.setAttribute('aria-label',content);}
+function line(x1,y1,x2,y2,attrs={},parent=$('drawing')){return el('line',{x1,y1,x2,y2,...attrs},parent);}
+function text(x,y,parts,cls='',anchor='start'){let e=el('text',{x,y,class:'diagram-text '+cls,'text-anchor':anchor});for(let part of parts){if(typeof part==='string')e.append(document.createTextNode(part));else{let t=el('tspan',{'baseline-shift':'sub'},e);t.textContent=part.sub;}}return e;}
+function curve(a,b,color,id,description,baseline=false){
+ // Clip the line to the first quadrant and the square economic viewport.
+ let points=[];for(let q of [0,PLOT.max]){let p=a+b*q;if(p>=0&&p<=PLOT.max)points.push({q,p});}for(let p of [0,PLOT.max]){let q=(p-a)/b;if(q>=0&&q<=PLOT.max)points.push({q,p});}
+ points=points.filter((p,i,arr)=>arr.findIndex(t=>Math.abs(t.q-p.q)<1e-7)===i).sort((u,v)=>u.q-v.q);
+ if(baseline&&b===1)points=[{q:0,p:0},{q:100,p:100}];
+ const u=points[0],v={...points.at(-1)};
+ // Match the reference baseline length; do not extend a perceived curve further.
+ if(!baseline&&v.q-u.q>100){v.q=u.q+100;v.p=a+b*v.q;}
+ const s={x1:X(u.q),y1:Y(u.p),x2:X(v.q),y2:Y(v.p),a,b,id};segments.push(s);
+ const g=el('g',{'data-curve':id});line(s.x1,s.y1,s.x2,s.y2,{stroke:color,'stroke-width':2.5},g);
+ tips[id]=description;return s;
+}
+// Segment/rectangle intersections keep text clear of every economic curve.
+function intersects(s,b){let lo=0,hi=1;for(const [p,d,min,max] of [[s.x1,s.x2-s.x1,b.x,b.x+b.width],[s.y1,s.y2-s.y1,b.y,b.y+b.height]]){if(Math.abs(d)<1e-8){if(p<min||p>max)return false;}else{let t0=(min-p)/d,t1=(max-p)/d;if(t0>t1)[t0,t1]=[t1,t0];lo=Math.max(lo,t0);hi=Math.min(hi,t1);if(lo>hi)return false;}}return true;}
+const overlap=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
+function label(parts,candidates,cls,content,id){
+ const e=text(0,0,parts,cls);let best=null;
+ for(const c of candidates){e.setAttribute('x',c.x);e.setAttribute('y',c.y);let b=e.getBBox(),box={x:b.x-4,y:b.y-3,width:b.width+8,height:b.height+6};let score=segments.filter(s=>intersects(s,box)).length*150+occupied.filter(o=>overlap(o,box)).length*200;
+ score+=box.x<8||box.x+box.width>592||box.y<10||box.y+box.height>(cls==='curve-label'?412:456)?10000:0;
+ if(!best||score<best.score)best={...c,box,score};if(score===0)break;}
+ e.setAttribute('x',best.x);e.setAttribute('y',best.y);occupied.push(best.box);
+ if(best.anchor){const b=best.box,ax=best.anchor.x,ay=best.anchor.y;const ex=Math.max(b.x,Math.min(ax,b.x+b.width)),ey=Math.max(b.y,Math.min(ay,b.y+b.height));if(Math.hypot(ex-ax,ey-ay)>12){let l=line(ax,ay,ex,ey,{stroke:MUTED,'stroke-width':1});$('drawing').insertBefore(l,e);}}
+ if(cls!=='curve-label')tip(e,id,content);return e;
+}
+function curveLabel(s,parts,content){
+ const candidates=[];
+ // Prefer positions near the upper/right end, with a normal offset from the curve.
+ for(const t of [.72,.52,.9,.32,.15]){const ax=s.x1+(s.x2-s.x1)*t,ay=s.y1+(s.y2-s.y1)*t;
+ for(const [dx,dy] of [[12,-15],[-132,-15],[16,28],[-132,28],[22,-30],[-150,42]])candidates.push({x:ax+dx,y:ay+dy,anchor:{x:ax,y:ay}});}
+ return label(parts,candidates,'curve-label',content,'label-'+s.id);
+}
+function guides(m){
+ const points=m.zero?[{q:50,p:50,sub:'e = s'}]:[{q:50,p:50,sub:'s'},{q:m.q,p:m.p,sub:'e'}];
+ for(const e of points){line(X(e.q),Y(e.p),X(e.q),420,{stroke:MUTED,'stroke-dasharray':'4 4','stroke-width':1});line(100,Y(e.p),X(e.q),Y(e.p),{stroke:MUTED,'stroke-dasharray':'4 4','stroke-width':1});}
+ // All quantity labels share a row; all price labels share a column.
+ const qs=points.map(e=>({pos:X(e.q),actual:X(e.q),sub:e.sub})).sort((a,b)=>a.pos-b.pos);
+ const ps=points.map(e=>({pos:Y(e.p),actual:Y(e.p),sub:e.sub})).sort((a,b)=>a.pos-b.pos);
+ for(const [arr,gap] of [[qs,42],[ps,25]])if(arr.length===2&&arr[1].pos-arr[0].pos<gap){let mid=(arr[1].pos+arr[0].pos)/2;arr[0].pos=mid-gap/2;arr[1].pos=mid+gap/2;}
+ for(const e of qs){if(Math.abs(e.pos-e.actual)>1)line(e.actual,420,e.pos,432,{stroke:MUTED,'stroke-width':1});const qLabel=text(e.pos,447,['Q',{sub:e.sub}],'','middle');
+ const description=e.sub==='s'?'Socially efficient output (Qs): the quantity where actual MSB equals actual MSC, maximising society’s net benefit.':e.sub==='e'?'Free-market equilibrium output (Qe): the quantity where perceived MPB equals perceived MPC. Decisions are based on perceived costs and benefits.':'Free-market equilibrium output (Qe) equals socially efficient output (Qs): with no mis-estimation, actual and perceived values coincide.';
+ tip(qLabel,'quantity-'+e.sub,description);}
+ for(const e of ps){if(Math.abs(e.pos-e.actual)>1)line(100,e.actual,85,e.pos,{stroke:MUTED,'stroke-width':1});text(80,e.pos+5,['P',{sub:e.sub}],'','end');}
+}
+function render(){
+ for(const type of ['mpc','mpb'])$('type-'+type).setAttribute('aria-pressed',String(type===selectedType));
+ closeTip();$('drawing').replaceChildren();segments=[];occupied=[];const m=model(selectedType,+$('magnitude').value);window.currentModel=m;
+ $('magnitude').setAttribute('aria-valuetext',m.zero?'No Mis-estimation':m.caseTitle+' — '+(m.magnitude<27?'Small':m.magnitude<54?'Moderate':'Large'));
+ $('svg-description').textContent=`${m.caseTitle}. ${m.zero?'No information error; market and efficient outcomes coincide.':(m.over?'Overconsumption':'Underconsumption')+' relative to socially efficient output.'}`;
+ // PPC-style case readout inside the diagram, above the plot.
+ el('rect',{x:190,y:4,width:310,height:28,rx:6,fill:'#f0f4ff',stroke:'#cbd7fa','stroke-width':1});
+ const caseReadout=text(345,24,[m.caseTitle],'','middle');caseReadout.setAttribute('font-weight','650');
+ occupied.push({x:190,y:4,width:310,height:28});
+ line(100,420,488,420,{stroke:'#374151','stroke-width':2,'marker-end':'url(#axis-arrow)'});line(100,420,100,32,{stroke:'#374151','stroke-width':2,'marker-end':'url(#axis-arrow)'});
+ text(83,20,['Price /'],'small-label','end');text(83,36,['Costs /'],'small-label','end');text(83,52,['Benefits'],'small-label','end');text(488,446,['Qty'],'','start');text(92,438,['O'],'small-label','end');
+ const showDwl=$('dwl').checked&&!m.zero;
+ if(showDwl){const poly=el('polygon',{points:`${X(50)},${Y(50)} ${X(m.q)},${Y(m.q)} ${X(m.q)},${Y(100-m.q)}`,fill:RED,'fill-opacity':.25,stroke:RED,'stroke-width':1,'data-area':'dwl'});tip(poly,'dwl','Deadweight loss: the net social benefit lost on units between market output and socially efficient output, measured between actual MSB and MSC.');}
+ guides(m);
+ segments.push({x1:100,y1:420,x2:488,y2:420},{x1:100,y1:420,x2:100,y2:32});
+ const supply=curve(0,1,GREEN,'actual-mpc','Actual marginal private cost equals marginal social cost. There are no external costs.',true);
+ const demand=curve(100,-1,BLUE,'actual-mpb','Actual marginal private benefit equals marginal social benefit. There are no external benefits.',true);
+ let perceived;if(!m.zero)perceived=curve(m.cost?m.shift:100+m.shift,m.cost?1:-1,RED,'perceived',`Perceived marginal private ${m.cost?'cost':'benefit'} is ${m.under?'below':'above'} its actual value. This is the curve used by decision-makers.`);
+ if($('divergence').checked&&!m.zero){let q=25;if(m.under)q=m.cost?m.magnitude+10:(100-m.magnitude)/2;let p=m.cost?q:100-q;const pp=p+m.shift;line(X(q),Y(p),X(q),Y(pp),{stroke:RED,'stroke-width':1.5,'marker-start':'url(#gap-arrow)','marker-end':'url(#gap-arrow)'});}
+ for(const pt of m.zero?[{q:50,p:50,sub:'e = s',id:'merged'}]:[{q:50,p:50,sub:'s',id:'efficient'},{q:m.q,p:m.p,sub:'e',id:'market'}]){
+ let c=el('circle',{cx:X(pt.q),cy:Y(pt.p),r:4,fill:pt.id==='market'?RED:'#1f2937'});let content=pt.id==='merged'?'Market equilibrium and social optimum coincide.':pt.id==='market'?'Market equilibrium: perceived MPB equals perceived MPC.':'Socially efficient outcome: actual MSB equals actual MSC.';tip(c,pt.id,content);
+ // Reserve space around point markers before positioning any text.
+ occupied.push({x:X(pt.q)-7,y:Y(pt.p)-7,width:14,height:14});
+ }
+ curveLabel(supply,m.cost?['MPC',{sub:m.zero?'ACTUAL = PERCEIVED':'ACTUAL'},' = MSC']:['MPC = MSC'],tips['actual-mpc']);
+ curveLabel(demand,!m.cost?['MPB',{sub:m.zero?'ACTUAL = PERCEIVED':'ACTUAL'},' = MSB']:['MPB = MSB'],tips['actual-mpb']);
+ if(perceived)curveLabel(perceived,[m.cost?'MPC':'MPB',{sub:'PERCEIVED'}],tips.perceived);
+ for(const pt of m.zero?[{q:50,p:50,sub:'e = s',id:'merged'}]:[{q:50,p:50,sub:'s',id:'efficient'},{q:m.q,p:m.p,sub:'e',id:'market'}]){const ax=X(pt.q),ay=Y(pt.p),c=[];for(const d of [[12,-12],[12,25],[-40,-14],[-40,28],[25,-36],[-55,-36],[32,42],[-60,48]])c.push({x:ax+d[0],y:ay+d[1],anchor:{x:ax,y:ay}});label(['E',{sub:pt.sub}],c,'',tips[pt.id],'label-'+pt.id);}
+ if(showDwl){
+  const apex=X(50),base=X(m.q),centerY=Y(50),padding=4;
+  const dwlLabel=text(0,0,['DWL'],'small-label','middle');let fitted=false;
+  // The entire padded text box must fit within the actual DWL triangle.
+  for(const fraction of [.55,.65,.75,.85]){
+   dwlLabel.setAttribute('x',apex+(base-apex)*fraction);dwlLabel.setAttribute('y',centerY);
+   let b=dwlLabel.getBBox();dwlLabel.setAttribute('y',centerY+centerY-(b.y+b.height/2));b=dwlLabel.getBBox();
+   const box={x:b.x-padding,y:b.y-padding,width:b.width+padding*2,height:b.height+padding*2};
+   const corners=[[box.x,box.y],[box.x+box.width,box.y],[box.x,box.y+box.height],[box.x+box.width,box.y+box.height]];
+   const inside=corners.every(([x,y])=>x>=Math.min(apex,base)&&x<=Math.max(apex,base)&&Math.abs(y-centerY)<=Math.abs(x-apex));
+   if(inside&&!occupied.some(o=>overlap(o,box))){fitted=true;occupied.push(box);break;}
+  }
+  if(fitted)tip(dwlLabel,'label-dwl',tips.dwl);else dwlLabel.remove();
+ }
+ if($('gap').checked&&!m.zero){const l=Math.min(X(50),X(m.q)),r=Math.max(X(50),X(m.q));line(l,467,r,467,{stroke:RED,'stroke-width':1.5,'marker-start':'url(#gap-arrow)','marker-end':'url(#gap-arrow)'});text((l+r)/2,490,[m.over?'Overconsumption':'Underconsumption'],'small-label','middle');}
+ $('legend').hidden=!showDwl;
+ const direction=m.zero?'No Overconsumption Or Underconsumption':m.over?'Overconsumption':'Underconsumption';
+ $('summary-body').innerHTML=`<tr><th>Information Error</th><td>${m.caseTitle}</td></tr><tr><th>Market Outcome</th><td>E<sub>e</sub>: ${m.zero?'Coincides With Social Optimum':'Determined By Perceived Costs And Benefits'}</td></tr><tr><th>Social Optimum</th><td>E<sub>s</sub>: Actual MSB = Actual MSC</td></tr><tr><th>Output</th><td>${direction}</td></tr><tr><th>Deadweight Loss</th><td>${m.zero?'None':'Present; Increases With The Size Of The Error'}</td></tr>`;
+ const kind=m.cost?'costs':'benefits';
+ $('explanation').innerHTML=m.zero?'<p>With <strong>no mis-estimation</strong>, perceived values equal actual values. Consumption occurs where <strong>MSB = MSC</strong>. There is no deadweight loss.</p>':`<p>Decision-makers <strong>${m.under?'underestimate':'overestimate'} private ${kind}</strong>, so perceived ${m.cost?'MPC':'MPB'} lies ${m.under?'below':'above'} its actual curve.</p><p>The market chooses E<sub>e</sub>, where <strong>perceived MPB = perceived MPC</strong>. Market output is ${m.over?'greater':'lower'} than the socially efficient output at E<sub>s</sub>, resulting in <strong>${m.over?'overconsumption':'underconsumption'}</strong>.</p><p>${m.over?'For the excess units, actual MSC exceeds actual MSB.':'For the missing units, actual MSB exceeds actual MSC, so potential net benefits are forgone.'} The area between actual MSB and MSC over these units is the <strong>deadweight loss</strong>.</p>`;
+}
+let pinned=false;
+function showTip(target,pin=false){tipAnchor=target;pinned=pin;$('tip-text').textContent=tips[target.dataset.tip];$('tooltip').hidden=false;const b=target.getBoundingClientRect(),t=$('tooltip'),w=t.offsetWidth,h=t.offsetHeight;t.style.left=Math.max(12,Math.min(b.left,innerWidth-w-12))+'px';t.style.top=Math.max(12,Math.min(b.bottom+8,innerHeight-h-12))+'px';}
+function closeTip(){ $('tooltip').hidden=true;pinned=false;tipAnchor=null;}
+$('diagram').addEventListener('pointerover',e=>{const t=e.target.closest('[data-tip]');if(t&&!pinned&&e.pointerType!=='touch')showTip(t);});
+$('diagram').addEventListener('pointerout',e=>{if(!pinned&&!e.relatedTarget?.closest('#tooltip')&&!e.relatedTarget?.closest('[data-tip]'))closeTip();});
+$('diagram').addEventListener('focusin',e=>{if(e.target.dataset.tip)showTip(e.target);});
+$('diagram').addEventListener('focusout',e=>{if(!pinned&&!e.relatedTarget?.closest('#tooltip'))closeTip();});
+$('diagram').addEventListener('click',e=>{const t=e.target.closest('[data-tip]');if(t)showTip(t,true);});
+$('diagram').addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.dataset.tip){e.preventDefault();showTip(e.target,true);}});
+$('close-tip').addEventListener('click',()=>{const a=tipAnchor;closeTip();a?.focus();closeTip();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeTip();});document.addEventListener('click',e=>{if(!e.target.closest('#tooltip')&&!e.target.closest('[data-tip]'))closeTip();});window.addEventListener('scroll',closeTip,{passive:true});window.addEventListener('resize',closeTip);
+for(const id of ['dwl','gap','divergence'])$(id).addEventListener('change',render);$('magnitude').addEventListener('input',render);
+for(const type of ['mpc','mpb'])$('type-'+type).addEventListener('click',()=>{selectedType=type;render();});
+$('reset').addEventListener('click',()=>{selectedType='mpc';$('magnitude').value=0;for(const id of ['dwl','gap','divergence'])$(id).checked=true;$('status').textContent='';render();});
+function exportSvg(grayscale){
+ const clone=$('diagram').cloneNode(true);clone.setAttribute('width','1200');clone.setAttribute('height','1060');clone.setAttribute('viewBox','0 0 600 530');
+ // Inline all text styles so exports need no external stylesheet.
+ const source=$('diagram').querySelectorAll('*'),dest=clone.querySelectorAll('*');source.forEach((e,i)=>{const cs=getComputedStyle(e);for(const k of ['font-family','font-size','font-weight','fill','stroke','stroke-width','paint-order','stroke-linejoin']){if(e.tagName==='text'||e.tagName==='tspan')dest[i].style.setProperty(k,cs.getPropertyValue(k));}});
+ clone.querySelectorAll('[tabindex]').forEach(e=>{e.removeAttribute('tabindex');e.removeAttribute('role');});
+ const bg=document.createElementNS(NS,'rect');bg.setAttribute('width','600');bg.setAttribute('height','530');bg.setAttribute('fill','white');clone.insertBefore(bg,clone.firstChild);
+ if(grayscale){clone.querySelectorAll('[stroke]').forEach(e=>{if(e.getAttribute('stroke')!=='transparent')e.setAttribute('stroke',e.getAttribute('stroke')===MUTED?'#aaa':'#333');});clone.querySelectorAll('marker path,circle').forEach(e=>e.setAttribute('fill','#333'));clone.querySelectorAll('[data-area]').forEach(e=>(e.setAttribute('fill','url(#dwl-hatch)'),e.removeAttribute('fill-opacity')));}
+ if(!$('legend').hidden){const r=document.createElementNS(NS,'rect');Object.entries({x:205,y:510,width:16,height:11,fill:grayscale?'url(#dwl-hatch)':RED,'fill-opacity':grayscale?1:.25,stroke:'#777'}).forEach(([k,v])=>r.setAttribute(k,v));clone.append(r);const t=document.createElementNS(NS,'text');Object.entries({x:228,y:520,'font-family':'system-ui,sans-serif','font-size':13,fill:'#1f2937'}).forEach(([k,v])=>t.setAttribute(k,v));t.textContent='Deadweight Loss';clone.append(t);}
+ return new XMLSerializer().serializeToString(clone);
+}
+window.exportImperfectInformationSvg=exportSvg;
+function download(blob,ext){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='Imperfect_Information_Two_Types'+ext;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+async function pngBlob(){const blob=new Blob([exportSvg($('format').value==='grayscale')],{type:'image/svg+xml;charset=utf-8'}),url=URL.createObjectURL(blob);try{const im=new Image();await new Promise((resolve,reject)=>{im.onload=resolve;im.onerror=reject;im.src=url;});const c=document.createElement('canvas');c.width=1200;c.height=1060;c.getContext('2d').drawImage(im,0,0);return await new Promise((resolve,reject)=>c.toBlob(b=>b?resolve(b):reject(new Error('PNG conversion failed')),'image/png'));}finally{URL.revokeObjectURL(url);}}
+$('svg-export').addEventListener('click',()=>{download(new Blob([exportSvg($('format').value==='grayscale')],{type:'image/svg+xml;charset=utf-8'}),'.svg');$('status').textContent='SVG Saved';});
+$('png-export').addEventListener('click',async()=>{try{download(await pngBlob(),'.png');$('status').textContent='PNG Saved';}catch(e){$('status').textContent='PNG Export Failed; Try SVG';}});
+$('copy').addEventListener('click',async()=>{try{if(!navigator.clipboard?.write||typeof ClipboardItem==='undefined')throw new Error('Unavailable');const promise=pngBlob();await navigator.clipboard.write([new ClipboardItem({'image/png':promise})]);$('status').textContent='Diagram Copied';}catch(e){$('status').textContent='Copy Is Unavailable Here; Use Export Diagram';}});
+render();
+</script></body></html>

@@ -1,0 +1,114 @@
+{
+  "version": "1.0.0-proposed",
+  "baseline_commit": "0308665a3a4de47b9315a88624c617240b0aed86",
+  "pages": [
+    {
+      "file": "Demand_Supply_Simultaneous_Shifts.html",
+      "kind": "widget",
+      "migration": "pending",
+      "model_css": []
+    },
+    {
+      "file": "Demand_Supply_Single_Shifts.html",
+      "kind": "widget",
+      "migration": "migrated",
+      "model_css": []
+    },
+    {
+      "file": "Elasticities_PED.html",
+      "kind": "widget",
+      "migration": "pending",
+      "model_css": []
+    },
+    {
+      "file": "Elasticities_PES.html",
+      "kind": "widget",
+      "migration": "pending",
+      "model_css": []
+    },
+    {
+      "file": "Elasticities_XED.html",
+      "kind": "widget",
+      "migration": "pending",
+      "model_css": []
+    },
+    {
+      "file": "Elasticities_YED.html",
+      "kind": "widget",
+      "migration": "pending",
+      "model_css": []
+    },
+    {
+      "file": "Government_Intervention.html",
+      "kind": "widget",
+      "migration": "pending",
+      "model_css": []
+    },
+    {
+      "file": "Guided_Externalities.html",
+      "kind": "widget",
+      "migration": "pending",
+      "model_css": []
+    },
+    {
+      "file": "Guided_Imperfect_Information.html",
+      "kind": "widget",
+      "migration": "pending",
+      "model_css": []
+    },
+    {
+      "file": "Guided_Price_Adjustment_Process.html",
+      "kind": "widget",
+      "migration": "pending",
+      "model_css": []
+    },
+    {
+      "file": "Imperfect_Information_Policies.html",
+      "kind": "widget",
+      "migration": "pending",
+      "model_css": []
+    },
+    {
+      "file": "Imperfect_Information_Two_Types.html",
+      "kind": "widget",
+      "migration": "pending",
+      "model_css": []
+    },
+    {
+      "file": "NE_Govt_Measures.html",
+      "kind": "widget",
+      "migration": "pending",
+      "model_css": []
+    },
+    {
+      "file": "Negative_Externalities.html",
+      "kind": "widget",
+      "migration": "pending",
+      "model_css": []
+    },
+    {
+      "file": "PE_Govt_Measures.html",
+      "kind": "widget",
+      "migration": "migrated",
+      "model_css": []
+    },
+    {
+      "file": "Positive_Externalities.html",
+      "kind": "widget",
+      "migration": "pending",
+      "model_css": []
+    },
+    {
+      "file": "Production_Possibility_Curve.html",
+      "kind": "widget",
+      "migration": "pending",
+      "model_css": []
+    },
+    {
+      "file": "index.html",
+      "kind": "index",
+      "migration": "migrated",
+      "model_css": []
+    }
+  ]
+}

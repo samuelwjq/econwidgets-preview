@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "exceptions": [
+    {
+      "id": "PPC-01",
+      "pages": [
+        "Production_Possibility_Curve.html"
+      ],
+      "authority": "D8/D9; preserve existing PPC teaching interactions",
+      "allowance": "Named goods, numeric coordinates, existing vertical-title orientation and draggable points.",
+      "boundary": "No stylesheet override of fixed shared geometry, colour meaning, labels or pointer-coordinate calculation. Presentation transform must preserve/invert existing coordinates correctly."
+    },
+    {
+      "id": "ELASTICITY-01",
+      "pages": [
+        "Elasticities_PED.html",
+        "Elasticities_PES.html",
+        "Elasticities_XED.html",
+        "Elasticities_YED.html"
+      ],
+      "authority": "User original scope and Stage 1 intentional differences",
+      "allowance": "Numeric elasticity markers/classifications; existing elasticity-specific curve geometry.",
+      "boundary": "Do not replace economic slopes, pivots, ranges, endpoints or response formulas with shared model logic."
+    },
+    {
+      "id": "GUIDED-01",
+      "pages": [
+        "Guided_Price_Adjustment_Process.html",
+        "Guided_Externalities.html",
+        "Guided_Imperfect_Information.html"
+      ],
+      "authority": "Original scope; D7/D15",
+      "allowance": "Existing step counts, explanation position, focus muting and navigation; narrow four-case button grid.",
+      "boundary": "No changes to step order, explanatory text, default state, focus behaviour or muted/unmuted teaching semantics."
+    },
+    {
+      "id": "COLOUR-01",
+      "pages": [
+        "Demand_Supply_Simultaneous_Shifts.html",
+        "Demand_Supply_Single_Shifts.html",
+        "Elasticities_PED.html",
+        "Elasticities_PES.html",
+        "Elasticities_XED.html",
+        "Elasticities_YED.html",
+        "Government_Intervention.html",
+        "Guided_Externalities.html",
+        "Guided_Imperfect_Information.html",
+        "Guided_Price_Adjustment_Process.html",
+        "Imperfect_Information_Policies.html",
+        "Imperfect_Information_Two_Types.html",
+        "NE_Govt_Measures.html",
+        "Negative_Externalities.html",
+        "PE_Govt_Measures.html",
+        "Positive_Externalities.html",
+        "Production_Possibility_Curve.html"
+      ],
+      "authority": "D3/D9/D11; preserve model-specific colours",
+      "allowance": "Existing semantic curve/area colours, contextual glossary colour emphasis, grayscale patterns and intentional initial/new contrast.",
+      "boundary": "Royal blue applies to interface accents, not compulsory recolouring of every economic curve."
+    },
+    {
+      "id": "SCENE-01",
+      "pages": [
+        "Government_Intervention.html",
+        "NE_Govt_Measures.html",
+        "PE_Govt_Measures.html",
+        "Imperfect_Information_Policies.html"
+      ],
+      "authority": "Original teaching scope; D8 permits justified model-specific presentation",
+      "allowance": "Existing labour, quota, ban, free/joint provision and correction scenes and contextual labels.",
+      "boundary": "Any wider viewBox, nonuniform scale or alternate geometry needs a concrete presentation adapter and documented evidence. This scope allowance does not pre-approve an unspecified geometry override."
+    }
+  ]
+}
