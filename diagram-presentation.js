@@ -43,7 +43,21 @@
    else if(label.axis==='price'){add(0,-d);add(0,d);}
    else for(const [dx,dy] of [[0,-d],[0,d],[-d,0],[d,0],[-d,-d],[d,-d],[-d,d],[d,d]])add(dx,dy);
   }
+  if(label.nearSegment){
+   if(label.kind!=='curve')for(let dx=-32;dx<=32;dx+=2)for(let dy=-32;dy<=32;dy+=2)out.push({x:label.preferred.x+dx,y:label.preferred.y+dy,width:label.width,height:label.height});
+   if(label.kind==='curve')for(let dx=-max;dx<=max;dx+=8)for(let dy=-max;dy<=max;dy+=8)out.push({x:label.preferred.x+dx,y:label.preferred.y+dy,width:label.width,height:label.height});
+   const s=label.nearSegment;
+   for(let i=0;i<=12;i++){const x=s.x1+(s.x2-s.x1)*i/12,y=s.y1+(s.y2-s.y1)*i/12;
+    for(const gap of [6,12,20])for(const[dx,dy]of[[gap,-label.height-gap],[gap,gap],[-label.width-gap,-label.height-gap],[-label.width-gap,gap],[-label.width/2,-label.height-gap],[-label.width/2,gap]])out.push({x:x+dx,y:y+dy,width:label.width,height:label.height});
+   }
+  }
   return out;
+ }
+ function segmentBoxDistance(s,b){
+  if(segmentHitsRect(s,b))return 0;
+  const pointDistance=(x,y)=>{const dx=s.x2-s.x1,dy=s.y2-s.y1,t=Math.max(0,Math.min(1,((x-s.x1)*dx+(y-s.y1)*dy)/(dx*dx+dy*dy||1)));return Math.hypot(x-s.x1-t*dx,y-s.y1-t*dy);};
+  const rectDistance=(x,y)=>Math.hypot(Math.max(b.x-x,0,x-b.x-b.width),Math.max(b.y-y,0,y-b.y-b.height));
+  return Math.min(...[[b.x,b.y],[b.x+b.width,b.y],[b.x,b.y+b.height],[b.x+b.width,b.y+b.height]].map(([x,y])=>pointDistance(x,y)),rectDistance(s.x1,s.y1),rectDistance(s.x2,s.y2));
  }
  function solveLabels(labels,options){
   const {bounds,obstacles=[],segments=[]}=options;
@@ -59,7 +73,8 @@
   for(const l of work){const safe=[];for(const b of l.choices){
    if(++nodes>settings.maxNodes){exhausted=true;break;}
    if(l.span){const center=l.axis==='quantity'?b.x+b.width/2:b.y+b.height/2;if(center<l.span.min||center>l.span.max)continue;}
-   if(inside(b,bounds)&&!obstacles.some(o=>intersects(b,o,padding))&&!segments.some(s=>segmentHitsRect(s,b,padding)))safe.push(b);
+   if(l.nearSegment&&segmentBoxDistance(l.nearSegment,b)>(l.maxDistancePx??config.gaps.curveProximityPx))continue;
+   if(inside(b,bounds)&&!obstacles.some(o=>intersects(b,o,padding))&&![...segments,...(l.avoidSegments||[])].some(s=>segmentHitsRect(s,b,padding)))safe.push(b);
   }l.choices=safe;if(exhausted)break;}
   work.sort((a,b)=>a.choices.length-b.choices.length||Number(!!b.family)-Number(!!a.family));
   const placed=new Map(),byId=new Map(work.map(l=>[l.id,l]));
@@ -99,7 +114,7 @@
   const scale=Math.hypot(m.a,m.b),px=config.text[role+'Px'];
   if(!(scale>0)||Math.abs(Math.hypot(m.c,m.d)-scale)>1e-5||Math.abs(m.a*m.c+m.b*m.d)>1e-5)throw Error('Invalid text coordinate transform');
   if(!px)throw Error('Unknown shared text role: '+role);
-  e.dataset.ewTextRole=role;e.style.fontSize=px/scale+'px';e.style.fontWeight='400';
+  e.dataset.ewTextRole=role;e.style.fontSize=px/scale+'px';e.style.fontWeight=(role==='curve'||role==='longEquation')?String(config.text.curveWeight):'400';
   if(halo){e.classList.add('ew-label');e.style.strokeWidth=config.text.haloPx/scale+'px';}
   for(const sub of e.querySelectorAll('tspan[baseline-shift="sub"]'))sub.style.fontSize=config.text.subscriptPx/scale+'px';
  }
@@ -118,7 +133,7 @@
    const e=entry.element;if(e.classList.contains('ew-axis-title'))throw Error('Axis titles cannot enter displacement layout');
    if(placedTransforms.has(e))throw Error('Call resetPresentation before the widget renders its next state');
    if(!e.getClientRects().length||getComputedStyle(e).display==='none'||getComputedStyle(e).visibility==='hidden')continue;
-   styleText(e,entry.role||'main');e.setAttribute('data-ew-layout-label','');
+   styleText(e,entry.role||'main');e.dataset.ewLabelKind=entry.kind||'point';e.setAttribute('data-ew-layout-label','');
    if(entry.axis==='price'){
     const available=point({x:config.values.priceColumnX,y:0}).x-tl.x;
     if(e.getBoundingClientRect().width>available){
@@ -127,7 +142,9 @@
     }
    }
    const b=e.getBoundingClientRect();
-   labels.push({...entry,id:entry.id||e.id,width:b.width,height:b.height,originalBox:{x:b.x,y:b.y},preferred:{x:b.x,y:b.y},anchor:entry.anchorUser?point(entry.anchorUser):null});
+   const nearSegment=entry.nearSegmentUser?(()=>{const a=point({x:entry.nearSegmentUser.x1,y:entry.nearSegmentUser.y1}),z=point({x:entry.nearSegmentUser.x2,y:entry.nearSegmentUser.y2});return{x1:a.x,y1:a.y,x2:z.x,y2:z.y};})():null;
+   const avoidSegments=(entry.avoidSegmentsUser||[]).map(s=>{const a=point({x:s.x1,y:s.y1}),b=point({x:s.x2,y:s.y2});return{x1:a.x,y1:a.y,x2:b.x,y2:b.y};});
+   labels.push({...entry,nearSegment,avoidSegments,id:entry.id||e.id,width:b.width,height:b.height,originalBox:{x:b.x,y:b.y},preferred:{x:b.x,y:b.y},anchor:entry.anchorUser?point(entry.anchorUser):null});
   }
   for(const l of labels){
    if(l.kind==='curve'&&l.family&&!familyData.has(l.id))throw Error('Register parallel curve geometry, not a guessed family rank');
@@ -147,7 +164,7 @@
    const from=svg.createSVGPoint(),to=svg.createSVGPoint();from.x=entry.originalBox.x;from.y=entry.originalBox.y;to.x=b.x;to.y=b.y;
    const a=from.matrixTransform(inv),z=to.matrixTransform(inv),base=e.getAttribute('transform');placedTransforms.set(e,base);
    e.setAttribute('transform',(base||'')+` translate(${z.x-a.x} ${z.y-a.y})`);
-   if(entry.leader!==false&&entry.anchor){
+   if(entry.kind!=='curve'&&entry.leader!==false&&entry.anchor){
     const end=leaderEndpoint(entry.anchor,b),distance=Math.hypot(end.x-entry.anchor.x,end.y-entry.anchor.y);
     const moved=entry.axis==='quantity'?Math.abs(b.x+b.width/2-entry.anchor.x)>2:entry.axis==='price'?Math.abs(b.y+b.height/2-entry.anchor.y)>2:Math.hypot(b.x-entry.originalBox.x,b.y-entry.originalBox.y)>2;
     if((entry.axis&&moved)||(!entry.axis&&distance>config.gaps.leaderThresholdPx)){
@@ -158,6 +175,6 @@
   }
   svg.dataset.ewLayoutError='';return result;
  }
- const api={intersects,inside,segmentHitsRect,separateIntervals,affinePlot,parallelOrder,solveLabels,leaderEndpoint,resetPresentation,styleText,wrapText,layoutSvg};
+ const api={intersects,inside,segmentHitsRect,segmentBoxDistance,separateIntervals,affinePlot,parallelOrder,solveLabels,leaderEndpoint,resetPresentation,styleText,wrapText,layoutSvg};
  root.EconDiagramPresentation=Object.freeze(api);if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

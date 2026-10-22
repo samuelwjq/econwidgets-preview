@@ -19,8 +19,8 @@ body.ew-page { margin:0; padding:16px; background:#fff; color:var(--ew-ink); fon
 .ew-page a { color:var(--ew-accent); text-underline-offset:3px; }
 .ew-nav a { display:inline-block; padding:4px 8px; font-size:13px; }
 .ew-page :focus-visible { outline:3px solid var(--ew-focus); outline-offset:3px; }
-.ew-controls { display:flex; flex-flow:row wrap; align-items:center; gap:8px 12px; padding:10px 12px; margin:0 0 12px; border-radius:var(--ew-radius); background:var(--ew-surface); }
-.ew-control-group { display:flex; flex:1 1 var(--ew-model-control-basis); align-items:center; flex-wrap:wrap; gap:6px 8px; min-width:0; }
+.ew-controls { display:flex; flex-flow:row wrap; align-items:center; gap:4px 8px; padding:6px 10px; margin:0 0 12px; border-radius:var(--ew-radius); background:var(--ew-surface); }
+.ew-control-group { display:flex; flex:1 1 var(--ew-model-control-basis); align-items:center; flex-wrap:wrap; gap:4px 8px; min-width:0; }
 .ew-control-label { font-size:13px; font-weight:600; }
 .ew-scale-label { font-size:12px; color:var(--ew-muted); }
 .ew-page button,.ew-page select { font:600 13px/1.4 var(--ew-font); color:var(--ew-ink); background:#fff; border:1px solid #cbd2dc; border-radius:var(--ew-radius); padding:7px 10px; min-height:44px; max-width:100%; }
@@ -44,7 +44,9 @@ body.ew-page { margin:0; padding:16px; background:#fff; color:var(--ew-ink); fon
 .ew-options label { display:inline-flex; align-items:center; gap:6px; min-height:36px; font-size:12px; }
 .ew-layout { display:grid; grid-template-columns:minmax(0,var(--ew-diagram-column)) var(--ew-sidebar); gap:var(--ew-gap); align-items:start; }
 .ew-main,.ew-glossary { min-width:0; }
-.ew-diagram-frame { width:100%; border:1px solid var(--ew-border); border-radius:var(--ew-radius); background:#fff; }
+.ew-diagram-frame { width:100%; border:1px solid var(--ew-border); border-radius:var(--ew-radius); background:#fff; overflow:hidden; }
+.ew-summary-strip { box-sizing:border-box; height:28px; display:flex; align-items:center; padding:0 12px; border-bottom:1px solid var(--ew-border); color:var(--ew-ink); font-size:12px; line-height:14px; font-weight:600; }
+@media(max-width:480px) { .ew-summary-strip { height:40px; white-space:normal; } }
 .ew-diagram { display:block; width:100%; height:auto; aspect-ratio:600 / 510; overflow:hidden; }
 .ew-diagram text { font-family:var(--ew-font); font-weight:400; }
 .ew-diagram .ew-label { paint-order:stroke; stroke:#fff; stroke-linejoin:round; }
@@ -139,11 +141,11 @@ body.ew-page { margin:0; padding:16px; background:#fff; color:var(--ew-ink); fon
 .ew-main { position:relative; }
 .ew-control-group>label { font-size:13px; font-weight:600; }
 .ew-control-group select { flex:1; }
-.ew-control-group>label:first-child { flex-basis:100%; }
+.ew-control-group>label:first-child { flex-basis:auto; }
 .ew-control-group .shift-output { flex-basis:100%; font-size:12px; color:var(--ew-muted); }
 .ew-page .slider-track { flex:1; position:relative; min-width:90px; }
 .ew-page .slider-track input { width:100%; }
-.ew-page .slider-zero { position:absolute; top:27px; left:50%; font-size:10px; color:var(--ew-muted); pointer-events:none; }
+.ew-page .slider-zero { position:absolute; top:20px; left:50%; font-size:9px; color:var(--ew-muted); pointer-events:none; }
 .ew-page .ui-legacy-zoom,.ew-page .ui-diagram-legends,.ew-page .ui-curve-key { display:none; }
 .ew-diagram .axis { stroke:#374151; stroke-width:2; vector-effect:non-scaling-stroke; }
 .ew-diagram .line-mpb { stroke:#2563eb; }
@@ -177,3 +179,33 @@ body.ew-page { margin:0; padding:16px; background:#fff; color:var(--ew-ink); fon
 .ew-pattern-other,.ew-pattern-ps { background:repeating-linear-gradient(0deg,#fff 0 4px,#999 4px 5px,#fff 5px 8px); }
 .ew-pattern-policy { background:repeating-linear-gradient(45deg,transparent 0 5px,#999 5px 6px,transparent 6px 8px),repeating-linear-gradient(135deg,#fff 0 5px,#999 5px 6px,#fff 6px 8px); }
 @media(max-width:900px) { .ew-tooltip { position:relative; width:100%; max-width:none; margin:10px 0; } }
+
+/* Pilot revision 2: compact rows and policy contrast. */
+.ew-controls button,.ew-controls select { min-height:32px; padding:4px 8px; font-size:12px; }
+.ew-controls .ew-control-group>label { font-size:12px; white-space:nowrap; }
+.ew-controls .ew-control-group>.ew-control-group { flex:1 1 auto; }
+.ew-controls>.shift-choice { flex:0 1 auto; }
+.ew-controls>.slider-card { flex:1 1 480px; flex-wrap:nowrap; }
+.ew-controls .shift-output { flex:0 0 auto; font-size:11px; }
+.ew-controls .slider-track { height:32px; }
+.ew-controls input[type="range"] { height:24px; margin:0; }
+.ew-controls #free-controls { flex-basis:450px; }
+.ew-controls .ew-settings { position:relative; min-height:28px; padding:0; }
+.ew-controls .ew-settings>summary { min-height:28px; padding:2px 0; font-size:11px; gap:6px; white-space:nowrap; }
+.ew-controls .ew-settings[open] { padding-left:118px; }
+.ew-controls .ew-settings[open]>summary { position:absolute; left:0; top:0; }
+.ew-controls .ew-settings .ew-options { flex:0 1 auto; gap:2px 8px; flex-wrap:wrap; align-items:center; }
+.ew-controls .ew-settings .ew-options>label { flex:0 0 auto; flex-basis:auto; min-height:28px; font-size:11px; font-weight:400; gap:4px; white-space:nowrap; }
+.ew-controls input[type="checkbox"] { width:14px; height:14px; margin:0; }
+.ew-diagram .ban-free-area { fill:rgba(167,139,250,.25); stroke:#a78bfa; stroke-width:1; }
+.ew-diagram.ew-policy-context #arrow-meb { stroke:#67717e; }
+.ew-diagram.ew-policy-context #arrow-start-blue path,.ew-diagram.ew-policy-context #arrow-end-blue path,.ew-diagram.ew-policy-context #externality-start path,.ew-diagram.ew-policy-context #externality-end path { fill:#67717e; }
+@media(pointer:coarse) {
+ .ew-controls button,.ew-controls select,.ew-controls .ew-settings>summary,.ew-controls .ew-settings .ew-options>label { min-height:44px; }
+}
+@media(max-width:600px) {
+ .ew-controls>.slider-card { flex-wrap:wrap; }
+ .ew-controls .ew-settings[open] { padding-left:0; }
+ .ew-controls .ew-settings[open]>summary { position:static; }
+ .ew-controls .ew-settings .ew-options { padding-top:0; }
+}

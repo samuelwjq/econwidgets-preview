@@ -32,8 +32,8 @@ function render(){EconDiagramPresentation.resetPresentation(svg);hideTip();let {
  $('surplus-key').hidden=!$('cs-toggle').checked&&!$('ps-toggle').checked;$('cs-key').hidden=!$('cs-toggle').checked;$('ps-key').hidden=!$('ps-toggle').checked;
  line(90,410,470,410,colour.ink,2,{'marker-end':'url(#marker-ink)'});line(90,410,90,30,colour.ink,2,{'marker-end':'url(#marker-ink)'});text(76,32,'Price',colour.ink,{'font-weight':'600'});text(480,416,'Quantity',colour.ink,{'font-weight':'600','text-anchor':'start'});
  guides(50,50);if(changed)guides(q,p);
- if(d!==0)curve('d',0,sub('DD',0),true);if(s!==0)curve('s',0,sub('SS',0),true);
- curve('d',d,d!==0?sub('DD',1):sub('DD',0));curve('s',s,s!==0?sub('SS',1):sub('SS',0));
+ if(d!==0)curve('d',0,sub('D',0),true);if(s!==0)curve('s',0,sub('S',0),true);
+ curve('d',d,d!==0?sub('D',1):sub('D',0));curve('s',s,s!==0?sub('S',1):sub('S',0));
  if($('adjustment').checked&&!sameP){for(let [k,start] of [['d',qd],['s',qs]]){let dx=X(q)-X(start),dy=Y(p)-Y(50),c=colour.gap;
  let desc=`As price ${p>50?'rises':'falls'}, quantity ${k==='d'?'demanded':'supplied'} ${q>start?'increases':'decreases'} along the current ${k==='d'?'demand':'supply'} curve towards the new equilibrium.`;
  let g=el('g',{'data-adjustment':k});let length=Math.hypot(dx,dy),size=Math.min(12,length*.20),angle=Math.atan2(dy,dx)*180/Math.PI;for(let t of [0,.33,.66]){let head=el('polygon',{points:`${size},0 0,${-size*.42} 0,${size*.42}`,fill:c,stroke:'none',transform:`translate(${X(start)+t*dx} ${Y(50)+t*dy}) rotate(${angle})`,'data-arrowhead':k});g.append(head);}tip(g,desc);

@@ -4,7 +4,7 @@
  const NS='http://www.w3.org/2000/svg';
  const props=['fill','fill-opacity','stroke','stroke-opacity','stroke-width','stroke-dasharray','stroke-dashoffset','stroke-linecap','stroke-linejoin','opacity','font-family','font-size','font-weight','font-style','text-anchor','dominant-baseline','baseline-shift','paint-order','visibility','display','marker-start','marker-mid','marker-end'];
  function make(tag,attrs={}){const e=document.createElementNS(NS,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);return e;}
- function snapshot(svg,{appearance='colour',legend=[],applyGrayscale,pixelRatio=2,title='',context=''}={}){
+ function snapshot(svg,{appearance='colour',legend=[],applyGrayscale,pixelRatio=2,title='',context='',summary=''}={}){
   if(svg.dataset.ewLayoutError)throw Error('Resolve diagram layout errors before export');
   if(!['colour','grayscale'].includes(appearance))throw Error('Unsupported appearance');
   if(appearance==='grayscale'&&typeof applyGrayscale!=='function')throw Error('Use the widget\'s existing grayscale mapping; do not infer economic colour roles');
@@ -31,6 +31,7 @@
   let y=24*unitPerPx;
   function lines(text,size,weight,fill){ctx.font=weight+' '+size+'px '+getComputedStyle(svg).fontFamily;let line='';const all=[];for(const word of text.split(/\s+/).filter(Boolean)){const next=line?line+' '+word:word;if(line&&ctx.measureText(next).width>widthPx-32){all.push(line);line=word;}else line=next;}if(line)all.push(line);for(const line of all){const t=make('text',{x:16*unitPerPx,y,'font-family':getComputedStyle(svg).fontFamily,'font-size':size*unitPerPx,'font-weight':weight,fill});t.textContent=line;out.append(t);y+=(size+7)*unitPerPx;}}
   lines(title,17,650,'#202a35');lines(context,14,400,'#67717e');y+=8*unitPerPx;
+  const summaryHeight=(window.innerWidth<=480?40:28)*unitPerPx,summaryText=make('text',{x:12*unitPerPx,y:y+18*unitPerPx,'font-family':getComputedStyle(svg).fontFamily,'font-size':12*unitPerPx,'font-weight':600,fill:'#202a35'});summaryText.textContent=summary;out.append(summaryText);out.append(make('line',{x1:0,y1:y+summaryHeight,x2:width,y2:y+summaryHeight,stroke:'#d7dce2','stroke-width':unitPerPx}));y+=summaryHeight;
   clone.removeAttribute('style');clone.setAttribute('x',(width-vb.width)/2);clone.setAttribute('y',y);clone.setAttribute('width',vb.width);clone.setAttribute('height',vb.height);out.append(clone);y+=vb.height;
   const row=make('g',{'data-ew-export-legend':''});out.append(row);let cursor=(width-required*unitPerPx)/2;ctx.font='12px '+getComputedStyle(svg).fontFamily;
   legend.forEach((e,i)=>{const top=y+11*unitPerPx;row.append(make('rect',{x:cursor,y:top,width:14*unitPerPx,height:10*unitPerPx,fill:e.fill||'#fff',stroke:'#777','stroke-width':unitPerPx}));cursor+=19*unitPerPx;if(e.pattern){row.append(make('rect',{x:cursor,y:top,width:14*unitPerPx,height:10*unitPerPx,fill:e.pattern,stroke:'#777','stroke-width':unitPerPx}));cursor+=19*unitPerPx;}const t=make('text',{x:cursor,y:top+9*unitPerPx,'font-family':getComputedStyle(svg).fontFamily,'font-size':12*unitPerPx,fill:'#67717e'});t.textContent=e.label;row.append(t);cursor+=(ctx.measureText(e.label).width+16)*unitPerPx;});
