@@ -247,3 +247,22 @@ body.ew-page { margin:0; padding:16px; background:#fff; color:var(--ew-ink); fon
 @media(max-width:359px) {
  .ew-controls>.slider-card { grid-template-columns:76px 44px minmax(70px,1fr) 44px; }
 }
+
+/* Topic 3: numerical scales and classifications remain visible. */
+.ew-elasticity .ew-controls>.slider-card { grid-template-columns:88px minmax(90px,1fr) auto; flex:1 1 380px; }
+.ew-elasticity .elastic-track { min-width:0; flex:1; }
+.ew-elasticity .elastic-track input { display:block; width:100%; }
+.ew-elasticity .slider-scale { display:block; position:relative; width:100%; height:22px; font-size:11px; color:var(--ew-muted); line-height:1.1; }
+.ew-elasticity .slider-scale span { position:absolute; top:0; transform:translateX(-50%); }
+.ew-elasticity .slider-scale span::before { content:''; display:block; height:6px; width:1px; background:#9ca3af; margin:0 auto 2px; }
+.ew-elasticity .slider-scale span:nth-child(1) { left:0; }
+.ew-elasticity .slider-scale span:nth-child(2) { left:50%; }
+.ew-elasticity .slider-scale span:nth-child(3) { left:100%; }
+.ew-elasticity .slider-scale.signed span:nth-child(1) { left:33.333%; }
+.ew-elasticity .slider-scale.signed span:nth-child(3) { left:66.667%; }
+.ew-elasticity .elastic-readout { font-size:12px; font-weight:600; }
+.ew-elasticity .slider-card output { font-size:12px; font-weight:600; white-space:nowrap; }
+.ew-elasticity .result-banner { padding:6px 10px; margin:6px 0; background:#eef4ff; font-size:13px; font-weight:600; border-radius:var(--ew-radius); }
+.ew-elasticity .model-note { font-size:12px; color:var(--ew-muted); }
+.ew-pattern-price { background:repeating-linear-gradient(135deg,#fff 0 4px,#999 4px 5px,#fff 5px 8px); }
+.ew-pattern-quantity { background:repeating-linear-gradient(0deg,#fff 0 4px,#999 4px 5px,#fff 5px 8px); }

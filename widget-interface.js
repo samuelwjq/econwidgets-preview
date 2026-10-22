@@ -184,6 +184,7 @@
   const items=[];
   if(policySelect)items.push(policySelect.selectedOptions[0].textContent);
   for(const id of ['step-count','case-current','elasticity-label']){const n=document.getElementById(id);if(n&&visible(n)&&n.textContent.trim())items.push(n.textContent.trim());}
+  if(document.body.classList.contains('ew-elasticity')){const selected=controls.querySelector('.shift-choice button[aria-pressed="true"]');if(document.getElementById('tr')&&window.widgetState?.shock===0)items.push('No Shift');else if(selected)items.push(selected.textContent.trim());}
   if(document.getElementById('curvature')) {
    const state=window.widgetState;
    if(state)items.push(state.mode==='points'?'Production Points':state.growthCase==='potential'?'Potential Growth':'Actual Growth & Reallocation');
@@ -260,7 +261,7 @@
  }
  // Remove Small Interface Instructions; Preserve Status Messages And Model Notes.
  for(const help of main.querySelectorAll('.diagram-help,.case-help')){
-  if(help.id==='export-status'||help.getAttribute('role')==='status')continue;
+  if(help.id==='export-status'||help.getAttribute('role')==='status'||document.body.classList.contains('ew-elasticity'))continue;
   help.remove();
  }
  function normaliseAccessibleLabels(){for(const input of document.querySelectorAll('[aria-label]')){

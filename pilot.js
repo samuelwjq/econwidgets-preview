@@ -41,9 +41,12 @@
  const areaIds={'dwl':['Deadweight loss','social'],'area-dwl':['Deadweight loss','social'],'free-policy-loss':['Free-provision DWL','social'],'free-market-loss':['Free-market DWL','other'],'subsidy-cost-rect':['Subsidy expenditure','policy'],'cs-area':['Consumer surplus','cs'],'ps-area':['Producer surplus','ps']};
  function summaryText(svg){
   if(!svg.querySelector('#diagram-plot')){
-   const state=window.currentState||{};if(state.step&&state.step<6)return '';const direction=(v,label)=>v==='Increases'?label+' Increases':v==='Decreases'?label+' Decreases':label+' Unchanged';
-   const shifts=[];
-   if(document.getElementById('magnitude')||document.getElementById('d-shift'))for(const[key,label]of[['d','Demand'],['s','Supply']])if(state[key])shifts.push(label+(state[key]>0?' Increases':' Decreases'));
+   const direction=(v,label)=>v==='Increases'?label+' Increases':v==='Decreases'?label+' Decreases':label+' Unchanged';
+   if(document.body.classList.contains('ew-elasticity')){const s=window.widgetState;if(!s)return '';const d=v=>Math.abs(v)<1e-8?'Unchanged':v>0?'Increases':'Decreases';return direction(d(s.p-50),'Price')+' · '+direction(d(s.q-50),'Qty');}
+   const state=window.currentState||{},shifts=[];
+   if(state.step===1)return '';
+   if(state.step||document.getElementById('magnitude')||document.getElementById('d-shift'))for(const[key,label]of[['d','Demand'],['s','Supply']])if(state[key])shifts.push(label+(state[key]>0?' Increases':' Decreases'));
+   if(state.step&&state.step<6)return shifts.join(' · ');
    return [...shifts,direction(state.priceChange,'Price'),direction(state.quantityChange,'Qty')].join(' · ');
   }
   const policy=document.getElementById('policy-select')?.value||'none';
@@ -57,7 +60,7 @@
  function legend(svg){
   if(!slot){slot=document.createElement('div');slot.className='ew-legend-slot';slot.setAttribute('aria-label','Shaded areas: colour and grayscale patterns');svg.closest('.diagram-frame').append(slot);}
   entries=[];
-  for(const e of svg.querySelectorAll('polygon,rect,path')){if(!visible(e))continue;const b=e.getBBox();if(b.width<.01||b.height<.01)continue;let info=areaIds[e.id];if(!info&&e.matches('.subsidy-rect'))info=['Subsidy expenditure','policy'];if(!info||entries.some(x=>x.label===info[0]))continue;entries.push({label:info[0],kind:info[1],colour:getComputedStyle(e).fill});}
+  for(const e of svg.querySelectorAll('polygon,rect,path')){if(!visible(e))continue;const b=e.getBBox();if(b.width<.01||b.height<.01)continue;let info=areaIds[e.id];if(!info&&['price','quantity'].includes(e.dataset.area))info=[e.dataset.area==='price'?'Price effect':'Quantity effect',e.dataset.area];if(!info&&e.matches('.subsidy-rect'))info=['Subsidy expenditure','policy'];if(!info||entries.some(x=>x.label===info[0]))continue;entries.push({label:info[0],kind:info[1],colour:getComputedStyle(e).fill});}
   const key=JSON.stringify(entries);if(slot.dataset.entries===key)return;slot.dataset.entries=key;slot.replaceChildren();for(const e of entries){const item=document.createElement('span');item.className='ew-legend-entry';const colour=document.createElement('i'),pattern=document.createElement('i');colour.className='ew-legend-swatch';colour.style.background=e.colour;pattern.className='ew-legend-swatch ew-pattern-'+e.kind;colour.setAttribute('aria-hidden','true');pattern.setAttribute('aria-hidden','true');item.append(colour,pattern,document.createTextNode(e.label));slot.append(item);}
  }
  function refresh(){
@@ -77,8 +80,8 @@
    }
    for(const[id,symbol,suffix]of[['joint-private-label','Q','private'],['joint-price-label','P','joint']]){const e=svg.querySelector('#'+id);if(e&&e.textContent===symbol+suffix)e.innerHTML=symbol+'<tspan baseline-shift="sub">'+suffix+'</tspan>';}
    const texts=[...svg.querySelectorAll('text')].filter(e=>visible(e)&&e.textContent.trim()),labels=[],fixed=[],families=new Map(),segments=[];
-   const curves=[...svg.querySelectorAll('line')].filter(e=>visible(e)&&(e.matches('.line-mpb,.line-mpc,.line-msb,.line-msc,.line-policy,.line-tax,.line-edu')||+e.getAttribute('stroke-width')===2.5));
-   const segment=e=>{const a=rootPoint(svg,e,+e.getAttribute('x1'),+e.getAttribute('y1')),b=rootPoint(svg,e,+e.getAttribute('x2'),+e.getAttribute('y2'));return{x1:a.x,y1:a.y,x2:b.x,y2:b.y};};
+   const curves=[...svg.querySelectorAll('line,polyline')].filter(e=>visible(e)&&(e.matches('.line-mpb,.line-mpc,.line-msb,.line-msc,.line-policy,.line-tax,.line-edu')||+e.getAttribute('stroke-width')===2.5));
+   const segment=e=>{if(e.localName==='polyline'){const p=e.getAttribute('points').trim().split(/[ ,]+/).map(Number),a=rootPoint(svg,e,p[0],p[1]),b=rootPoint(svg,e,p[p.length-2],p[p.length-1]);return{x1:a.x,y1:a.y,x2:b.x,y2:b.y};}const a=rootPoint(svg,e,+e.getAttribute('x1'),+e.getAttribute('y1')),b=rootPoint(svg,e,+e.getAttribute('x2'),+e.getAttribute('y2'));return{x1:a.x,y1:a.y,x2:b.x,y2:b.y};};
    for(const e of curves)segments.push(segment(e));segments.push({x1:100,y1:50,x2:100,y2:430},{x1:100,y1:430,x2:480,y2:430});
    const gov=!!svg.querySelector('#diagram-plot');
    for(const [i,e]of texts.entries()){
@@ -89,6 +92,9 @@
      if((plain==='Quantity'||plain==='Qty')){e.textContent='Qty';position(svg,e,488,447);e.setAttribute('text-anchor','start');}
      else if(e.querySelectorAll('tspan').length){position(svg,e,88,36);e.setAttribute('text-anchor','end');for(const[t,j]of[...e.querySelectorAll('tspan')].map((t,j)=>[t,j])){const p=new DOMPoint(88,36+j*18).matrixTransform(e.getScreenCTM().inverse().multiply(svg.getScreenCTM()));t.setAttribute('x',p.x);t.setAttribute('y',p.y);t.removeAttribute('dy');}role='small';}
      else{position(svg,e,100,30);e.setAttribute('text-anchor','middle');}e.dataset.ewTextRole=role;fixed.push(e);continue;
+    }
+    if(/^No price adjustment: equilibrium price is unchanged\.$/i.test(plain)){
+     role='small';P.styleText(e,role);position(svg,e,290,110);e.setAttribute('text-anchor','middle');P.wrapText(e,[plain.slice(0,plain.indexOf(':')+1),plain.slice(plain.indexOf(':')+1,plain.toLowerCase().indexOf(' is ')),plain.slice(plain.toLowerCase().indexOf(' is '))]);
     }
     if(e.dataset.gapLabel){
      const arrow=svg.querySelector('[data-gap-arrow="'+e.dataset.gapLabel+'"]');
@@ -115,7 +121,7 @@
      const s=segment(curve);nearSegmentUser=s;const endpoint=s.x1>s.x2?{x:s.x1,y:s.y1}:{x:s.x2,y:s.y2};anchorUser=endpoint;kind='curve';role=gov?'longEquation':'curve';
      P.styleText(e,role);e.setAttribute('text-anchor','start');const unit=600/svg.getBoundingClientRect().width,b=e.getBBox(),m=e.getScreenCTM(),w=b.width*Math.hypot(m.a,m.b)*unit;
      position(svg,e,Math.max(108,Math.min(endpoint.x+12,592-w-2)),Math.max(66,Math.min(410,endpoint.y+4)));
-     const slope=(s.y2-s.y1)/(s.x2-s.x1),key=(e.closest('#free-scene')?.id||'main')+':'+Math.round(slope*1e6);if(!families.has(key))families.set(key,[]);families.get(key).push({...s,id});
+     const slope=(s.y2-s.y1)/(s.x2-s.x1),key=(e.closest('#free-scene')?.id||'main')+':'+Math.round(slope*1e6);if(Number.isFinite(slope)){if(!families.has(key))families.set(key,[]);families.get(key).push({...s,id});}
     }else if(e.matches('.welfare-label,.area-label,#label-dwl-text,#label-subsidy-cost-text')){e.classList.add('ew-fixed-label');e.dataset.ewTextRole='small';fixed.push(e);continue;}
     else if(/(?:Under|Over)-(?:consumption|production)/i.test(plain)){position(svg,e,290,490);e.setAttribute('text-anchor','middle');role='small';}
     else if(plain==='MEB'){role='small';}
@@ -133,7 +139,7 @@
    }
    for(const e of svg.querySelectorAll('circle'))if(visible(e)&&+e.getAttribute('r')<=6)fixed.push(e);
    for(const e of svg.querySelectorAll('#under-arrow,#over-arrow,#arrow-gap,.free-gap-arrow'))if(visible(e)){const p=new DOMPoint(0,470).matrixTransform(e.getScreenCTM().inverse().multiply(svg.getScreenCTM()));e.setAttribute('y1',p.y);e.setAttribute('y2',p.y);}
-   for(const e of svg.querySelectorAll('line')){if(+e.getAttribute('stroke-width')===2.5)e.classList.add('ew-curve');if(e.getAttribute('stroke-dasharray')==='4 4')e.classList.add('ew-coordinate-guide');}
+   for(const e of svg.querySelectorAll('line,polyline')){if(+e.getAttribute('stroke-width')===2.5)e.classList.add('ew-curve');if(e.getAttribute('stroke-dasharray')==='4 4')e.classList.add('ew-coordinate-guide');}
    const result=P.layoutSvg(svg,{labels,fixedElements:fixed,segments,parallelFamilies:[...families].map(([id,segments])=>({id,segments,referenceX:290}))});
    if(result.ok){
     const matrix=svg.getScreenCTM(),inverse=matrix.inverse(),gap=6;
