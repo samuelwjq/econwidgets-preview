@@ -275,6 +275,7 @@
  function wrapTeaching(node,title){
   if(!node||node.closest('.controls,.sidebar,.ui-teaching-panels'))return null;
   const disclosure=document.createElement('details');disclosure.className='ui-teaching-disclosure ew-disclosure';
+  if(node.id==='mechanism'&&/price adjustment process/i.test(title))disclosure.classList.add('ew-price-adjustment');
   const heading=document.createElement('summary');heading.innerHTML='<span></span><span class="ui-expand-hint ew-expand-hint">Click To Expand</span>';
   heading.firstElementChild.textContent=title;disclosure.append(heading);panels.append(disclosure);disclosure.append(node);
   disclosurePairs.push([disclosure,node]);return disclosure;

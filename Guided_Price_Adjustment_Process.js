@@ -8,7 +8,7 @@ function el(tag,attrs={},html=''){let n=document.createElementNS(NS,tag);for(let
 function line(x1,y1,x2,y2,c=colour.ink,w=2,extra={}){return el('line',{x1,y1,x2,y2,stroke:c,'stroke-width':w,...extra});}
 function text(x,y,html,c=colour.ink,extra={}){return el('text',{x,y,fill:c,'text-anchor':'middle',...extra},html);}
 function tip(n,description){n.dataset.tip=description.replace(/<[^>]*>/g,'');if(description.includes('<strong>'))n.dataset.tipHtml=description;n.setAttribute('tabindex','0');n.setAttribute('role','img');n.setAttribute('aria-label',n.dataset.tip);n.classList.add('has-tooltip');return n;}
-function arrow(x1,y1,x2,y2,c,id,both=false){let len=Math.hypot(x2-x1,y2-y1);if(len<.01)return;let marker='marker-'+id;if(len<18){marker='small-'+layer.children.length;let size=Math.min(6,len/(both?4:2));el('marker',{id:marker,viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:size,markerHeight:size,markerUnits:'userSpaceOnUse',orient:'auto-start-reverse'},`<path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="${c}"/>`);}let a={'marker-end':`url(#${marker})`};if(both)a['marker-start']=`url(#${marker})`;return line(x1,y1,x2,y2,c,2.2,a);}
+function arrow(x1,y1,x2,y2,c,id,both=false){let len=Math.hypot(x2-x1,y2-y1);if(len<.01)return;let marker='marker-'+id;if(len<18){marker='small-'+layer.children.length;let size=Math.min(6,len/(both?4:2));el('marker',{id:marker,viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:size,markerHeight:size,markerUnits:'userSpaceOnUse',orient:'auto-start-reverse'},`<path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="${c}"/>`);}let a={'marker-end':`url(#${marker})`};if(both){a['marker-start']=`url(#${marker})`;a['data-gap-arrow']='shortage';}return line(x1,y1,x2,y2,c,2.2,a);}
 
 function curve(kind,shift,label,old=false){let a=kind==='d'?100+shift:-shift,b=kind==='d'?-1:1,c=old?colour[kind==='d'?'oldD':'oldS']:colour[kind];
  let qStart=Math.max(0,b>0?-a: a-105),qEnd=Math.min(shift===0?100:105,b<0?a:105-a);line(X(qStart),Y(a+b*qStart),X(qEnd),Y(a+b*qEnd),c,2.5);
@@ -49,7 +49,7 @@ part('gap',()=>{
 
  }
  let n=arrow(X(left),397,X(right),397,colour.gap,'gap',true);if(n)tip(n,`${qd>qs?'Shortage':'Surplus'} at P₀: ${qd>qs?'quantity demanded exceeds quantity supplied':'quantity supplied exceeds quantity demanded'}. The arrow shows the horizontal gap between Qd and Qs.`);
- tip(text((X(qd)+X(qs))/2,382,`${qd>qs?'Shortage':'Surplus'} at ${sub('P',0)}`,colour.gap,{'font-weight':'600'}), 'This gap is measured on the current curves at P₀. Its arrow is placed near the quantity axis for clarity.');
+ tip(text((X(qd)+X(qs))/2,382,`${qd>qs?'Shortage':'Surplus'} at ${sub('P',0)}`,colour.gap,{'font-weight':'600','data-gap-label':'shortage'}), 'This gap is measured on the current curves at P₀. Its arrow is placed near the quantity axis for clarity.');
  }
 
 });

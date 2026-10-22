@@ -14,9 +14,10 @@
   strokes:{curve:2.5,guide:1,leader:1,guideDash:'4 4',leaderColour:'#9ca3af'},
   gaps:{labelPx:6,obstaclePx:4,leaderThresholdPx:12,curveProximityPx:24,compactCurveProximityPx:48,compactCurveWidthPx:480},
   search:{stepPx:8,maxOffsetPx:160,maxNodes:50000},
-  legend:{heightPx:32,fontPx:12,swatchWidthPx:14,swatchHeightPx:10,itemGapPx:16},
+  legend:{heightPx:28,fontPx:12,swatchWidthPx:14,swatchHeightPx:10,itemGapPx:16},
+  summary:{background:'#fff9db',heightPx:28,compactHeightPx:40,fontPx:12},
   export:{pixelRatio:2,background:'#ffffff'},
-  breakpoints:{stack:900,controls:600,phone:480,caseButtons:560}
+  breakpoints:{stack:900,controls:600,phone:480,caseButtons:560,narrowSlider:359}
  });
  root.EconDiagramConfig=config;
  if(typeof module!=='undefined'&&module.exports)module.exports=config;

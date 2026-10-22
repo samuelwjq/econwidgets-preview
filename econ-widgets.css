@@ -57,14 +57,14 @@ body.ew-page { margin:0; padding:16px; background:#fff; color:var(--ew-ink); fon
 .ew-layout { display:grid; grid-template-columns:minmax(0,var(--ew-diagram-column)) var(--ew-sidebar); gap:var(--ew-gap); align-items:start; }
 .ew-main,.ew-glossary { min-width:0; }
 .ew-diagram-frame { width:100%; border:1px solid var(--ew-border); border-radius:var(--ew-radius); background:#fff; overflow:hidden; }
-.ew-summary-strip { box-sizing:border-box; height:28px; display:flex; align-items:center; padding:0 12px; border-bottom:1px solid var(--ew-border); color:var(--ew-ink); font-size:12px; line-height:14px; font-weight:600; }
+.ew-summary-strip { box-sizing:border-box; height:28px; display:flex; align-items:center; padding:0 12px; border-bottom:1px solid var(--ew-border); background:#fff9db; color:var(--ew-ink); font-size:12px; line-height:14px; font-weight:600; }
 @media(max-width:480px) { .ew-summary-strip { height:40px; white-space:normal; } }
 .ew-diagram { display:block; width:100%; height:auto; aspect-ratio:600 / 510; overflow:hidden; }
 .ew-diagram text { font-family:var(--ew-font); font-weight:400; }
 .ew-diagram .ew-label { paint-order:stroke; stroke:#fff; stroke-linejoin:round; }
 .ew-diagram .ew-axis-title { fill:#374151; font-weight:400; }
 .ew-diagram .ew-displacement-leader { fill:none; stroke:#9ca3af; stroke-width:1; vector-effect:non-scaling-stroke; pointer-events:none; }
-.ew-legend-slot { height:32px; display:flex; align-items:center; justify-content:safe center; gap:16px; overflow-x:auto; overflow-y:hidden; padding:0 8px; font-size:12px; line-height:1; white-space:nowrap; }
+.ew-legend-slot { height:28px; display:flex; align-items:center; justify-content:safe center; gap:16px; overflow-x:auto; overflow-y:hidden; padding:0 8px; font-size:12px; line-height:1; white-space:nowrap; }
 /* Hide legend content, never the reserved slot. */
 .ew-legend-slot>[hidden] { display:none; }
 .ew-legend-entry { display:inline-flex; align-items:center; gap:5px; flex:none; }
@@ -82,6 +82,7 @@ body.ew-page { margin:0; padding:16px; background:#fff; color:var(--ew-ink); fon
 .ew-disclosure>summary::after { margin-left:auto; }
 .ew-expand-hint { font-size:12px; color:var(--ew-muted); font-weight:400; }
 .ew-disclosure[open]>summary .ew-expand-hint { display:none; }
+.ew-price-adjustment { background:#eef4ff; }
 .ew-disclosure-body { padding:0 10px 12px; }
 .ew-glossary { padding:0; border:0; background:transparent; }
 .ew-glossary h2,.ew-glossary h3 { margin:0 0 10px; font-size:16px; font-weight:650; }
@@ -154,7 +155,7 @@ body.ew-page { margin:0; padding:16px; background:#fff; color:var(--ew-ink); fon
 .ew-control-group>label { font-size:13px; font-weight:600; }
 .ew-control-group select { flex:1; }
 .ew-control-group>label:first-child { flex-basis:auto; }
-.ew-control-group .shift-output { flex-basis:100%; font-size:12px; color:var(--ew-muted); }
+.ew-controls .shift-output { display:none; }
 .ew-page .slider-track { flex:1; position:relative; min-width:90px; }
 .ew-page .slider-track input { width:100%; }
 .ew-page .slider-zero { position:absolute; top:20px; left:50%; font-size:9px; color:var(--ew-muted); pointer-events:none; }
@@ -197,8 +198,10 @@ body.ew-page { margin:0; padding:16px; background:#fff; color:var(--ew-ink); fon
 .ew-controls .ew-control-group>label { font-size:12px; white-space:nowrap; }
 .ew-controls .ew-control-group>.ew-control-group { flex:1 1 auto; }
 .ew-controls>.shift-choice { flex:0 1 auto; }
-.ew-controls>.slider-card { flex:1 1 480px; flex-wrap:nowrap; }
-.ew-controls .shift-output { flex:0 0 auto; font-size:11px; }
+.ew-controls>.slider-card { display:grid; flex:1 1 480px; grid-template-columns:88px 48px minmax(90px,1fr) 48px; align-items:center; gap:4px 6px; }
+.ew-controls>.slider-card>label { white-space:normal; }
+.ew-controls>.slider-card>.slider-track { width:100%; min-width:0; }
+.ew-controls>.slider-card input[type="range"] { width:100%; min-width:0; }
 .ew-controls .slider-track { height:32px; }
 .ew-controls input[type="range"] { height:24px; margin:0; }
 .ew-controls #free-controls { flex-basis:450px; }
@@ -237,8 +240,10 @@ body.ew-page { margin:0; padding:16px; background:#fff; color:var(--ew-ink); fon
  .ew-controls button,.ew-controls select,.ew-controls .ew-settings>summary,.ew-controls .ew-settings .ew-options>label { min-height:44px; }
 }
 @media(max-width:600px) {
- .ew-controls>.slider-card { flex-wrap:wrap; }
  .ew-controls .ew-settings[open] { padding-left:0; }
  .ew-controls .ew-settings[open]>summary { position:static; }
  .ew-controls .ew-settings .ew-options { padding-top:0; }
+}
+@media(max-width:359px) {
+ .ew-controls>.slider-card { grid-template-columns:76px 44px minmax(70px,1fr) 44px; }
 }
