@@ -1,0 +1,89 @@
+/* Presentation bridge for the two approved pilot widgets. No economic calculations. */
+(()=>{'use strict';
+ const NS='http://www.w3.org/2000/svg',P=EconDiagramPresentation,C=EconDiagramConfig;
+ let pending=false,running=false,entries=[],slot;
+ const visible=e=>{for(let n=e;n&&n.nodeType===1;n=n.parentElement)if(n.hidden||getComputedStyle(n).display==='none'||getComputedStyle(n).visibility==='hidden')return false;return !e.closest('defs')&&e.getClientRects().length>0;};
+ const rootPoint=(svg,e,x,y)=>new DOMPoint(x,y).matrixTransform(svg.getScreenCTM().inverse().multiply(e.getScreenCTM()));
+ function position(svg,e,x,y){const p=new DOMPoint(x,y).matrixTransform(e.getScreenCTM().inverse().multiply(svg.getScreenCTM()));e.setAttribute('x',p.x);e.setAttribute('y',p.y);}
+ function chrome(){
+  const mapping={'.widget-header':'ew-header','.layout':'ew-layout','.main-content':'ew-main','.sidebar':'ew-glossary','.controls':'ew-controls','.diagram-frame':'ew-diagram-frame','.control-row,.control-group,.policy-selector,.slider-card,.shift-choice':'ew-control-group','.scale-label':'ew-scale-label','.toggle-grid,.option-row,.checkbox-group':'ew-options','.ui-teaching-disclosure':'ew-disclosure','.ui-expand-hint':'ew-expand-hint','.summary-table,.outcomes':'ew-table','.summary-wrap':'ew-table-wrap','.mechanism,.policy-note,.model-note':'ew-explanation','.diagram-help':'ew-help','.related-widget':'ew-nav'};
+  for(const [q,c]of Object.entries(mapping))document.querySelectorAll(q).forEach(e=>e.classList.add(c));
+  const controls=document.querySelector('.controls'),layout=document.querySelector('.layout');if(controls&&layout&&controls.parentNode!==layout.parentNode)layout.before(controls);
+ }
+ function legacyCurveGeometry(svg){
+  // Retained visual square clipping and equal drawn length of the private pair.
+  const plot=svg.querySelector('#diagram-plot');if(!plot)return;
+  if(!plot.querySelector('#ew-square-clip')){const defs=document.createElementNS(NS,'defs');defs.innerHTML='<clipPath id="ew-square-clip"><rect x="70" y="25" width="355" height="355"/></clipPath>';plot.prepend(defs);}
+  for(const e of plot.querySelectorAll('polygon.dwl-poly,polygon.ban-free-area,polygon#dwl,polygon#area-dwl,polygon#area-tax-rev'))e.setAttribute('clip-path','url(#ew-square-clip)');
+  for(const e of plot.querySelectorAll('line.line-mpb,line.line-mpc,line.line-msb,line.line-msc,line.line-policy,line.line-tax,line.line-qpoll,line.line-rd,line.line-edu')){
+   if(!visible(e))continue;const a={x:+e.getAttribute('x1'),y:+e.getAttribute('y1')},d={x:+e.getAttribute('x2')-a.x,y:+e.getAttribute('y2')-a.y};if(Math.hypot(d.x,d.y)<.01)continue;let lo=-1e6,hi=1e6;
+   for(const[v,delta,min,max]of[[a.x,d.x,70,425],[a.y,d.y,25,380]]){if(Math.abs(delta)<1e-8){if(v<min-.01||v>max+.01){lo=1;hi=0;}continue;}const t1=(min-v)/delta,t2=(max-v)/delta;lo=Math.max(lo,Math.min(t1,t2));hi=Math.min(hi,Math.max(t1,t2));}if(lo>hi)continue;
+   for(const[k,v]of Object.entries({x1:a.x+lo*d.x,y1:a.y+lo*d.y,x2:a.x+hi*d.x,y2:a.y+hi*d.y}))e.setAttribute(k,v);
+  }
+  for(const scope of[plot,svg.querySelector('#free-scene')].filter(Boolean)){const pair=['mpb','mpc'].map(k=>[...scope.querySelectorAll('line.line-'+k)].find(visible));if(pair.some(e=>!e))continue;const length=e=>Math.hypot(+e.getAttribute('x2')-+e.getAttribute('x1'),+e.getAttribute('y2')-+e.getAttribute('y1')),target=Math.min(...pair.map(length));for(const e of pair){const n=length(e);if(n<=target+.01)continue;const t=target/n;e.setAttribute('x2',+e.getAttribute('x1')+t*(+e.getAttribute('x2')-+e.getAttribute('x1')));e.setAttribute('y2',+e.getAttribute('y1')+t*(+e.getAttribute('y2')-+e.getAttribute('y1')));}}
+ }
+ const areaIds={'dwl':['Deadweight loss','social'],'area-dwl':['Deadweight loss','social'],'free-policy-loss':['Free-provision DWL','social'],'free-market-loss':['Free-market DWL','other'],'subsidy-cost-rect':['Subsidy expenditure','policy'],'cs-area':['Consumer surplus','cs'],'ps-area':['Producer surplus','ps']};
+ function legend(svg){
+  if(!slot){slot=document.createElement('div');slot.className='ew-legend-slot';slot.setAttribute('aria-label','Shaded areas: colour and grayscale patterns');svg.closest('.diagram-frame').append(slot);}
+  entries=[];
+  for(const e of svg.querySelectorAll('polygon,rect,path')){if(!visible(e))continue;const b=e.getBBox();if(b.width<.01||b.height<.01)continue;let info=areaIds[e.id];if(!info&&e.matches('.subsidy-rect'))info=['Subsidy expenditure','policy'];if(!info||entries.some(x=>x.label===info[0]))continue;entries.push({label:info[0],kind:info[1],colour:getComputedStyle(e).fill});}
+  const key=JSON.stringify(entries);if(slot.dataset.entries===key)return;slot.dataset.entries=key;slot.replaceChildren();for(const e of entries){const item=document.createElement('span');item.className='ew-legend-entry';const colour=document.createElement('i'),pattern=document.createElement('i');colour.className='ew-legend-swatch';colour.style.background=e.colour;pattern.className='ew-legend-swatch ew-pattern-'+e.kind;colour.setAttribute('aria-hidden','true');pattern.setAttribute('aria-hidden','true');item.append(colour,pattern,document.createTextNode(e.label));slot.append(item);}
+ }
+ function refresh(){
+  const svg=document.getElementById('diagram');if(running||!svg?.getScreenCTM())return;
+  running=true;try{
+   P.resetPresentation(svg);chrome();legacyCurveGeometry(svg);
+   for(const[id,symbol,suffix]of[['joint-private-label','Q','private'],['joint-price-label','P','joint']]){const e=svg.querySelector('#'+id);if(e&&e.textContent===symbol+suffix)e.innerHTML=symbol+'<tspan baseline-shift="sub">'+suffix+'</tspan>';}
+   const texts=[...svg.querySelectorAll('text')].filter(e=>visible(e)&&e.textContent.trim()),labels=[],fixed=[],families=new Map(),segments=[];
+   const curves=[...svg.querySelectorAll('line')].filter(e=>visible(e)&&(e.matches('.line-mpb,.line-mpc,.line-msb,.line-msc,.line-policy,.line-tax,.line-edu')||+e.getAttribute('stroke-width')===2.5));
+   const segment=e=>{const a=rootPoint(svg,e,+e.getAttribute('x1'),+e.getAttribute('y1')),b=rootPoint(svg,e,+e.getAttribute('x2'),+e.getAttribute('y2'));return{x1:a.x,y1:a.y,x2:b.x,y2:b.y};};
+   for(const e of curves)segments.push(segment(e));segments.push({x1:100,y1:50,x2:100,y2:430},{x1:100,y1:430,x2:480,y2:430});
+   const gov=!!svg.querySelector('#diagram-plot');
+   for(const [i,e]of texts.entries()){
+    const plain=e.textContent.trim(),id=e.id||'ew-text-'+i;let role=(['10','11','12'].includes(e.getAttribute('font-size'))?'small':'main'),kind='point',anchorUser,axis,curve;
+    e.classList.remove('ew-axis-title');
+    if(e.matches('.axis-title')||plain==='Price'||plain==='Quantity'){
+     e.classList.add('ew-axis-title');
+     if(plain==='Quantity'){position(svg,e,488,447);e.setAttribute('text-anchor','start');}
+     else if(e.querySelectorAll('tspan').length){position(svg,e,88,36);e.setAttribute('text-anchor','end');for(const[t,j]of[...e.querySelectorAll('tspan')].map((t,j)=>[t,j])){const p=new DOMPoint(88,36+j*18).matrixTransform(e.getScreenCTM().inverse().multiply(svg.getScreenCTM()));t.setAttribute('x',p.x);t.setAttribute('y',p.y);t.removeAttribute('dy');}role='small';}
+     else{position(svg,e,100,30);e.setAttribute('text-anchor','middle');}e.dataset.ewTextRole=role;fixed.push(e);continue;
+    }
+    if(e.dataset.axisKind){axis=e.dataset.axisKind==='q'?'quantity':'price';anchorUser=rootPoint(svg,e,+e.dataset.axisX,+e.dataset.axisY);}
+    if(e.dataset.pointX!==undefined){anchorUser=rootPoint(svg,e,+e.dataset.pointX,+e.dataset.pointY);position(svg,e,anchorUser.x+14,anchorUser.y-13);e.setAttribute('text-anchor','start');}
+    if(e.hasAttribute('data-curve-label')){
+     // Single Shift emits each curve immediately before its own label.
+     let n=e.previousElementSibling;while(n&&!curves.includes(n))n=n.previousElementSibling;curve=n;
+    }else if(gov&&/^M(?:PB|PC|SB|SC)/.test(plain)){
+     const scope=e.closest('#free-scene')||svg;
+     if(e.dataset.curveTarget)curve=svg.querySelector('#'+e.dataset.curveTarget);
+     if(!curve&&e.id&&e.id!=='label-policy-curve')curve=svg.querySelector('#'+e.id.replace('label-','curve-'));
+     if(e.id==='label-policy-curve')curve=svg.querySelector('#line-policy-curve');
+     if(!curve&&/^MPC\*/.test(plain))curve=[...scope.querySelectorAll('line.line-policy')].find(visible);
+     if(!curve){const k=/^MPB/.test(plain)?'mpb':/^MSB/.test(plain)?'msb':/^MPC/.test(plain)?'mpc':'msc';curve=[...scope.querySelectorAll('line.line-'+k)].find(visible);}
+    }
+    if(curve&&visible(curve)){
+     const s=segment(curve),endpoint=s.x1>s.x2?{x:s.x1,y:s.y1}:{x:s.x2,y:s.y2};anchorUser=endpoint;kind='curve';role=gov?'longEquation':'curve';
+     P.styleText(e,role);e.setAttribute('text-anchor','start');const unit=600/svg.getBoundingClientRect().width,b=e.getBBox(),m=e.getScreenCTM(),w=b.width*Math.hypot(m.a,m.b)*unit;
+     position(svg,e,Math.max(108,Math.min(endpoint.x+12,592-w-2)),Math.max(66,Math.min(410,endpoint.y+4)));
+     const slope=(s.y2-s.y1)/(s.x2-s.x1),key=(e.closest('#free-scene')?.id||'main')+':'+Math.round(slope*1e6);if(!families.has(key))families.set(key,[]);families.get(key).push({...s,id});
+    }else if(e.matches('.welfare-label,.area-label,#label-dwl-text,#label-subsidy-cost-text')){e.classList.add('ew-fixed-label');e.dataset.ewTextRole='small';fixed.push(e);continue;}
+    else if(/(?:Under|Over)-(?:consumption|production)/i.test(plain)||/^(Shortage|Surplus) at/i.test(plain)){position(svg,e,290,490);e.setAttribute('text-anchor','middle');role='small';}
+    else if(plain==='MEB'){role='small';}
+    if(e.id==='label-policy-arrow'&&/^Government output \(Qg\)$/i.test(plain)&&svg.getBoundingClientRect().width<400){P.styleText(e,'small');const html=e.innerHTML,split=html.indexOf(' ');P.wrapText(e,[html.slice(0,split),html.slice(split)]);}
+    if(!axis&&!anchorUser){const a=rootPoint(svg,e,+e.getAttribute('x'),+e.getAttribute('y'));anchorUser={x:a.x,y:a.y};}
+    labels.push({id,element:e,kind,role,anchorUser,axis,leader:axis||kind==='curve'||e.dataset.pointX!==undefined?undefined:false});
+   }
+   for(const e of svg.querySelectorAll('circle'))if(visible(e)&&+e.getAttribute('r')<=6)fixed.push(e);
+   for(const e of svg.querySelectorAll('[data-axis-change="price"]')){e.setAttribute('x1',20);e.setAttribute('x2',20);}
+   for(const e of svg.querySelectorAll('[data-axis-change="quantity"]')){e.setAttribute('y1',454);e.setAttribute('y2',454);}
+   for(const e of svg.querySelectorAll('#under-arrow,#over-arrow,#arrow-gap,.free-gap-arrow'))if(visible(e)){const p=new DOMPoint(0,470).matrixTransform(e.getScreenCTM().inverse().multiply(svg.getScreenCTM()));e.setAttribute('y1',p.y);e.setAttribute('y2',p.y);}
+   for(const e of svg.querySelectorAll('line')){if(+e.getAttribute('stroke-width')===2.5)e.classList.add('ew-curve');if(e.getAttribute('stroke-dasharray')==='4 4')e.classList.add('ew-coordinate-guide');}
+   const result=P.layoutSvg(svg,{labels,fixedElements:fixed,segments,parallelFamilies:[...families].map(([id,segments])=>({id,segments,referenceX:290}))});
+   legend(svg);window.EconPilot.lastResult=result;
+  }finally{running=false;}
+ }
+ function schedule(){if(!pending){pending=true;requestAnimationFrame(()=>{pending=false;refresh();});}}
+ window.EconPilot={schedule,refresh,chrome,legendEntries:()=>entries};
+ window.addEventListener('resize',()=>{if(innerWidth<=900){const tip=document.getElementById('diagram-tooltip')||document.getElementById('tooltip');tip?.style.removeProperty('left');tip?.style.removeProperty('top');}schedule();});
+ document.addEventListener('DOMContentLoaded',()=>{chrome();const svg=document.getElementById('diagram');if(window.ResizeObserver)new ResizeObserver(schedule).observe(svg);document.fonts?.ready.then(schedule);schedule();});
+})();
