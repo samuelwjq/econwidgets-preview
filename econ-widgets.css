@@ -94,6 +94,8 @@ body.ew-page { margin:0; padding:16px; background:#fff; color:var(--ew-ink); fon
 .ew-assumptions { margin-bottom:12px; }
 .ew-explanation { font-size:14px; line-height:1.6; }
 .ew-explanation p { margin:0 0 10px; }
+.ew-explanation>h2 { font-size:15px; line-height:1.4; font-weight:650; margin:0 0 6px; }
+.ew-government .policy-note { margin:10px 0; }
 .ew-explanation strong,.ew-explanation b { color:var(--ew-red); }
 .ew-table-wrap { overflow-x:auto; }
 .ew-table { width:100%; border-collapse:collapse; font-size:13px; }
@@ -146,6 +148,20 @@ body.ew-page { margin:0; padding:16px; background:#fff; color:var(--ew-ink); fon
 .ew-semantic-cs strong { color:#2563eb; }
 .ew-semantic-ps strong { color:#16a34a; }
 .ew-axis,.ew-curve,.ew-coordinate-guide { vector-effect:non-scaling-stroke; }
+.ew-government .curve { fill:none; stroke-width:2.5; vector-effect:non-scaling-stroke; }
+.ew-government .guide-line { stroke:#9ca3af; stroke-width:1; stroke-dasharray:4 4; vector-effect:non-scaling-stroke; }
+.ew-government .ew-controls #slider-value { grid-column:3 / -1; font-size:11px; color:var(--ew-muted); }
+.ew-page .formula { font-size:12px; color:var(--ew-muted); margin:4px 0; }
+.ew-page .note-small { font-size:12px; color:var(--ew-muted); }
+.ew-ne-policy .ew-controls #ban-controls { flex:1 1 100%; min-width:0; }
+.ew-ne-policy .ew-controls>.slider-card>.control-group { grid-column:1 / -1; display:grid; grid-template-columns:inherit; gap:4px 6px; }
+.ew-ne-policy .ew-controls>.slider-card>.control-group>label { white-space:normal; }
+.ew-ne-policy .ew-controls>.slider-card .scale-label { white-space:normal; line-height:1.2; }
+.ew-ne-policy #ban-scene [stroke="#4169e1"] { stroke-dasharray:none; }
+.ew-ne-policy #ban-results { font-size:14px; line-height:1.6; }
+.ew-ne-policy #ban-results h2 { font-size:15px; }
+.ew-ne-policy #ban-results strong { color:var(--ew-red); }
+.ew-pattern-dots { background:radial-gradient(circle at 3px 3px,#777 1px,#fff 1px); background-size:8px 8px; }
 .ew-axis { fill:none; stroke:#374151; stroke-width:2; }
 .ew-curve { fill:none; stroke-width:2.5; }
 .ew-coordinate-guide { fill:none; stroke:#9ca3af; stroke-width:1; stroke-dasharray:4 4; }
@@ -164,7 +180,7 @@ body.ew-page { margin:0; padding:16px; background:#fff; color:var(--ew-ink); fon
 .ew-diagram .line-mpb { stroke:#2563eb; }
 .ew-diagram .line-mpc { stroke:#16a34a; }
 .ew-diagram .line-msb,.ew-diagram .line-msc { stroke:#dc2626; }
-.ew-diagram .line-policy,.ew-diagram .line-tax,.ew-diagram .line-quota,.ew-diagram .line-qpoll,.ew-diagram .line-rd,.ew-diagram .line-edu { stroke:var(--ew-accent); stroke-dasharray:6 4; }
+.ew-diagram .line-policy,.ew-diagram .line-tax,.ew-diagram .line-quota,.ew-diagram .line-qpoll,.ew-diagram .line-rd,.ew-diagram .line-edu { stroke:var(--ew-accent); stroke-dasharray:none; }
 .ew-diagram .line-mpb,.ew-diagram .line-mpc,.ew-diagram .line-msb,.ew-diagram .line-msc,.ew-diagram .line-policy,.ew-diagram .line-tax,.ew-diagram .line-quota,.ew-diagram .line-qpoll,.ew-diagram .line-rd,.ew-diagram .line-edu { stroke-width:2.5; vector-effect:non-scaling-stroke; }
 .ew-diagram .guide-line { stroke:#9ca3af; stroke-width:1; stroke-dasharray:4 4; vector-effect:non-scaling-stroke; }
 .ew-diagram .dwl-poly { fill:rgba(220,38,38,.25); stroke:#dc2626; stroke-width:1.5; cursor:pointer; }

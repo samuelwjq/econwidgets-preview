@@ -138,7 +138,7 @@
     const available=point({x:config.values.priceColumnX,y:0}).x-tl.x;
     if(e.getBoundingClientRect().width>available){
      const html=e.innerHTML,parts=html.includes(' = ')?html.split(/(?= = )/):html.includes(' (')?html.split(/(?= \()/):[html];
-     if(parts.length>1)wrapText(e,parts);
+     if(parts.length>1){wrapText(e,parts);if(e.getBoundingClientRect().width>available&&html.includes(' = ')){e.innerHTML=html;const terms=html.split(' = ');wrapText(e,terms.map((term,i)=>i<terms.length-1?term+' = ':term));}}
     }
    }
    const b=e.getBoundingClientRect();

@@ -9,6 +9,7 @@
   const mapping={'.widget-header':'ew-header','.layout':'ew-layout','.main-content':'ew-main','.sidebar':'ew-glossary','.controls':'ew-controls','.diagram-frame':'ew-diagram-frame','.control-row,.control-group,.policy-selector,.slider-card,.shift-choice':'ew-control-group','.scale-label':'ew-scale-label','.toggle-grid,.option-row,.checkbox-group':'ew-options','.ui-teaching-disclosure':'ew-disclosure','.ui-expand-hint':'ew-expand-hint','.summary-table,.outcomes':'ew-table','.summary-wrap':'ew-table-wrap','.mechanism,.policy-note,.model-note':'ew-explanation','.diagram-help':'ew-help','.related-widget':'ew-nav'};
   for(const [q,c]of Object.entries(mapping))document.querySelectorAll(q).forEach(e=>e.classList.add(c));
   const controls=document.querySelector('.controls'),layout=document.querySelector('.layout');if(controls&&layout&&controls.parentNode!==layout.parentNode)layout.before(controls);
+  const banControls=document.getElementById('ban-controls');if(document.body.classList.contains('ew-ne-policy')&&controls&&banControls&&banControls.parentElement!==controls)controls.append(banControls);
   for(const output of document.querySelectorAll('.controls .shift-output')){if(!output.hidden)output.hidden=true;output.setAttribute('aria-hidden','true');}
  }
  function alignMeb(svg){
@@ -40,6 +41,10 @@
  }
  const areaIds={'dwl':['Deadweight loss','social'],'area-dwl':['Deadweight loss','social'],'free-policy-loss':['Free-provision DWL','social'],'free-market-loss':['Free-market DWL','other'],'subsidy-cost-rect':['Subsidy expenditure','policy'],'cs-area':['Consumer surplus','cs'],'ps-area':['Producer surplus','ps']};
  function summaryText(svg){
+  const dir=(v,label)=>label+' '+(Math.abs(v)<1e-7?'Unchanged':v>0?'Increases':'Decreases');
+  if(document.body.classList.contains('ew-government')){const m=window.currentGovernmentModel;if(!m)return '';if(m.policy==='quota'&&m.q<1e-7)return 'Price Not Applicable · Qty Decreases';return dir((m.policy==='direct'?m.pp:m.pc)-50,m.policy==='wage'?'Wage':'Price')+' · '+dir(m.q-50,m.policy==='wage'?'Employment':'Qty');}
+  if(document.body.classList.contains('ew-basic-externality')){const positive=!!document.getElementById('meb-slider'),magnitude=Number(document.getElementById(positive?'meb-slider':'mec-slider').value);return Math.abs(magnitude)<1e-7?'Qe = Qs · No Output Gap':positive?'Qe < Qs · Under-consumption/production':'Qe > Qs · Over-consumption/production';}
+  if(document.body.classList.contains('ew-ne-policy')){if(document.getElementById('policy-select').value==='ban'){const b=window.currentBanModel;return 'Qty Decreases · DWL '+(Math.abs(b.banDwl-b.freeDwl)<1e-7?'Unchanged':b.banDwl<1e-7?'Eliminated':b.banDwl<b.freeDwl?'Decreases':'Increases');}const s=window.currentNEModel;if(!s)return '';const before=Math.abs(s.qe-s.qs),after=Math.abs(s.currentQ-s.activeQs);return dir(s.currentQ-s.qe,'Qty')+' · DWL '+(Math.abs(after-before)<1e-7?'Unchanged':after<1e-7?'Eliminated':after<before?'Decreases':'Increases');}
   if(!svg.querySelector('#diagram-plot')){
    const direction=(v,label)=>v==='Increases'?label+' Increases':v==='Decreases'?label+' Decreases':label+' Unchanged';
    if(document.body.classList.contains('ew-elasticity')){
@@ -70,14 +75,15 @@
  function legend(svg){
   if(!slot){slot=document.createElement('div');slot.className='ew-legend-slot';slot.setAttribute('aria-label','Shaded areas: colour and grayscale patterns');svg.closest('.diagram-frame').append(slot);}
   entries=[];
-  for(const e of svg.querySelectorAll('polygon,rect,path')){if(!visible(e))continue;const b=e.getBBox();if(b.width<.01||b.height<.01)continue;let info=areaIds[e.id];if(!info&&['price','quantity'].includes(e.dataset.area))info=[e.dataset.area==='price'?'Price effect':'Quantity effect',e.dataset.area];if(!info&&e.matches('.subsidy-rect'))info=['Subsidy expenditure','policy'];if(!info||entries.some(x=>x.label===info[0]))continue;entries.push({label:info[0],kind:info[1],colour:getComputedStyle(e).fill});}
+  for(const e of svg.querySelectorAll('polygon,rect,path')){if(!visible(e))continue;const b=e.getBBox();if(b.width<.01||b.height<.01)continue;let info=areaIds[e.id];if(!info&&['price','quantity'].includes(e.dataset.area))info=[e.dataset.area==='price'?'Price effect':'Quantity effect',e.dataset.area];if(!info&&document.body.classList.contains('ew-government'))info={cs:['Consumer surplus','cs'],ps:['Producer surplus','ps'],dwl:['Deadweight loss','dots'],g:['Government '+(window.currentGovernmentModel?.fiscal||'transfer'),'policy']}[e.dataset.area];if(!info&&e.id==='area-tax-rev')info=['Tax revenue','policy'];if(!info&&e.id==='ban-loss-area')info=['DWL under ban','social'];if(!info&&e.id==='ban-free-area')info=['Free-market DWL','other'];if(!info&&e.matches('.subsidy-rect'))info=['Subsidy expenditure','policy'];if(!info||entries.some(x=>x.label===info[0]))continue;entries.push({label:info[0],kind:info[1],colour:getComputedStyle(e).fill});}
   const key=JSON.stringify(entries);if(slot.dataset.entries===key)return;slot.dataset.entries=key;slot.replaceChildren();for(const e of entries){const item=document.createElement('span');item.className='ew-legend-entry';const colour=document.createElement('i'),pattern=document.createElement('i');colour.className='ew-legend-swatch';colour.style.background=e.colour;pattern.className='ew-legend-swatch ew-pattern-'+e.kind;colour.setAttribute('aria-hidden','true');pattern.setAttribute('aria-hidden','true');item.append(colour,pattern,document.createTextNode(e.label));slot.append(item);}
  }
  function refresh(){
   const svg=document.getElementById('diagram');if(running||!svg?.getScreenCTM())return;
+  const nativeTitles=[...svg.querySelectorAll('text>title')].map(title=>({parent:title.parentElement,title}));nativeTitles.forEach(({title})=>title.remove());
   running=true;try{
    P.resetPresentation(svg);chrome();legacyCurveGeometry(svg);alignMeb(svg);
-   if(svg.querySelector('#diagram-plot')){
+   if(svg.querySelector('#diagram-plot')&&!document.body.classList.contains('ew-government')&&!document.body.classList.contains('ew-basic-externality')){
     svg.classList.add('ew-policy-context');
     for(const e of svg.querySelectorAll('.line-mpb,.line-mpc,.line-msb,.line-msc'))e.style.stroke='#374151';
     for(const e of svg.querySelectorAll('#label-mpb,#label-mpc,#label-msb,#label-msc,#free-scene text'))if(/^(?:MPB|MPC|MSB|MSC)/.test(e.textContent)&&!/^MPC\*/.test(e.textContent))e.style.fill='#374151';
@@ -90,7 +96,7 @@
    }
    for(const[id,symbol,suffix]of[['joint-private-label','Q','private'],['joint-price-label','P','joint']]){const e=svg.querySelector('#'+id);if(e&&e.textContent===symbol+suffix)e.innerHTML=symbol+'<tspan baseline-shift="sub">'+suffix+'</tspan>';}
    const texts=[...svg.querySelectorAll('text')].filter(e=>visible(e)&&e.textContent.trim()),labels=[],fixed=[],families=new Map(),segments=[];
-   const curves=[...svg.querySelectorAll('line,polyline')].filter(e=>visible(e)&&(e.matches('.line-mpb,.line-mpc,.line-msb,.line-msc,.line-policy,.line-tax,.line-edu')||+e.getAttribute('stroke-width')===2.5));
+   const curves=[...svg.querySelectorAll('line,polyline')].filter(e=>visible(e)&&(e.matches('.curve,.line-mpb,.line-mpc,.line-msb,.line-msc,.line-policy,.line-tax,.line-quota,.line-edu,.line-qpoll,.line-rd')||+e.getAttribute('stroke-width')===2.5));
    const segment=e=>{if(e.localName==='polyline'){const p=e.getAttribute('points').trim().split(/[ ,]+/).map(Number),a=rootPoint(svg,e,p[0],p[1]),b=rootPoint(svg,e,p[p.length-2],p[p.length-1]);return{x1:a.x,y1:a.y,x2:b.x,y2:b.y};}const a=rootPoint(svg,e,+e.getAttribute('x1'),+e.getAttribute('y1')),b=rootPoint(svg,e,+e.getAttribute('x2'),+e.getAttribute('y2'));return{x1:a.x,y1:a.y,x2:b.x,y2:b.y};};
    for(const e of curves)segments.push(segment(e));segments.push({x1:100,y1:50,x2:100,y2:430},{x1:100,y1:430,x2:480,y2:430});
    const gov=!!svg.querySelector('#diagram-plot');
@@ -99,7 +105,7 @@
     e.classList.remove('ew-axis-title');
     if(e.matches('.axis-title')||plain==='Price'||(plain==='Quantity'||plain==='Qty')){
      e.classList.add('ew-axis-title');
-     if((plain==='Quantity'||plain==='Qty')){e.textContent='Qty';position(svg,e,488,447);e.setAttribute('text-anchor','start');}
+     if(/^(?:Quantity|Qty)(?:\s|$)/.test(plain)){e.textContent=plain.replace(/^Quantity/,'Qty');position(svg,e,488,447);e.setAttribute('text-anchor','start');P.styleText(e,role);if(plain.includes('Labour')&&e.getBoundingClientRect().width>104*svg.getBoundingClientRect().width/600)P.wrapText(e,['Qty ','Of ','Labour']);}
      else if(e.querySelectorAll('tspan').length){position(svg,e,88,36);e.setAttribute('text-anchor','end');for(const[t,j]of[...e.querySelectorAll('tspan')].map((t,j)=>[t,j])){const p=new DOMPoint(88,36+j*18).matrixTransform(e.getScreenCTM().inverse().multiply(svg.getScreenCTM()));t.setAttribute('x',p.x);t.setAttribute('y',p.y);t.removeAttribute('dy');}role='small';}
      else{position(svg,e,100,30);e.setAttribute('text-anchor','middle');}e.dataset.ewTextRole=role;fixed.push(e);continue;
     }
@@ -116,9 +122,13 @@
     }
     if(e.dataset.axisKind){axis=e.dataset.axisKind==='q'?'quantity':'price';anchorUser=rootPoint(svg,e,+e.dataset.axisX,+e.dataset.axisY);}
     if(e.dataset.pointX!==undefined){anchorUser=rootPoint(svg,e,+e.dataset.pointX,+e.dataset.pointY);position(svg,e,anchorUser.x+14,anchorUser.y-13);e.setAttribute('text-anchor','start');}
-    if(e.hasAttribute('data-curve-label')){
+    if(e.dataset.policyLabel||(document.body.classList.contains('ew-government')&&plain==='Quota')){
+     curve=curves.find(n=>n.localName==='line'&&n.getAttribute('stroke')==='#dc2626'&&+n.getAttribute('stroke-width')===2.5);
+    }else if(document.body.classList.contains('ew-ne-policy')&&plain==='Quota'){
+     curve=svg.querySelector('#line-quota');
+    }else if(e.hasAttribute('data-curve-label')||e.dataset.curveTarget){
      // Single Shift emits each curve immediately before its own label.
-     let n=e.previousElementSibling;while(n&&!curves.includes(n))n=n.previousElementSibling;curve=n;
+     let n=e.previousElementSibling;while(n&&!curves.includes(n))n=n.previousElementSibling;curve=e.dataset.curveTarget?svg.querySelector('#'+e.dataset.curveTarget):n;
     }else if(gov&&/^M(?:PB|PC|SB|SC)/.test(plain)){
      const scope=e.closest('#free-scene')||svg;
      if(e.dataset.curveTarget)curve=svg.querySelector('#'+e.dataset.curveTarget);
@@ -128,15 +138,16 @@
      if(!curve){const k=/^MPB/.test(plain)?'mpb':/^MSB/.test(plain)?'msb':/^MPC/.test(plain)?'mpc':'msc';curve=[...scope.querySelectorAll('line.line-'+k)].find(visible);}
     }
     if(curve&&visible(curve)){
-     const s=segment(curve);nearSegmentUser=s;const endpoint=s.x1>s.x2?{x:s.x1,y:s.y1}:{x:s.x2,y:s.y2};anchorUser=endpoint;kind='curve';role=gov?'longEquation':'curve';
+     if(document.body.classList.contains('ew-ne-policy'))e.style.fill=curve.matches('.line-tax,.line-qpoll,.line-rd,.line-edu')?'#4169e1':'#374151';
+     const s=segment(curve);nearSegmentUser=s;const endpoint=s.x1>s.x2?{x:s.x1,y:s.y1}:{x:s.x2,y:s.y2};anchorUser=endpoint;kind='curve';role=gov&&!document.body.classList.contains('ew-government')?'longEquation':'curve';
      P.styleText(e,role);e.setAttribute('text-anchor','start');const unit=600/svg.getBoundingClientRect().width,b=e.getBBox(),m=e.getScreenCTM(),w=b.width*Math.hypot(m.a,m.b)*unit;
      position(svg,e,Math.max(108,Math.min(endpoint.x+12,592-w-2)),Math.max(66,Math.min(410,endpoint.y+4)));
      const slope=(s.y2-s.y1)/(s.x2-s.x1),key=(e.closest('#free-scene')?.id||'main')+':'+Math.round(slope*1e6);if(Number.isFinite(slope)){if(!families.has(key))families.set(key,[]);families.get(key).push({...s,id});}
     }else if(e.matches('.welfare-label,.area-label,#label-dwl-text,#label-subsidy-cost-text')){e.classList.add('ew-fixed-label');e.dataset.ewTextRole='small';fixed.push(e);continue;}
-    else if(/(?:Under|Over)-(?:consumption|production)/i.test(plain)){position(svg,e,290,490);e.setAttribute('text-anchor','middle');role='small';}
-    else if(plain==='MEB'){role='small';}
+    else if(/(?:Under|Over)-(?:consumption|production)/i.test(plain)){position(svg,e,290,490);e.setAttribute('text-anchor','middle');role='small';if(e.id==='label-output-gap'&&svg.getBoundingClientRect().width<320&&plain.includes(' / ')){P.styleText(e,role);position(svg,e,450,300);const parts=plain.match(/^((?:Under|Over)-)(Consumption \/ )((?:Under|Over)-)(Production)$/i);if(parts)P.wrapText(e,parts.slice(1));}}
+    else if(plain==='MEB'||plain==='MEC'){role='small';}
     if(e.id==='label-policy-arrow'&&/^Government output \(Qg\)$/i.test(plain)&&svg.getBoundingClientRect().width<400){P.styleText(e,'small');const html=e.innerHTML,split=html.indexOf(' ');P.wrapText(e,[html.slice(0,split),html.slice(split)]);}
-    const mebLabel=gov&&plain==='MEB',annotation=mebLabel?(e.closest('#free-scene')||svg).querySelector('#arrow-meb,.free-externality'):e.id==='label-policy-arrow'?svg.querySelector('#arrow-policy'):null;
+    const mebLabel=gov&&/^(MEB|MEC)$/.test(plain),annotation=mebLabel?(e.closest('#free-scene,#ban-scene')||svg).querySelector(plain==='MEC'?'#mec-arrow,#group-mec line,line[stroke="#2563eb"]':'#arrow-meb,#meb-arrow,.free-externality'):e.id==='label-policy-arrow'?svg.querySelector('#arrow-policy'):null;
     if(annotation&&visible(annotation)){
      const a=segment(annotation);anchorUser={x:(a.x1+a.x2)/2,y:(a.y1+a.y2)/2};
      if(mebLabel||document.getElementById('policy-select')?.value==='direct_subsidy'){
@@ -145,7 +156,8 @@
      if(mebLabel||/^(?:Subsidy)$/i.test(plain)){nearSegmentUser=a;avoidSegmentsUser=[a];}
     }
     if(!axis&&!anchorUser){const a=rootPoint(svg,e,+e.getAttribute('x'),+e.getAttribute('y'));anchorUser={x:a.x,y:a.y};}
-    labels.push({id,element:e,kind,role,anchorUser,axis,nearSegmentUser,avoidSegmentsUser,maxDistancePx:kind==='curve'?(svg.getBoundingClientRect().width<C.gaps.compactCurveWidthPx?C.gaps.compactCurveProximityPx:C.gaps.curveProximityPx):nearSegmentUser?22:undefined,leader:kind==='curve'?false:axis||e.dataset.pointX!==undefined?undefined:false});
+    let candidates;if(e.id==='label-output-gap'&&e.hasAttribute('data-ew-wrapped')){const m=svg.getScreenCTM(),a=new DOMPoint(104,60).matrixTransform(m),b=new DOMPoint(592,502).matrixTransform(m),box=e.getBoundingClientRect(),xs=[b.x-box.width],ys=[b.y-box.height];for(let x=a.x;x+box.width<=b.x;x+=2)xs.push(x);for(let y=a.y;y+box.height<=b.y;y+=2)ys.push(y);candidates=[{x:box.x,y:box.y}];for(const x of xs)for(const y of ys)candidates.push({x,y});}
+    labels.push({id,element:e,kind,role,anchorUser,axis,nearSegmentUser,avoidSegmentsUser,candidates,maxDistancePx:kind==='curve'?(svg.getBoundingClientRect().width<C.gaps.compactCurveWidthPx?C.gaps.compactCurveProximityPx:C.gaps.curveProximityPx):nearSegmentUser?22:undefined,leader:kind==='curve'?false:axis||e.dataset.pointX!==undefined?undefined:false});
    }
    for(const e of svg.querySelectorAll('circle'))if(visible(e)&&+e.getAttribute('r')<=6)fixed.push(e);
    for(const e of svg.querySelectorAll('#under-arrow,#over-arrow,#arrow-gap,.free-gap-arrow'))if(visible(e)){const p=new DOMPoint(0,470).matrixTransform(e.getScreenCTM().inverse().multiply(svg.getScreenCTM()));e.setAttribute('y1',p.y);e.setAttribute('y2',p.y);}
@@ -161,7 +173,7 @@
     }
    }
    updateSummary(svg);legend(svg);window.EconPilot.lastResult=result;
-  }finally{running=false;}
+  }finally{nativeTitles.forEach(({parent,title})=>{if(parent.isConnected)parent.append(title);});running=false;}
  }
  function schedule(){if(!pending){pending=true;requestAnimationFrame(()=>{pending=false;refresh();});}}
  window.EconPilot={schedule,refresh,chrome,legendEntries:()=>entries,summaryText:()=>summaryStrip?.textContent||''};
