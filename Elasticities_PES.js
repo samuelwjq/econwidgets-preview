@@ -59,8 +59,8 @@ curve(s.qd,changed&&KIND!=='PED'?sub('D',1):sub('D',0),'#2563eb');curve(s.qs,cha
 guides(50,50);if(changed)guides(q,p);labels(q,p);
 function arrow(x1,y1,x2,y2,label,attrs={}){if(Math.hypot(x2-x1,y2-y1)<.1)return;const n=line(x1,y1,x2,y2,'#dc2626',{'stroke-width':1.3,'marker-end':'url(#change-arrow)',...attrs});if(label)tip(n,label);return n;}
 add('defs',{},'<marker id="change-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M1 1.5 L9 5 L1 8.5Z" fill="#dc2626"/></marker>');
-if(!eq(p,50)){arrow(38,Y(50),38,Y(p),'Equilibrium price '+direction(p-50).toLowerCase(),{'data-axis-change':'price'});text(20,(Y(50)+Y(p))/2+4,'ΔP','#dc2626');}
-if(!eq(q,50)){arrow(X(50),474,X(q),474,'Equilibrium quantity '+direction(q-50).toLowerCase(),{'data-axis-change':'quantity'});text((X(50)+X(q))/2,493,'ΔQ','#dc2626');}
+if(!eq(p,50)){arrow(38,Y(50),38,Y(p),'Equilibrium price '+direction(p-50).toLowerCase(),{'data-axis-change':'price'});}
+if(!eq(q,50)){arrow(X(50),474,X(q),474,'Equilibrium quantity '+direction(q-50).toLowerCase(),{'data-axis-change':'quantity'});}
 if($('adjustment').checked&&changed){const qd=s.qd(50),qs=s.qs(50);if(!eq(p,50)){
 const left=Math.min(qd,qs),right=Math.max(qd,qs),gap=qd>qs?'Shortage':'Surplus';
 const gapArrow=arrow(X(left),391,X(right),391,gap+' at P₀: the gap between quantity demanded and quantity supplied.',{'data-adjustment':'gap','data-gap-arrow':'shortage','marker-start':'url(#change-arrow)'});

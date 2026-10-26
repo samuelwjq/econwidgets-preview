@@ -217,7 +217,7 @@
  }
  function exportSVG(){
   EconPilot.refresh();
-  return EconExportPresentation.snapshot(svg,{appearance:style?.value||'colour',legend:EconPilot.legendEntries().map(e=>({...e,fill:e.colour,pattern:'url(#ui-hatch-'+e.kind+')'})),applyGrayscale,title:document.querySelector('h1').textContent,context:exportContext(),summary:EconPilot.summaryText()});
+  return EconExportPresentation.snapshot(svg,{appearance:style?.value||'colour',legend:EconPilot.legendEntries().map(e=>({...e,fill:e.colour,pattern:'url(#ui-hatch-'+e.kind+')'})),applyGrayscale,title:document.querySelector('h1').textContent,context:exportContext(),summary:EconPilot.summaryText(),summaryCompactHeightPx:document.body.classList.contains('ew-elasticity')?EconDiagramConfig.summary.elasticityCompactHeightPx:undefined});
  }
  async function exportPNG(){
   const text=exportSVG(),blob=new Blob([text],{type:'image/svg+xml'}),url=URL.createObjectURL(blob);

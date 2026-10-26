@@ -42,7 +42,13 @@
  function summaryText(svg){
   if(!svg.querySelector('#diagram-plot')){
    const direction=(v,label)=>v==='Increases'?label+' Increases':v==='Decreases'?label+' Decreases':label+' Unchanged';
-   if(document.body.classList.contains('ew-elasticity')){const s=window.widgetState;if(!s)return '';const d=v=>Math.abs(v)<1e-8?'Unchanged':v>0?'Increases':'Decreases';return direction(d(s.p-50),'Price')+' · '+direction(d(s.q-50),'Qty');}
+   if(document.body.classList.contains('ew-elasticity')){
+    const s=window.widgetState;if(!s)return '';
+    const d=v=>Math.abs(v)<1e-8?'Unchanged':v>0?'Increases':'Decreases',parts=[],ped=!!document.querySelector('label[for="elasticity"]')?.textContent.includes('PED'),priceTopic=!!document.getElementById('tr'),shift=priceTopic?s.shock:s.delta;
+    if(Math.abs(shift)>1e-8)parts.push(direction(d(shift),ped?'Supply':'Demand'));
+    const classification=document.getElementById('elasticity-label')?.textContent.trim();if(classification)parts.push(classification);
+    return [...parts,direction(d(s.p-50),'Price'),direction(d(s.q-50),'Qty')].join(' · ');
+   }
    const state=window.currentState||{},shifts=[];
    if(state.step===1)return '';
    if(state.step||document.getElementById('magnitude')||document.getElementById('d-shift'))for(const[key,label]of[['d','Demand'],['s','Supply']])if(state[key])shifts.push(label+(state[key]>0?' Increases':' Decreases'));
@@ -94,7 +100,7 @@
      else{position(svg,e,100,30);e.setAttribute('text-anchor','middle');}e.dataset.ewTextRole=role;fixed.push(e);continue;
     }
     if(/^No price adjustment: equilibrium price is unchanged\.$/i.test(plain)){
-     role='small';P.styleText(e,role);position(svg,e,290,110);e.setAttribute('text-anchor','middle');P.wrapText(e,[plain.slice(0,plain.indexOf(':')+1),plain.slice(plain.indexOf(':')+1,plain.toLowerCase().indexOf(' is ')),plain.slice(plain.toLowerCase().indexOf(' is '))]);
+     role='small';P.styleText(e,role);const narrow=svg.getBoundingClientRect().width<320;position(svg,e,narrow?220:290,narrow?90:110);e.setAttribute('text-anchor','middle');P.wrapText(e,narrow?plain.match(/^(No Price)( Adjustment:)( Equilibrium Price)( Is Unchanged\.)$/i).slice(1):[plain.slice(0,plain.indexOf(':')+1),plain.slice(plain.indexOf(':')+1,plain.toLowerCase().indexOf(' is ')),plain.slice(plain.toLowerCase().indexOf(' is '))]);
     }
     if(e.dataset.gapLabel){
      const arrow=svg.querySelector('[data-gap-arrow="'+e.dataset.gapLabel+'"]');
