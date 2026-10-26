@@ -44,10 +44,14 @@
    const direction=(v,label)=>v==='Increases'?label+' Increases':v==='Decreases'?label+' Decreases':label+' Unchanged';
    if(document.body.classList.contains('ew-elasticity')){
     const s=window.widgetState;if(!s)return '';
-    const d=v=>Math.abs(v)<1e-8?'Unchanged':v>0?'Increases':'Decreases',parts=[],ped=!!document.querySelector('label[for="elasticity"]')?.textContent.includes('PED'),priceTopic=!!document.getElementById('tr'),shift=priceTopic?s.shock:s.delta;
-    if(Math.abs(shift)>1e-8)parts.push(direction(d(shift),ped?'Supply':'Demand'));
-    const classification=document.getElementById('elasticity-label')?.textContent.trim();if(classification)parts.push(classification);
-    return [...parts,direction(d(s.p-50),'Price'),direction(d(s.q-50),'Qty')].join(' · ');
+    const d=v=>Math.abs(v)<1e-8?'Unchanged':v>0?'Increases':'Decreases',parts=[],label=document.querySelector('label[for="elasticity"]')?.textContent||'',kind=label.includes('PED')?'PED':label.includes('PES')?'PES':label.includes('XED')?'XED':'YED',priceTopic=!!document.getElementById('tr'),shift=priceTopic?s.shock:s.delta;
+    if(Math.abs(shift)>1e-8)parts.push(direction(d(shift),kind==='PED'?'Supply':'Demand'));
+    const classification=document.getElementById('elasticity-label')?.textContent.trim(),notation=EconElasticityExplanation.notation(kind,s.e),outcomes=[direction(d(s.q-50),'Qty'),direction(d(s.tr1-s.tr0),'TR/TE')];
+    const build=(elasticity,price)=>[...parts,elasticity,direction(d(s.p-50),price),...outcomes].filter(Boolean).join(' · ');
+    const candidates=[build(classification,'Price'),build(notation,'Price'),build(notation,'P')],ctx=document.createElement('canvas').getContext('2d');ctx.font='600 12px '+getComputedStyle(svg).fontFamily;
+    const width=svg.getBoundingClientRect().width-24,rows=Math.floor((innerWidth<=480?C.summary.elasticityCompactHeightPx:C.summary.heightPx)/14);
+    const fits=text=>{let count=1,line='';for(const word of text.split(/\s+/)){const next=line?line+' '+word:word;if(line&&ctx.measureText(next).width>width){count++;line=word;}else line=next;}return count<=rows;};
+    return candidates.find(fits)||candidates.at(-1);
    }
    const state=window.currentState||{},shifts=[];
    if(state.step===1)return '';
