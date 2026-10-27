@@ -40,6 +40,28 @@
   for(const scope of[plot,svg.querySelector('#free-scene')].filter(Boolean)){const pair=['mpb','mpc'].map(k=>[...scope.querySelectorAll('line.line-'+k)].find(visible));if(pair.some(e=>!e))continue;const length=e=>Math.hypot(+e.getAttribute('x2')-+e.getAttribute('x1'),+e.getAttribute('y2')-+e.getAttribute('y1')),target=Math.min(...pair.map(length));for(const e of pair){const n=length(e);if(n<=target+.01)continue;const t=target/n;e.setAttribute('x2',+e.getAttribute('x1')+t*(+e.getAttribute('x2')-+e.getAttribute('x1')));e.setAttribute('y2',+e.getAttribute('y1')+t*(+e.getAttribute('y2')-+e.getAttribute('y1')));}}
  }
  const areaIds={'dwl':['Deadweight loss','social'],'area-dwl':['Deadweight loss','social'],'free-policy-loss':['Free-provision DWL','social'],'free-market-loss':['Free-market DWL','other'],'subsidy-cost-rect':['Subsidy expenditure','policy'],'cs-area':['Consumer surplus','cs'],'ps-area':['Producer surplus','ps']};
+ const originalPolicySegments=new WeakMap();
+ function policyCurveLengths(svg){
+  const government=document.body.classList.contains('ew-government');
+  if(!government&&!document.body.matches('.ew-ne-policy,.ew-pe-policy'))return;
+  const read=e=>{if(e.localName==='polyline'){const p=e.getAttribute('points').trim().split(/[ ,]+/).map(Number);return{x1:p[0],y1:p[1],x2:p.at(-2),y2:p.at(-1)};}return Object.fromEntries(['x1','y1','x2','y2'].map(k=>[k,+e.getAttribute(k)]));};
+  const curves=[...svg.querySelectorAll('.curve,line.line-mpb,line.line-mpc,line.line-msb,line.line-msc,line.line-policy,line.line-tax,line.line-qpoll,line.line-rd,line.line-edu')].filter(visible),pairs=[];
+  if(government){const mode=window.currentGovernmentModel?.policy;if(!['specific','indirect','direct'].includes(mode))return;const policy=curves[2],base=curves[mode==='direct'?0:1];if(policy&&base)pairs.push([policy,base]);}
+  else for(const policy of curves.filter(e=>e.matches('.line-policy,.line-tax,.line-qpoll,.line-rd,.line-edu'))){const scope=policy.closest('#free-scene')||svg,negative=policy.matches('.line-qpoll,.line-rd'),s=read(policy),base=scope.querySelector(negative?'#curve-msc':s.y2<s.y1?'#curve-mpc,line.line-mpc':'#curve-mpb,line.line-mpb');if(base)pairs.push([policy,base]);}
+  for(const[policy,base]of pairs){
+   let a=read(policy);if(government){if(!originalPolicySegments.has(policy))originalPolicySegments.set(policy,a);a=originalPolicySegments.get(policy);}const b=read(base),dx=a.x2-a.x1,dy=a.y2-a.y1,length=Math.hypot(dx,dy),bdx=b.x2-b.x1,bdy=b.y2-b.y1;
+   if(!length||Math.abs(dx*bdy-dy*bdx)>1e-5*length*Math.hypot(bdx,bdy))continue;
+   const target=Math.min(length,Math.hypot(bdx,bdy)),ux=dx/length,uy=dy/length,required=[];
+   const toLocal=(e,x,y)=>new DOMPoint(x,y).matrixTransform(policy.getScreenCTM().inverse().multiply(e.getScreenCTM()));
+   const protect=p=>{const along=(p.x-a.x1)*ux+(p.y-a.y1)*uy,off=Math.abs((p.x-a.x1)*uy-(p.y-a.y1)*ux);if(off<.05&&along>=-.05&&along<=length+.05)required.push(Math.max(0,Math.min(length,along)));};
+   for(const other of curves){if(other===policy)continue;const s=read(other),c=toLocal(other,s.x1,s.y1),d=toLocal(other,s.x2,s.y2),vx=d.x-c.x,vy=d.y-c.y,cross=dx*vy-dy*vx;if(Math.abs(cross)<1e-7)continue;const t=((c.x-a.x1)*vy-(c.y-a.y1)*vx)/cross,u=((c.x-a.x1)*dy-(c.y-a.y1)*dx)/cross;if(t>=0&&t<=1&&u>=0&&u<=1)protect({x:a.x1+t*dx,y:a.y1+t*dy});}
+   for(const e of svg.querySelectorAll('circle,polygon,rect,line[marker-start]')){if(!visible(e))continue;if(e.localName==='circle')protect(toLocal(e,+e.getAttribute('cx'),+e.getAttribute('cy')));else if(e.localName==='polygon'){const p=e.getAttribute('points').trim().split(/[ ,]+/).map(Number);for(let i=0;i<p.length;i+=2)protect(toLocal(e,p[i],p[i+1]));}else if(e.localName==='rect'){const x=+e.getAttribute('x'),y=+e.getAttribute('y'),w=+e.getAttribute('width'),h=+e.getAttribute('height');for(const [xx,yy]of[[x,y],[x+w,y],[x,y+h],[x+w,y+h]])protect(toLocal(e,xx,yy));}else{const s=read(e);protect(toLocal(e,s.x1,s.y1));protect(toLocal(e,s.x2,s.y2));}}
+   const low=required.length?Math.min(...required):0,high=required.length?Math.max(...required):0,pad=required.length?Math.min(4,length-target):0,used=Math.min(length,Math.max(target,high-low+2*pad)),start=Math.max(0,Math.min(length-used,low-pad));
+   const s={x1:a.x1+start*ux,y1:a.y1+start*uy,x2:a.x1+(start+used)*ux,y2:a.y1+(start+used)*uy};
+   if(policy.localName==='polyline')policy.setAttribute('points',s.x1+','+s.y1+' '+s.x2+','+s.y2);else for(const[k,v]of Object.entries(s))policy.setAttribute(k,v);
+   policy.dataset.ewLengthRule=used>target+.05?'required-geometry-exception':'matched-or-boundary-limited';
+  }
+ }
  // Read-only teaching summaries: use the rendered outputs, never change models.
  function gapSummary(residual,before,positive,epsilon=1e-7){
   const original=positive?'Under-consumption':'Over-consumption';
@@ -107,7 +129,7 @@
   const svg=document.getElementById('diagram');if(running||!svg?.getScreenCTM())return;
   const nativeTitles=[...svg.querySelectorAll('text>title')].map(title=>({parent:title.parentElement,title}));nativeTitles.forEach(({title})=>title.remove());
   running=true;try{
-   P.resetPresentation(svg);chrome();legacyCurveGeometry(svg);alignMeb(svg);
+   P.resetPresentation(svg);chrome();legacyCurveGeometry(svg);alignMeb(svg);policyCurveLengths(svg);
    if(svg.querySelector('#diagram-plot')&&!document.body.classList.contains('ew-government')&&!document.body.classList.contains('ew-basic-externality')){
     svg.classList.add('ew-policy-context');
     for(const e of svg.querySelectorAll('.line-mpb,.line-mpc,.line-msb,.line-msc'))e.style.stroke='#374151';
@@ -131,7 +153,7 @@
     if(e.matches('.axis-title')||plain==='Price'||(plain==='Quantity'||plain==='Qty')){
      e.classList.add('ew-axis-title');
      if(/^(?:Quantity|Qty)(?:\s|$)/.test(plain)){e.textContent=plain.replace(/^Quantity/,'Qty');position(svg,e,488,447);e.setAttribute('text-anchor','start');P.styleText(e,role);if(plain.includes('Labour')&&e.getBoundingClientRect().width>104*svg.getBoundingClientRect().width/600)P.wrapText(e,['Qty ','Of ','Labour']);}
-     else if(e.querySelectorAll('tspan').length){position(svg,e,88,36);e.setAttribute('text-anchor','end');for(const[t,j]of[...e.querySelectorAll('tspan')].map((t,j)=>[t,j])){const p=new DOMPoint(88,36+j*18).matrixTransform(e.getScreenCTM().inverse().multiply(svg.getScreenCTM()));t.setAttribute('x',p.x);t.setAttribute('y',p.y);t.removeAttribute('dy');}role='small';}
+     else if(e.querySelectorAll('tspan').length){const topic5=document.body.matches('.ew-pe-policy,.ew-ne-policy,.ew-basic-externality'),unit=600/svg.getBoundingClientRect().width;position(svg,e,88,36);e.setAttribute('text-anchor','end');for(const[t,j]of[...e.querySelectorAll('tspan')].map((t,j)=>[t,j])){const y=topic5?50+(j-1)*12*unit:36+j*18,p=new DOMPoint(88,y).matrixTransform(e.getScreenCTM().inverse().multiply(svg.getScreenCTM()));t.setAttribute('x',p.x);t.setAttribute('y',p.y);t.removeAttribute('dy');}role=topic5?'topic5Title':'small';}
      else{position(svg,e,100,30);e.setAttribute('text-anchor','middle');}e.dataset.ewTextRole=role;fixed.push(e);continue;
     }
     if(/^No price adjustment: equilibrium price is unchanged\.$/i.test(plain)){

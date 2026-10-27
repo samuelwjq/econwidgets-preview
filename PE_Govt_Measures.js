@@ -60,6 +60,7 @@
     toggleDwl.disabled=policy==='joint_provision';
     toggleDwl.closest('label').title=policy==='joint_provision'?'DWL requires public production-cost assumptions.':'';
     document.getElementById('slider-max-label').textContent='High';
+    sliderContainer.querySelector('.scale-label').textContent='None';
     policySlider.max='60';
     const meb = FIXED_MEB;
     const sliderVal = parseFloat(policySlider.value);
@@ -202,7 +203,7 @@
     } 
     else if (policy === 'indirect_subsidy') {
       sliderContainer.style.display = 'flex';
-      sliderLabel.innerHTML = '<strong>Subsidy Level:</strong>';
+      sliderLabel.innerHTML = '<strong>Per-unit Subsidy:</strong>';
 
       const s = sliderVal;
       currentQ = 50 + s / 2;
@@ -276,7 +277,7 @@
     } 
     else if (policy === 'direct_subsidy') {
       sliderContainer.style.display = 'flex';
-      sliderLabel.innerHTML = '<strong>Subsidy Level:</strong>';
+      sliderLabel.innerHTML = '<strong>Per-unit Subsidy:</strong>';
 
       const s = sliderVal;
       currentQ = 50 + s / 2;
@@ -362,7 +363,9 @@
     }
     else if (policy === 'education') {
       sliderContainer.style.display = 'flex';
-      sliderLabel.innerHTML = '<strong>Campaign Intensity:</strong>';
+      sliderLabel.innerHTML = '<strong>Campaign Effectiveness:</strong>';
+      sliderContainer.querySelector('.scale-label').textContent='Zero';
+      document.getElementById('slider-max-label').textContent='Highly Effective';
 
       const c = sliderVal;
       currentQ = 50 + c / 2;
@@ -385,7 +388,7 @@
         labelPolicyCurve.style.display = 'none';
       } else {
         linePolicyCurve.style.display = 'inline';
-        labelPolicyCurve.textContent = "MPB*";
+        labelPolicyCurve.textContent = "MPB* (Education)";
         labelPolicyCurve.setAttribute('x', eduX2 + 6);
         labelPolicyCurve.setAttribute('y', eduY2 + 4);
         labelPolicyCurve.removeAttribute('text-anchor');

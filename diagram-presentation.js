@@ -129,14 +129,16 @@
   const obstacles=(registration.fixedElements||[]).filter(e=>e.getClientRects().length).map(e=>{const b=e.getBoundingClientRect();return {x:b.x,y:b.y,width:b.width,height:b.height};});
   const labels=[],familyData=new Map();
   for(const family of registration.parallelFamilies||[]){const order=parallelOrder(family.segments,family.referenceX);for(const segment of family.segments)familyData.set(segment.id,{family:family.id,order:order[segment.id]});}
-  for(const entry of registration.labels){
+  for(let entry of registration.labels){
    const e=entry.element;if(e.classList.contains('ew-axis-title'))throw Error('Axis titles cannot enter displacement layout');
    if(placedTransforms.has(e))throw Error('Call resetPresentation before the widget renders its next state');
    if(!e.getClientRects().length||getComputedStyle(e).display==='none'||getComputedStyle(e).visibility==='hidden')continue;
    styleText(e,entry.role||'main');e.dataset.ewLabelKind=entry.kind||'point';e.setAttribute('data-ew-layout-label','');
    if(entry.axis==='price'){
     const available=point({x:config.values.priceColumnX,y:0}).x-tl.x;
-    if(e.getBoundingClientRect().width>available){
+    const terms=e.innerHTML.split(' = '),fourPrices=terms.length===4&&/^P/.test(e.textContent.trim());
+    if(fourPrices){wrapText(e,[terms.slice(0,2).join(' = '),' = '+terms.slice(2).join(' = ')]);if(e.getBoundingClientRect().width>available)entry={...entry,axis:undefined,kind:'point',leader:true,fourPriceInterior:true};}
+    else if(e.getBoundingClientRect().width>available){
      const html=e.innerHTML,parts=html.includes(' = ')?html.split(/(?= = )/):html.includes(' (')?html.split(/(?= \()/):[html];
      if(parts.length>1){wrapText(e,parts);if(e.getBoundingClientRect().width>available&&html.includes(' = ')){e.innerHTML=html;const terms=html.split(' = ');wrapText(e,terms.map((term,i)=>i<terms.length-1?term+' = ':term));}}
     }
@@ -144,7 +146,7 @@
    const b=e.getBoundingClientRect();
    const nearSegment=entry.nearSegmentUser?(()=>{const a=point({x:entry.nearSegmentUser.x1,y:entry.nearSegmentUser.y1}),z=point({x:entry.nearSegmentUser.x2,y:entry.nearSegmentUser.y2});return{x1:a.x,y1:a.y,x2:z.x,y2:z.y};})():null;
    const avoidSegments=(entry.avoidSegmentsUser||[]).map(s=>{const a=point({x:s.x1,y:s.y1}),b=point({x:s.x2,y:s.y2});return{x1:a.x,y1:a.y,x2:b.x,y2:b.y};});
-   labels.push({...entry,nearSegment,avoidSegments,id:entry.id||e.id,width:b.width,height:b.height,originalBox:{x:b.x,y:b.y},preferred:{x:b.x,y:b.y},anchor:entry.anchorUser?point(entry.anchorUser):null});
+   labels.push({...entry,nearSegment,avoidSegments,id:entry.id||e.id,width:b.width,height:b.height,originalBox:{x:b.x,y:b.y},preferred:entry.fourPriceInterior?{x:point({x:config.plot.left+16,y:0}).x,y:point(entry.anchorUser).y-b.height/2}:{x:b.x,y:b.y},anchor:entry.anchorUser?point(entry.anchorUser):null});
   }
   for(const l of labels){
    if(l.kind==='curve'&&l.family&&!familyData.has(l.id))throw Error('Register parallel curve geometry, not a guessed family rank');

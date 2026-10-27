@@ -58,6 +58,16 @@ body.ew-page { margin:0; padding:16px; background:#fff; color:var(--ew-ink); fon
 .ew-main,.ew-glossary { min-width:0; }
 .ew-diagram-frame { width:100%; border:1px solid var(--ew-border); border-radius:var(--ew-radius); background:#fff; overflow:hidden; }
 .ew-summary-strip { box-sizing:border-box; height:28px; display:flex; align-items:center; padding:0 12px; border-bottom:1px solid var(--ew-border); background:#fff9db; color:var(--ew-ink); font-size:12px; line-height:14px; font-weight:600; }
+.ew-help-dialog { box-sizing:border-box; width:400px; max-width:calc(100vw - 24px); padding:14px; border:1px solid var(--ew-border); border-radius:4px; background:white; color:var(--ew-ink); font:13px/1.4 var(--ew-font); }
+.ew-help-dialog::backdrop { background:#202a3559; }
+.ew-help-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.ew-help-heading h2 { margin:0; font-size:16px; }
+.ew-help-heading button { min-width:32px; min-height:32px; padding:2px 6px; }
+.ew-help-dialog ul { margin:8px 0 0; padding-left:18px; }
+.ew-help-dialog li { margin:4px 0; }
+.ew-actions .ew-help-button { min-width:32px; font-weight:700; }
+@media(max-height:360px) and (min-width:560px) { .ew-help-dialog { width:560px; padding:10px 12px; } .ew-help-dialog ul { display:grid; grid-template-columns:1fr 1fr; column-gap:20px; } }
+@media(max-width:359px) { .ew-help-dialog { padding:10px; font-size:12px; line-height:16px; } .ew-help-dialog li { margin:3px 0; } }
 @media(max-width:480px) { .ew-summary-strip { height:40px; white-space:normal; } }
 @media(max-width:480px) { .ew-ne-policy .ew-summary-strip,.ew-pe-policy .ew-summary-strip { height:56px; } }
 .ew-diagram { display:block; width:100%; height:auto; aspect-ratio:600 / 510; overflow:hidden; }

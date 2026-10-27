@@ -7,10 +7,10 @@ ceiling:{name:'Price Ceiling',label:'Maximum price',min:20,max:80,value:45,gloss
 floor:{name:'Price Floor',label:'Minimum price',min:20,max:80,value:75,glossary:'floor'},
 wage:{name:'Minimum Wage',label:'Minimum wage',min:20,max:80,value:75,glossary:'wage'},
 quota:{name:'Quota',label:'Maximum quantity',min:0,max:100,value:25,glossary:'quota'},
-specific:{name:'Indirect Specific Tax',label:'Tax per unit',min:0,max:60,value:20,glossary:'specific'},
-advalorem:{name:'Indirect Ad-Valorem Tax',label:'Tax rate (% of pre-tax price)',min:0,max:300,value:30,glossary:'advalorem'},
-indirect:{name:'Indirect Subsidy (specific)',label:'Subsidy per unit paid to producers',min:0,max:60,value:20,glossary:'indirect'},
-direct:{name:'Direct Subsidy',label:'Subsidy per unit paid to consumers',min:0,max:60,value:20,glossary:'direct'}
+specific:{name:'Indirect Specific Tax',label:'per unit Tax',min:0,max:60,value:20,glossary:'specific'},
+advalorem:{name:'Indirect Ad-Valorem Tax',label:'Tax Rate',min:0,max:300,value:30,glossary:'advalorem'},
+indirect:{name:'Indirect Subsidy (specific)',label:'per-unit subsidy',min:0,max:60,value:20,glossary:'indirect'},
+direct:{name:'Direct Subsidy',label:'per-unit subsidy',min:0,max:60,value:20,glossary:'direct'}
 };
 const values=Object.fromEntries(Object.entries(policies).map(([k,p])=>[k,p.value??0]));
 const D=q=>100-q,S=q=>q;const baseline={q:50,pc:50,pp:50,cs:1250,ps:1250,g:0,tw:2500,dwl:0};
@@ -66,7 +66,7 @@ const glossary=[
 ];
 glossary.forEach(([id,name,text])=>{const el=document.createElement('details');el.id='glossary-'+id;const title=document.createElement('summary');title.textContent=name;const p=document.createElement('p');p.innerHTML=formatNotation(text);el.append(title,p);$('glossary').append(el);});
 let current=calculate('none',0);
-function configure(){for(const id of ['show-cs','show-ps','show-g'])$(id).checked=false;const k=$('policy-select').value,p=policies[k];$('slider-card').hidden=k==='none';if(k!=='none'){Object.assign($('policy-slider'),{min:p.min,max:p.max,value:values[k]});$('slider-label').textContent=p.label;$('slider-min').textContent=k==='quota'?'Smaller quota':'Lower';$('slider-max').textContent=k==='quota'?'Larger quota':'Higher';}$('tooltip').hidden=true;render();}
+function configure(){for(const id of ['show-cs','show-ps','show-g'])$(id).checked=false;const k=$('policy-select').value,p=policies[k];$('slider-card').hidden=k==='none';if(k!=='none'){Object.assign($('policy-slider'),{min:p.min,max:p.max,value:values[k]});$('slider-label').textContent=p.label;const taxSub=['specific','advalorem','indirect','direct'].includes(k);$('slider-min').textContent=taxSub?'None':'Lower';$('slider-max').textContent=taxSub?'High':'Higher';}$('tooltip').hidden=true;render();}
 const palette={cs:'#2563eb',ps:'#16a34a',g:'#8b5cf6',dwl:'#dc2626'};
 const X=q=>112+3*q,Y=p=>432-p/120*360;
 function add(tag,attrs={},parent=$('diagram-plot')){const e=document.createElementNS(NS,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);parent.append(e);return e;}

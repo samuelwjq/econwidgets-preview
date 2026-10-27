@@ -91,6 +91,7 @@
  if(exportLabel)exportPanel.append(exportLabel);if(download){download.textContent='Download PNG';exportPanel.append(download);}if(copy){copy.textContent='Copy Diagram';bar.append(copy);}
  const svgDownload=document.createElement('button');svgDownload.type='button';svgDownload.textContent='Download SVG';exportPanel.insertBefore(svgDownload,download);
  bar.append(exportMenu);frame.after(bar);
+ EconWidgetHelp.install(bar,{kind:document.getElementById('next')?'guided':document.body.classList.contains('ew-elasticity')?'elasticity':document.getElementById('policy-select')?'policy':'standard'});
  bars.filter(n=>n!==bar).forEach(n=>{if(!n.children.length)n.remove();});
  let status=main.querySelector('#export-status,[role="status"]');
  if(!status){status=document.createElement('p');status.className='diagram-help';status.setAttribute('role','status');bar.after(status);}
@@ -261,7 +262,7 @@
  }
  // Remove Small Interface Instructions; Preserve Status Messages And Model Notes.
  for(const help of main.querySelectorAll('.diagram-help,.case-help')){
-  if(help.id==='export-status'||help.getAttribute('role')==='status'||document.body.classList.contains('ew-elasticity'))continue;
+  if(help.id==='export-status'||help.getAttribute('role')==='status')continue;
   help.remove();
  }
  function normaliseAccessibleLabels(){for(const input of document.querySelectorAll('[aria-label]')){
