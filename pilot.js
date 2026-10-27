@@ -40,11 +40,41 @@
   for(const scope of[plot,svg.querySelector('#free-scene')].filter(Boolean)){const pair=['mpb','mpc'].map(k=>[...scope.querySelectorAll('line.line-'+k)].find(visible));if(pair.some(e=>!e))continue;const length=e=>Math.hypot(+e.getAttribute('x2')-+e.getAttribute('x1'),+e.getAttribute('y2')-+e.getAttribute('y1')),target=Math.min(...pair.map(length));for(const e of pair){const n=length(e);if(n<=target+.01)continue;const t=target/n;e.setAttribute('x2',+e.getAttribute('x1')+t*(+e.getAttribute('x2')-+e.getAttribute('x1')));e.setAttribute('y2',+e.getAttribute('y1')+t*(+e.getAttribute('y2')-+e.getAttribute('y1')));}}
  }
  const areaIds={'dwl':['Deadweight loss','social'],'area-dwl':['Deadweight loss','social'],'free-policy-loss':['Free-provision DWL','social'],'free-market-loss':['Free-market DWL','other'],'subsidy-cost-rect':['Subsidy expenditure','policy'],'cs-area':['Consumer surplus','cs'],'ps-area':['Producer surplus','ps']};
+ // Read-only teaching summaries: use the rendered outputs, never change models.
+ function gapSummary(residual,before,positive,epsilon=1e-7){
+  const original=positive?'Under-consumption':'Over-consumption';
+  if(Math.abs(residual)<epsilon)return original+' Eliminated';
+  if((positive&&residual<0)||(!positive&&residual>0))return (positive?'Over-consumption':'Under-consumption')+' Arises';
+  const delta=Math.abs(residual)-before;
+  return original+' '+(Math.abs(delta)<epsilon?'Unchanged':delta<0?'Reduced':'Increased');
+ }
+ function dwlSummary(after,before,epsilon=1e-7){return 'DWL '+(Math.abs(after-before)<epsilon?'Unchanged':after<epsilon?'Eliminated':after<before?'Reduced':'Increased');}
+ function policySummary(svg,dir){
+  const policy=document.getElementById('policy-select').value,join=parts=>parts.join(' · ');
+  if(document.body.classList.contains('ew-ne-policy')){
+   if(policy==='ban'){const b=window.currentBanModel;return join(['Output Banned','Qe Decreases',gapSummary(b.qs,Math.abs(b.qs-b.qe),false),dwlSummary(b.banDwl,b.freeDwl)]);}
+   const s=window.currentNEModel;if(!s)return '';
+   const baseline=s.qs-s.qe,residual=s.activeQs-s.currentQ,amount={tax:'tax-slider',quota:'quota-slider',qpoll:'qpoll-slider',rd:'rd-slider',edu:'edu-slider'}[policy],value=Number(document.getElementById(amount)?.value||0);
+   let effect={none:'No Policy',tax:value?'MPC → MPC + Tax':'MPC Unchanged',quota:'Output Quota',qpoll:value?'MSC Shifts Down':'MSC Unchanged',rd:value?'MSC Shifts Down':'MSC Unchanged',edu:value?'MPC → MPC*':'MPC Unchanged'}[policy];
+   const quantity=['qpoll','rd'].includes(policy)?dir(s.activeQs-s.qs,'Qs')+'; Qe Unchanged':dir(s.currentQ-s.qe,'Qe');
+   return join([effect,quantity,gapSummary(residual,Math.abs(baseline),false),dwlSummary(Math.abs(residual),Math.abs(baseline))]);
+  }
+  const value=Number(document.getElementById('policy-slider').value),effects={none:'No Policy',indirect_subsidy:value?'MPC → MPC − Subsidy':'MPC Unchanged',direct_subsidy:value?'MPB → MPB + Subsidy':'MPB Unchanged',joint_provision:value?'MPC → MPC*':'MPC Unchanged',education:value?'MPB → MPB*':'MPB Unchanged',free_provision:'MPC → MPC*'};
+  if(policy==='free_provision'){
+   const m=window.currentFreeModel;if(!m)return '';
+   return join([effects[policy],dir(m.qf-m.qe,'Qe'),gapSummary(m.qs-m.qf,Math.abs(m.qs-m.qe),true),dwlSummary(m.freeLoss,m.marketLoss)]);
+  }
+  const base=svg.querySelector('#line-qe'),opt=svg.querySelector('#line-qs'),line=svg.querySelector('#line-qpol'),initial=+base.getAttribute('x1'),optimal=+opt.getAttribute('x1'),current=policy==='none'||!line||line.style.display==='none'?initial:+line.getAttribute('x1'),before=Math.abs(optimal-initial),after=optimal-current;
+  // Joint Provision uses the user's reduced-underproduction assumption; the
+  // source deliberately leaves public production costs and welfare undefined.
+  if(policy==='joint_provision')return join([effects[policy],dir(current-initial,'Total Qty'),value?'Under-consumption Reduced':'Under-consumption Unchanged',value?'DWL Reduced':'DWL Unchanged']);
+  return join([effects[policy],dir(current-initial,'Qe'),gapSummary(after,before,true,.05),dwlSummary(Math.abs(after),before,.05)]);
+ }
  function summaryText(svg){
   const dir=(v,label)=>label+' '+(Math.abs(v)<1e-7?'Unchanged':v>0?'Increases':'Decreases');
   if(document.body.classList.contains('ew-government')){const m=window.currentGovernmentModel;if(!m)return '';if(m.policy==='quota'&&m.q<1e-7)return 'Price Not Applicable · Qty Decreases';return dir((m.policy==='direct'?m.pp:m.pc)-50,m.policy==='wage'?'Wage':'Price')+' · '+dir(m.q-50,m.policy==='wage'?'Employment':'Qty');}
-  if(document.body.classList.contains('ew-basic-externality')){const positive=!!document.getElementById('meb-slider'),magnitude=Number(document.getElementById(positive?'meb-slider':'mec-slider').value);return Math.abs(magnitude)<1e-7?'Qe = Qs · No Output Gap':positive?'Qe < Qs · Under-consumption/production':'Qe > Qs · Over-consumption/production';}
-  if(document.body.classList.contains('ew-ne-policy')){if(document.getElementById('policy-select').value==='ban'){const b=window.currentBanModel;return 'Qty Decreases · DWL '+(Math.abs(b.banDwl-b.freeDwl)<1e-7?'Unchanged':b.banDwl<1e-7?'Eliminated':b.banDwl<b.freeDwl?'Decreases':'Increases');}const s=window.currentNEModel;if(!s)return '';const before=Math.abs(s.qe-s.qs),after=Math.abs(s.currentQ-s.activeQs);return dir(s.currentQ-s.qe,'Qty')+' · DWL '+(Math.abs(after-before)<1e-7?'Unchanged':after<1e-7?'Eliminated':after<before?'Decreases':'Increases');}
+  if(document.body.classList.contains('ew-basic-externality')){const positive=!!document.getElementById('meb-slider'),magnitude=Number(document.getElementById(positive?'meb-slider':'mec-slider').value),prefix=(positive?'MEB':'MEC')+(Math.abs(magnitude)<1e-7?' = 0':' > 0');return prefix+' · '+(Math.abs(magnitude)<1e-7?'Qe = Qs · No Output Gap':positive?'Qe < Qs · Under-consumption/production':'Qe > Qs · Over-consumption/production');}
+  if(document.body.matches('.ew-ne-policy,.ew-pe-policy'))return policySummary(svg,dir);
   if(!svg.querySelector('#diagram-plot')){
    const direction=(v,label)=>v==='Increases'?label+' Increases':v==='Decreases'?label+' Decreases':label+' Unchanged';
    if(document.body.classList.contains('ew-elasticity')){
@@ -64,12 +94,7 @@
    if(state.step&&state.step<6)return shifts.join(' · ');
    return [...shifts,direction(state.priceChange,'Price'),direction(state.quantityChange,'Qty')].join(' · ');
   }
-  const policy=document.getElementById('policy-select')?.value||'none';
-  if(policy==='joint_provision'){const line=svg.querySelector('#line-qpol'),base=svg.querySelector('#line-qe'),current=line&&line.style.display!=='none'&&line.hasAttribute('x1')?Number(line.getAttribute('x1')):NaN,initial=Number(base?.getAttribute('x1')),qty=Number.isFinite(current)?current:initial;const q=qty>initial+.05?'Total Qty Increases':qty<initial-.05?'Total Qty Decreases':'Total Qty Unchanged';return q+' · '+(Math.abs(qty-initial)>.05?'DWL Decreases':'DWL Unchanged');}
-  if(policy==='free_provision'&&window.currentFreeModel){const m=window.currentFreeModel,delta=m.freeLoss-m.marketLoss;return 'Total Qty Increases · DWL '+(Math.abs(delta)<1e-7?'Unchanged':delta<0?'Decreases':'Increases');}
-  const base=svg.querySelector('#line-qe'),opt=svg.querySelector('#line-qs'),policyLine=svg.querySelector('#line-qpol'),baseX=+base?.getAttribute('x1'),optX=+opt?.getAttribute('x1'),currentX=policy==='none'||!policyLine||policyLine.style.display==='none'?baseX:+policyLine.getAttribute('x1');
-  if(!Number.isFinite(baseX)||!Number.isFinite(optX)||!Number.isFinite(currentX))return 'Diagram summary unavailable';
-  const q=currentX>baseX+.05?'Qty Increases':currentX<baseX-.05?'Qty Decreases':'Qty Unchanged',before=Math.abs(baseX-optX),after=Math.abs(currentX-optX),welfare=Math.abs(after-before)<.05?'DWL Unchanged':after<.05?'DWL Eliminated':after<before?'DWL Decreases':'DWL Increases';return q+' · '+welfare;
+  return '';
  }
  function updateSummary(svg){const frame=svg.closest('.diagram-frame');if(!summaryStrip){summaryStrip=document.querySelector('.ew-summary-strip');if(!summaryStrip){summaryStrip=document.createElement('div');summaryStrip.className='ew-summary-strip';}summaryStrip.setAttribute('role','group');summaryStrip.setAttribute('aria-label','Diagram summary');}if(summaryStrip.parentElement!==frame)frame.prepend(summaryStrip);summaryStrip.textContent=summaryText(svg);}
  function legend(svg){
@@ -88,7 +113,7 @@
     for(const e of svg.querySelectorAll('.line-mpb,.line-mpc,.line-msb,.line-msc'))e.style.stroke='#374151';
     for(const e of svg.querySelectorAll('#label-mpb,#label-mpc,#label-msb,#label-msc,#free-scene text'))if(/^(?:MPB|MPC|MSB|MSC)/.test(e.textContent)&&!/^MPC\*/.test(e.textContent))e.style.fill='#374151';
     for(const e of svg.querySelectorAll('#arrow-meb,.free-externality'))e.style.stroke='#67717e';
-    for(const e of svg.querySelectorAll('#label-meb'))e.style.fill='#374151';
+    for(const e of svg.querySelectorAll('#label-meb'))e.style.fill='#dc2626';
     for(const e of svg.querySelectorAll('#label-policy-curve,#label-policy-arrow'))e.style.fill='#4169e1';
     for(const e of svg.querySelectorAll('#free-scene text'))if(/^MPC\*/.test(e.textContent))e.style.fill='#4169e1';
     const merged=svg.querySelector('#label-msb'),mode=document.getElementById('policy-select')?.value;
@@ -145,7 +170,7 @@
      const slope=(s.y2-s.y1)/(s.x2-s.x1),key=(e.closest('#free-scene')?.id||'main')+':'+Math.round(slope*1e6);if(Number.isFinite(slope)){if(!families.has(key))families.set(key,[]);families.get(key).push({...s,id});}
     }else if(e.matches('.welfare-label,.area-label,#label-dwl-text,#label-subsidy-cost-text')){e.classList.add('ew-fixed-label');e.dataset.ewTextRole='small';fixed.push(e);continue;}
     else if(/(?:Under|Over)-(?:consumption|production)/i.test(plain)){position(svg,e,290,490);e.setAttribute('text-anchor','middle');role='small';if(e.id==='label-output-gap'&&svg.getBoundingClientRect().width<320&&plain.includes(' / ')){P.styleText(e,role);position(svg,e,450,300);const parts=plain.match(/^((?:Under|Over)-)(Consumption \/ )((?:Under|Over)-)(Production)$/i);if(parts)P.wrapText(e,parts.slice(1));}}
-    else if(plain==='MEB'||plain==='MEC'){role='small';}
+    else if(plain==='MEB'||plain==='MEC'){role='small';if(document.body.matches('.ew-ne-policy,.ew-pe-policy'))e.style.fill='#dc2626';}
     if(e.id==='label-policy-arrow'&&/^Government output \(Qg\)$/i.test(plain)&&svg.getBoundingClientRect().width<400){P.styleText(e,'small');const html=e.innerHTML,split=html.indexOf(' ');P.wrapText(e,[html.slice(0,split),html.slice(split)]);}
     const mebLabel=gov&&/^(MEB|MEC)$/.test(plain),annotation=mebLabel?(e.closest('#free-scene,#ban-scene')||svg).querySelector(plain==='MEC'?'#mec-arrow,#group-mec line,line[stroke="#2563eb"]':'#arrow-meb,#meb-arrow,.free-externality'):e.id==='label-policy-arrow'?svg.querySelector('#arrow-policy'):null;
     if(annotation&&visible(annotation)){

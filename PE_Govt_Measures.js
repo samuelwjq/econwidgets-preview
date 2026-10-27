@@ -165,7 +165,7 @@
     labelPs.setAttribute('x', 60);
     labelPs.setAttribute('y', psY);
 
-    linePolicyCurve.style.strokeDasharray = '6,4';
+    linePolicyCurve.style.strokeDasharray = 'none';
     linePolicyCurve.style.display = 'none';
     arrowPolicy.style.display = 'none';
     labelPolicyCurve.style.display = 'none';

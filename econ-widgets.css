@@ -59,6 +59,7 @@ body.ew-page { margin:0; padding:16px; background:#fff; color:var(--ew-ink); fon
 .ew-diagram-frame { width:100%; border:1px solid var(--ew-border); border-radius:var(--ew-radius); background:#fff; overflow:hidden; }
 .ew-summary-strip { box-sizing:border-box; height:28px; display:flex; align-items:center; padding:0 12px; border-bottom:1px solid var(--ew-border); background:#fff9db; color:var(--ew-ink); font-size:12px; line-height:14px; font-weight:600; }
 @media(max-width:480px) { .ew-summary-strip { height:40px; white-space:normal; } }
+@media(max-width:480px) { .ew-ne-policy .ew-summary-strip,.ew-pe-policy .ew-summary-strip { height:56px; } }
 .ew-diagram { display:block; width:100%; height:auto; aspect-ratio:600 / 510; overflow:hidden; }
 .ew-diagram text { font-family:var(--ew-font); font-weight:400; }
 .ew-diagram .ew-label { paint-order:stroke; stroke:#fff; stroke-linejoin:round; }

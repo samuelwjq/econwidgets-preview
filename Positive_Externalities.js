@@ -198,7 +198,8 @@
 
       // Render Two-Sided Vertical Purple Arrow & Label for MEB
       if (mebCheck.checked) {
-        const qMeb = Math.max(25, meb - 10);
+        // Fixed annotation lane; only the vertical benefit gap changes.
+        const qMeb = 70;
         const qMebX = toSvgX(qMeb);
         const mpbY_q = toSvgY(100 -  qMeb);
         const msbY_q = toSvgY(100 + meb - 1 * qMeb);
