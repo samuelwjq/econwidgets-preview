@@ -262,8 +262,8 @@ body.ew-page { margin:0; padding:16px; background:#fff; color:var(--ew-ink); fon
 @media(max-width:900px) { .ew-walk-panel { padding:8px 0; } .ew-glossary .sidebar-divider { display:none; } }
 @media(max-width:480px) { .ew-step-navigation { margin-left:0; } }
 .ew-diagram .ban-free-area { fill:rgba(167,139,250,.25); stroke:#a78bfa; stroke-width:1; }
-.ew-diagram.ew-policy-context #arrow-meb { stroke:#67717e; }
-.ew-diagram.ew-policy-context #arrow-start-blue path,.ew-diagram.ew-policy-context #arrow-end-blue path,.ew-diagram.ew-policy-context #externality-start path,.ew-diagram.ew-policy-context #externality-end path { fill:#67717e; }
+.ew-diagram.ew-policy-context #arrow-meb { stroke:#dc2626; }
+.ew-diagram.ew-policy-context #arrow-start-blue path,.ew-diagram.ew-policy-context #arrow-end-blue path,.ew-diagram.ew-policy-context #externality-start path,.ew-diagram.ew-policy-context #externality-end path { fill:#dc2626; }
 @media(pointer:coarse) {
  .ew-controls button,.ew-controls select,.ew-controls .ew-settings>summary,.ew-controls .ew-settings .ew-options>label { min-height:44px; }
 }

@@ -49,6 +49,7 @@
   if(government){const mode=window.currentGovernmentModel?.policy;if(!['specific','indirect','direct'].includes(mode))return;const policy=curves[2],base=curves[mode==='direct'?0:1];if(policy&&base)pairs.push([policy,base]);}
   else for(const policy of curves.filter(e=>e.matches('.line-policy,.line-tax,.line-qpoll,.line-rd,.line-edu'))){const scope=policy.closest('#free-scene')||svg,negative=policy.matches('.line-qpoll,.line-rd'),s=read(policy),base=scope.querySelector(negative?'#curve-msc':s.y2<s.y1?'#curve-mpc,line.line-mpc':'#curve-mpb,line.line-mpb');if(base)pairs.push([policy,base]);}
   for(const[policy,base]of pairs){
+   if(policy.matches('.line-qpoll,.line-rd')){policy.dataset.ewLengthRule='full-plot-boundary';continue;}
    let a=read(policy);if(government){if(!originalPolicySegments.has(policy))originalPolicySegments.set(policy,a);a=originalPolicySegments.get(policy);}const b=read(base),dx=a.x2-a.x1,dy=a.y2-a.y1,length=Math.hypot(dx,dy),bdx=b.x2-b.x1,bdy=b.y2-b.y1;
    if(!length||Math.abs(dx*bdy-dy*bdx)>1e-5*length*Math.hypot(bdx,bdy))continue;
    const target=Math.min(length,Math.hypot(bdx,bdy)),ux=dx/length,uy=dy/length,required=[];

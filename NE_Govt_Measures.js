@@ -301,7 +301,7 @@
 
       const qCapX = toSvgX(quotaVal);
       lineQuota.setAttribute('x1', qCapX); lineQuota.setAttribute('y1', 380);
-      lineQuota.setAttribute('x2', qCapX); lineQuota.setAttribute('y2', toSvgY(100));
+      lineQuota.setAttribute('x2', qCapX); lineQuota.setAttribute('y2', 25);
       lineQuota.style.display = 'block';
 
     } else if (activePolicy === 'qpoll') {
@@ -554,7 +554,7 @@
     if (activePolicy === 'quota') {
       const qCapX = toSvgX(quotaVal);
       const labelX = Math.min(580, Math.max(70, qCapX));
-      const text = createSvgText(labelX, toSvgY(93), 'Quota', {
+      const text = createSvgText(labelX, 42, 'Quota', {
         anchor: 'middle',
         fontWeight: 'bold',
         fill: '#4169e1'
