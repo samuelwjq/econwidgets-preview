@@ -14,6 +14,7 @@
   strokes:{curve:2.5,guide:1,leader:1,guideDash:'4 4',leaderColour:'#9ca3af'},
   gaps:{labelPx:6,obstaclePx:4,leaderThresholdPx:12,curveProximityPx:24,compactCurveProximityPx:48,compactCurveWidthPx:480},
   search:{stepPx:8,maxOffsetPx:160,maxNodes:50000},
+  exceptions:{imperfectInfoDense:{maxDistancePx:80,leaderThresholdPx:24},imperfectInfoPhone:{viewportHeight:550,safeBottom:542,extraBottom:40}},
   legend:{heightPx:28,fontPx:12,swatchWidthPx:14,swatchHeightPx:10,itemGapPx:16},
   summary:{background:'#fff9db',heightPx:28,compactHeightPx:40,elasticityCompactHeightPx:56,policyCompactHeightPx:56,fontPx:12},
   export:{pixelRatio:2,background:'#ffffff'},

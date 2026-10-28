@@ -91,7 +91,7 @@
    let selected=null,choices=null;
    // Forward checking avoids exploring branches that already leave another
    // label without a position. Recompute the smallest remaining domain.
-   for(const l of work){if(placed.has(l.id))continue;const safe=l.choices.filter(b=>compatible(l,b));if(!safe.length)return false;if(!choices||safe.length<choices.length){selected=l;choices=safe;}}
+   for(const l of work){if(placed.has(l.id))continue;const safe=l.choices.filter(b=>compatible(l,b));if(!safe.length)return false;if(!choices||(l.placementPriority||0)>(selected.placementPriority||0)||((l.placementPriority||0)===(selected.placementPriority||0)&&safe.length<choices.length)){selected=l;choices=safe;}}
    for(const b of choices){if(++nodes>settings.maxNodes){exhausted=true;return false;}placed.set(selected.id,b);if(visit())return true;placed.delete(selected.id);if(exhausted)return false;}
    return false;
   }
@@ -99,6 +99,14 @@
   return {ok,reason:ok?null:exhausted?'search-budget-exceeded':'no-safe-placement',positions:ok?Object.fromEntries(placed):{},unresolved:ok?[]:labels.map(l=>l.id),domains:ok?undefined:Object.fromEntries(work.map(l=>[l.id,l.choices.length])),nodes};
  }
  function leaderEndpoint(anchor,box){return {x:Math.max(box.x,Math.min(box.x+box.width,anchor.x)),y:Math.max(box.y,Math.min(box.y+box.height,anchor.y))};}
+ // Approved dense imperfect-information exception: connect to the nearest
+ // visible part of the registered curve, not to a guessed/end-point anchor.
+ function curveLeaderEndpoints(segment,box){
+  const dx=segment.x2-segment.x1,dy=segment.y2-segment.y1,den=dx*dx+dy*dy||1,pairs=[];
+  for(const end of [{x:box.x,y:box.y},{x:box.x+box.width,y:box.y},{x:box.x,y:box.y+box.height},{x:box.x+box.width,y:box.y+box.height}]){const t=Math.max(0,Math.min(1,((end.x-segment.x1)*dx+(end.y-segment.y1)*dy)/den));pairs.push({start:{x:segment.x1+t*dx,y:segment.y1+t*dy},end});}
+  for(const start of [{x:segment.x1,y:segment.y1},{x:segment.x2,y:segment.y2}])pairs.push({start,end:leaderEndpoint(start,box)});
+  return pairs.sort((a,b)=>Math.hypot(a.start.x-a.end.x,a.start.y-a.end.y)-Math.hypot(b.start.x-b.end.x,b.start.y-b.end.y))[0];
+ }
  function resetPresentation(svg){
   svg.querySelectorAll('[data-ew-wrapped]').forEach(e=>{if(wrappedText.has(e)){e.innerHTML=wrappedText.get(e);wrappedText.delete(e);}e.removeAttribute('data-ew-wrapped');});
   svg.querySelectorAll('[data-ew-layout-label]').forEach(e=>{if(placedTransforms.has(e)){const t=placedTransforms.get(e);if(t===null)e.removeAttribute('transform');else e.setAttribute('transform',t);placedTransforms.delete(e);}});
@@ -166,6 +174,10 @@
    const from=svg.createSVGPoint(),to=svg.createSVGPoint();from.x=entry.originalBox.x;from.y=entry.originalBox.y;to.x=b.x;to.y=b.y;
    const a=from.matrixTransform(inv),z=to.matrixTransform(inv),base=e.getAttribute('transform');placedTransforms.set(e,base);
    e.setAttribute('transform',(base||'')+` translate(${z.x-a.x} ${z.y-a.y})`);
+   if(entry.kind==='curve'&&entry.curveLeaderException==='IMPERFECT-INFO-DENSE'&&entry.nearSegment){
+    const {start,end}=curveLeaderEndpoints(entry.nearSegment,b);
+    if(Math.hypot(start.x-end.x,start.y-end.y)>config.exceptions.imperfectInfoDense.leaderThresholdPx){const u=new DOMPoint(start.x,start.y).matrixTransform(inverse),v=new DOMPoint(end.x,end.y).matrixTransform(inverse),line=document.createElementNS(svg.namespaceURI,'line');for(const[k,val]of Object.entries({x1:u.x,y1:u.y,x2:v.x,y2:v.y,class:'ew-displacement-leader','data-ew-label-for':entry.id,'data-ew-curve-leader-exception':'IMPERFECT-INFO-DENSE'}))line.setAttribute(k,val);layer.append(line);}
+   }
    if(entry.kind!=='curve'&&entry.leader!==false&&entry.anchor){
     const end=leaderEndpoint(entry.anchor,b),distance=Math.hypot(end.x-entry.anchor.x,end.y-entry.anchor.y);
     const moved=entry.axis==='quantity'?Math.abs(b.x+b.width/2-entry.anchor.x)>2:entry.axis==='price'?Math.abs(b.y+b.height/2-entry.anchor.y)>2:Math.hypot(b.x-entry.originalBox.x,b.y-entry.originalBox.y)>2;
@@ -177,6 +189,6 @@
   }
   svg.dataset.ewLayoutError='';return result;
  }
- const api={intersects,inside,segmentHitsRect,segmentBoxDistance,separateIntervals,affinePlot,parallelOrder,solveLabels,leaderEndpoint,resetPresentation,styleText,wrapText,layoutSvg};
+ const api={intersects,inside,segmentHitsRect,segmentBoxDistance,separateIntervals,affinePlot,parallelOrder,solveLabels,leaderEndpoint,curveLeaderEndpoints,resetPresentation,styleText,wrapText,layoutSvg};
  root.EconDiagramPresentation=Object.freeze(api);if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

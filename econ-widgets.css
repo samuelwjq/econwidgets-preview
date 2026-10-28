@@ -60,6 +60,27 @@ body.ew-page { margin:0; padding:16px; background:#fff; color:var(--ew-ink); fon
 .ew-summary-strip { box-sizing:border-box; height:28px; display:flex; align-items:center; padding:0 12px; border-bottom:1px solid var(--ew-border); background:#fff9db; color:var(--ew-ink); font-size:12px; line-height:14px; font-weight:600; }
 .ew-help-dialog { box-sizing:border-box; width:400px; max-width:calc(100vw - 24px); padding:14px; border:1px solid var(--ew-border); border-radius:4px; background:white; color:var(--ew-ink); font:13px/1.4 var(--ew-font); }
 .ew-help-dialog::backdrop { background:#202a3559; }
+.ew-batch4 .explanation { border:1px solid #cbd7fa; background:#eef4ff; padding:12px; border-radius:4px; margin-bottom:14px; }
+.ew-batch4 .explanation h2 { margin:0 0 8px; font-size:15px; }
+.ew-batch4 .explanation p { margin:0 0 10px; }
+.ew-batch4 .explanation em { display:block; font-size:12px; margin-top:8px; }
+.ew-batch4 .progress { height:5px; background:#dce3f1; margin-bottom:10px; }
+.ew-batch4 .progress span { display:block; height:100%; background:var(--ew-accent); }
+.ew-batch4 .steps { display:flex; gap:4px; margin-top:10px; }
+.ew-batch4 .steps button { flex:1; min-width:0; padding:3px; }
+.ew-batch4 button[aria-current="step"],.ew-batch4 button[aria-pressed="true"] { color:white; background:var(--ew-accent); border-color:var(--ew-accent); }
+.ew-batch4 .step-nav { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+.ew-batch4 .focus-note,.ew-batch4 .control-note,.ew-batch4 .status { font-size:12px; color:var(--ew-muted); margin:4px 0; }
+.ew-batch4 .signed-range { flex:1; min-width:170px; position:relative; }
+.ew-batch4 .signed-range input { width:100%; margin:0; }
+.ew-batch4 .midpoint-marker { position:absolute; left:50%; top:28px; width:1px; height:8px; background:#9ca3af; pointer-events:none; }
+.ew-batch4 .slider-captions { display:flex; justify-content:space-between; gap:4px; font-size:11px; color:var(--ew-muted); }
+.ew-batch4 .slider-captions span:nth-child(2) { position:absolute; left:50%; transform:translateX(-50%); }
+.ew-batch4 .information-type { flex-wrap:wrap; }
+.ew-batch4 .information-type button { min-width:60px; }
+.ew-batch4 .tip-target { cursor:pointer; }
+.ew-batch4 .status { min-height:18px; }
+@media(max-width:480px) { .ew-batch4 .ew-summary-strip { height:56px; } }
 .ew-help-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; }
 .ew-help-heading h2 { margin:0; font-size:16px; }
 .ew-help-heading button { min-width:32px; min-height:32px; padding:2px 6px; }
@@ -72,6 +93,7 @@ body.ew-page { margin:0; padding:16px; background:#fff; color:var(--ew-ink); fon
 @media(max-width:480px) { .ew-summary-strip { height:40px; white-space:normal; } }
 @media(max-width:480px) { .ew-ne-policy .ew-summary-strip,.ew-pe-policy .ew-summary-strip { height:56px; } }
 .ew-diagram { display:block; width:100%; height:auto; aspect-ratio:600 / 510; overflow:hidden; }
+@media(max-width:480px) { .ew-b4-policy .ew-diagram { aspect-ratio:600 / 550; } }
 .ew-diagram text { font-family:var(--ew-font); font-weight:400; }
 .ew-diagram .ew-label { paint-order:stroke; stroke:#fff; stroke-linejoin:round; }
 .ew-diagram .ew-axis-title { fill:#374151; font-weight:400; }
@@ -81,6 +103,7 @@ body.ew-page { margin:0; padding:16px; background:#fff; color:var(--ew-ink); fon
 .ew-legend-slot>[hidden] { display:none; }
 .ew-legend-entry { display:inline-flex; align-items:center; gap:5px; flex:none; }
 .ew-legend-swatch { width:14px; height:10px; border:1px solid #777; display:inline-block; flex:none; }
+.ew-legend-outline { border-style:dashed; }
 .ew-actions { display:flex; align-items:center; flex-wrap:wrap; gap:6px; margin:8px 0 10px; }
 .ew-actions button,.ew-export>summary { min-height:32px; padding:5px 9px; font-size:12px; font-weight:400; }
 .ew-export { position:relative; }
