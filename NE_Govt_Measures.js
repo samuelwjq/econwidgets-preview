@@ -506,9 +506,9 @@
     if (activePolicy === 'tax') {
       activeCurves.push({ curveId:'curve-tax', yEnd: 60 + taxVal, label: 'MPC + Tax', color: '#4169e1' });
     } else if (activePolicy === 'qpoll') {
-      activeCurves.push({ curveId:activePolicy==='qpoll'?'curve-qpoll':'curve-rd', yEnd: 60 + effectiveMec, label: 'New MSC', color: '#4169e1' });
+      activeCurves.push({ curveId:activePolicy==='qpoll'?'curve-qpoll':'curve-rd', yEnd: 60 + effectiveMec, label: 'MSC* (Pollutant Quota)', color: '#4169e1' });
     } else if (activePolicy === 'rd') {
-      activeCurves.push({ curveId:activePolicy==='qpoll'?'curve-qpoll':'curve-rd', yEnd: 60 + effectiveMec, label: 'New MSC', color: '#4169e1' });
+      activeCurves.push({ curveId:activePolicy==='qpoll'?'curve-qpoll':'curve-rd', yEnd: 60 + effectiveMec, label: 'MSC* (R&D)', color: '#4169e1' });
     } else if (activePolicy === 'edu') {
       activeCurves.push({ curveId:'curve-edu', yEnd: 60 + eduVal, label: 'MPC* (Education)', color: '#4169e1' });
     }
@@ -744,7 +744,7 @@
     if(b.qs>ECON_EPS&&Math.abs(b.qs-b.qe)>ECON_EPS){line(b.qs,0,b.qs,mpb(b.qs),{class:'guide-line'});const es=banEl('circle',{cx:x(b.qs),cy:y(mpb(b.qs)),r:4.5,fill:'#dc2626'});explainBan(es,'<strong>Social optimum</strong><br>MSB = MSC at this positive output. A complete ban would also prevent the beneficial units below Qs.','Explain social optimum');txt(x(b.qs)+10,y(mpb(b.qs))-10,'Es',{fill:'#dc2626','data-point-x':x(b.qs),'data-point-y':y(mpb(b.qs))});const label=txt(x(b.qs),Math.abs(b.qs-b.qe)<10?418:400,'Qs',{fill:'#dc2626','text-anchor':'middle'});explainBan(label,banExplanation,'Explain socially optimal output');}
     const zero=txt(70,438,b.qs<=ECON_EPS?'Qb = Qs':'Qb',{fill:'#4169e1','text-anchor':'middle'});explainBan(zero,b.qs<=ECON_EPS?'<strong>Zero output is socially optimal</strong><br>MSC is at least MSB for every feasible positive quantity. A ban eliminates the output-related DWL in this model.':'<strong>Output under a ban</strong><br>A ban sets the output quota at zero. There is no transaction price because no units are traded.','Explain zero-output quota');
     if(overprodCheck.checked&&b.qs>ECON_EPS){const len=x(b.qs)-70,pad=Math.min(2,len/4);banEl('line',{x1:70+pad,y1:452,x2:x(b.qs)-pad,y2:452,stroke:'#dc2626','stroke-width':2,...(len>20?{'marker-start':'url(#arrow-left)','marker-end':'url(#arrow-right)'}:{})});txt(Math.max(150,(70+x(b.qs))/2),465,'Under-production with ban',{fill:'#dc2626','text-anchor':'middle','font-size':'11'});}
-    if(mecCheck.checked&&mec>ECON_EPS){const q=15;line(q,mpc(q),q,msc(q),{stroke:'#2563eb','stroke-width':2});line(q-1.2,mpc(q),q+1.2,mpc(q),{stroke:'#2563eb','stroke-width':2});line(q-1.2,msc(q),q+1.2,msc(q),{stroke:'#2563eb','stroke-width':2});txt(x(q)+7,(y(mpc(q))+y(msc(q)))/2+4,'MEC',{fill:'#2563eb'});}
+    if(mecCheck.checked&&mec>ECON_EPS){const q=15;line(q,mpc(q),q,msc(q),{id:'ban-mec-arrow',stroke:'#dc2626','stroke-width':2,'marker-start':'url(#ew-meb-start)','marker-end':'url(#ew-meb-end)'});txt(x(q)+7,(y(mpc(q))+y(msc(q)))/2+4,'MEC',{fill:'#dc2626'});}
     let heading,reason;
     if(b.banDwl<ECON_EPS){heading='The ban eliminates DWL.';reason='MSC is at least MSB for every positive unit. The socially optimal quantity is zero.';}
     else if(Math.abs(b.gain)<ECON_EPS){heading='The ban and free market have equal DWL.';reason='The ban prevents harmful units, but the forgone benefits of the beneficial units are equally large.';}

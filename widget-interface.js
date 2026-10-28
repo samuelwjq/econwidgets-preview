@@ -197,10 +197,10 @@
   const ns='http://www.w3.org/2000/svg';
   const add=(tag,attrs,text,parent=clone)=>{const n=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,v));if(text!==undefined)n.textContent=text;parent.append(n);return n;};
    const defs=add('defs',{},undefined,clone);
-   for(const kind of ['social','other','policy','cs','ps','price','quantity','dots']){
+   for(const kind of ['social','other','policy','cs','ps','price','quantity','dots','tr']){
     const pattern=add('pattern',{id:'ui-hatch-'+kind,width:8,height:8,patternUnits:'userSpaceOnUse'},undefined,defs);
     add('rect',{width:8,height:8,fill:'#fff'},undefined,pattern);
-    if(kind==='dots')add('circle',{cx:3,cy:3,r:1,fill:'#555'},undefined,pattern);else add('path',{d:['social','cs','price'].includes(kind)?'M-2,2 L2,-2 M0,8 L8,0 M6,10 L10,6':kind==='policy'?'M0,0 L8,8 M0,8 L8,0':'M0,4 L8,4',stroke:'#777','stroke-width':1,fill:'none'},undefined,pattern);
+    if(kind==='dots')add('circle',{cx:3,cy:3,r:1,fill:'#555'},undefined,pattern);else add('path',{d:['social','cs','price'].includes(kind)?'M-2,2 L2,-2 M0,8 L8,0 M6,10 L10,6':kind==='policy'?'M0,0 L8,8 M0,8 L8,0':kind==='tr'?'M4,0 L4,8':'M0,4 L8,4',stroke:'#777','stroke-width':1,fill:'none'},undefined,pattern);
    }
    const ids={'dwl':'social','area-dwl':'social','ban-loss-area':'social','free-policy-loss':'social','ban-free-area':'other','free-market-loss':'other','area-tax-rev':'policy','subsidy-cost-rect':'policy','cs-area':'cs','ps-area':'ps'};
    for(const n of clone.querySelectorAll('*')){
@@ -212,7 +212,7 @@
     let kind=ids[n.id]||n.dataset.area;
     if(kind==='g')kind='policy';if(kind==='dwl')kind=document.body.classList.contains('ew-government')?'dots':'social';
     if(!kind&&n.matches('.subsidy-rect,.tax-poly'))kind='policy';
-    if(kind&&['social','other','policy','cs','ps','price','quantity','dots'].includes(kind)){n.style.fill='url(#ui-hatch-'+kind+')';n.style.fillOpacity='1';}
+    if(kind&&['social','other','policy','cs','ps','price','quantity','dots','tr'].includes(kind)){n.style.fill='url(#ui-hatch-'+kind+')';n.style.fillOpacity='1';}
     if(n.matches('.curve,.line-mpb,.line-mpc,.line-msb,.line-msc,.line-policy,.line-tax,.line-quota,.line-qpoll,.line-rd,.line-edu')){n.style.stroke='#333';n.style.strokeDasharray='none';}
    }
  }

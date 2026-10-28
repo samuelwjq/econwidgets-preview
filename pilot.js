@@ -16,9 +16,9 @@
   // A vertical external-benefit arrow spans the two curves at its own x.
   // Source heights had been measured at Qe while the arrow was shifted left.
   const scope=svg.querySelector('#free-scene')||svg,benefit=scope.querySelector('#curve-mpb,line.line-mpb'),social=scope.querySelector('#curve-msb,line.line-msb');
-  if(!benefit||!social)return;
   const atX=(line,x)=>{const x1=+line.getAttribute('x1'),x2=+line.getAttribute('x2'),y1=+line.getAttribute('y1'),y2=+line.getAttribute('y2');return y1+(x-x1)*(y2-y1)/(x2-x1);};
-  if(!svg.querySelector('#ew-meb-start')){const defs=svg.querySelector('defs');for(const[id,d,ref]of[['ew-meb-start','M10,1 L0,5 L10,9 Z',0],['ew-meb-end','M0,1 L10,5 L0,9 Z',10]]){const marker=document.createElementNS(NS,'marker');for(const[k,v]of Object.entries({id,viewBox:'0 0 10 10',refX:ref,refY:5,markerWidth:5,markerHeight:5,orient:'auto'}))marker.setAttribute(k,v);const shape=document.createElementNS(NS,'path');shape.setAttribute('d',d);shape.setAttribute('fill','#67717e');marker.append(shape);defs.append(marker);}}
+  if(!svg.querySelector('#ew-meb-start')){const defs=svg.querySelector('defs');for(const[id,d,ref]of[['ew-meb-start','M10,1 L0,5 L10,9 Z',0],['ew-meb-end','M0,1 L10,5 L0,9 Z',10]]){const marker=document.createElementNS(NS,'marker');for(const[k,v]of Object.entries({id,viewBox:'0 0 10 10',refX:ref,refY:5,markerWidth:5,markerHeight:5,orient:'auto'}))marker.setAttribute(k,v);const shape=document.createElementNS(NS,'path');shape.setAttribute('d',d);shape.setAttribute('fill','#dc2626');marker.append(shape);defs.append(marker);}}
+  if(!benefit||!social)return;
   for(const arrow of scope.querySelectorAll('#arrow-meb,.free-externality')){if(!visible(arrow))continue;const x=+arrow.getAttribute('x1');arrow.setAttribute('y1',atX(benefit,x));arrow.setAttribute('y2',atX(social,x));arrow.setAttribute('marker-start','url(#ew-meb-start)');arrow.setAttribute('marker-end','url(#ew-meb-end)');}
  }
  function legacyCurveGeometry(svg){
@@ -56,7 +56,8 @@
    const protect=p=>{const along=(p.x-a.x1)*ux+(p.y-a.y1)*uy,off=Math.abs((p.x-a.x1)*uy-(p.y-a.y1)*ux);if(off<.05&&along>=-.05&&along<=length+.05)required.push(Math.max(0,Math.min(length,along)));};
    for(const other of curves){if(other===policy)continue;const s=read(other),c=toLocal(other,s.x1,s.y1),d=toLocal(other,s.x2,s.y2),vx=d.x-c.x,vy=d.y-c.y,cross=dx*vy-dy*vx;if(Math.abs(cross)<1e-7)continue;const t=((c.x-a.x1)*vy-(c.y-a.y1)*vx)/cross,u=((c.x-a.x1)*dy-(c.y-a.y1)*dx)/cross;if(t>=0&&t<=1&&u>=0&&u<=1)protect({x:a.x1+t*dx,y:a.y1+t*dy});}
    for(const e of svg.querySelectorAll('circle,polygon,rect,line[marker-start]')){if(!visible(e))continue;if(e.localName==='circle')protect(toLocal(e,+e.getAttribute('cx'),+e.getAttribute('cy')));else if(e.localName==='polygon'){const p=e.getAttribute('points').trim().split(/[ ,]+/).map(Number);for(let i=0;i<p.length;i+=2)protect(toLocal(e,p[i],p[i+1]));}else if(e.localName==='rect'){const x=+e.getAttribute('x'),y=+e.getAttribute('y'),w=+e.getAttribute('width'),h=+e.getAttribute('height');for(const [xx,yy]of[[x,y],[x+w,y],[x,y+h],[x+w,y+h]])protect(toLocal(e,xx,yy));}else{const s=read(e);protect(toLocal(e,s.x1,s.y1));protect(toLocal(e,s.x2,s.y2));}}
-   const low=required.length?Math.min(...required):0,high=required.length?Math.max(...required):0,pad=required.length?Math.min(4,length-target):0,used=Math.min(length,Math.max(target,high-low+2*pad)),start=Math.max(0,Math.min(length-used,low-pad));
+   // Axis/visible-boundary intercept is mandatory; shorten only the far end.
+   const high=required.length?Math.max(...required):0,pad=required.length?Math.min(4,length-target):0,used=Math.min(length,Math.max(target,high+pad)),start=0;
    const s={x1:a.x1+start*ux,y1:a.y1+start*uy,x2:a.x1+(start+used)*ux,y2:a.y1+(start+used)*uy};
    if(policy.localName==='polyline')policy.setAttribute('points',s.x1+','+s.y1+' '+s.x2+','+s.y2);else for(const[k,v]of Object.entries(s))policy.setAttribute(k,v);
    policy.dataset.ewLengthRule=used>target+.05?'required-geometry-exception':'matched-or-boundary-limited';
@@ -122,7 +123,7 @@
  function legend(svg){
   if(!slot){slot=document.createElement('div');slot.className='ew-legend-slot';slot.setAttribute('aria-label','Shaded areas: colour and grayscale patterns');svg.closest('.diagram-frame').append(slot);}
   entries=[];
-  for(const e of svg.querySelectorAll('polygon,rect,path')){if(!visible(e))continue;const b=e.getBBox();if(b.width<.01||b.height<.01)continue;let info=areaIds[e.id];if(!info&&['price','quantity'].includes(e.dataset.area))info=[e.dataset.area==='price'?'Price effect':'Quantity effect',e.dataset.area];if(!info&&document.body.classList.contains('ew-government'))info={cs:['Consumer surplus','cs'],ps:['Producer surplus','ps'],dwl:['Deadweight loss','dots'],g:['Government '+(window.currentGovernmentModel?.fiscal||'transfer'),'policy']}[e.dataset.area];if(!info&&e.id==='area-tax-rev')info=['Tax revenue','policy'];if(!info&&e.id==='ban-loss-area')info=['DWL under ban','social'];if(!info&&e.id==='ban-free-area')info=['Free-market DWL','other'];if(!info&&e.matches('.subsidy-rect'))info=['Subsidy expenditure','policy'];if(!info||entries.some(x=>x.label===info[0]))continue;entries.push({label:info[0],kind:info[1],colour:getComputedStyle(e).fill});}
+  for(const e of svg.querySelectorAll('polygon,rect,path')){if(!visible(e))continue;const b=e.getBBox();if(b.width<.01||b.height<.01)continue;let info=areaIds[e.id];if(!info&&['price','quantity'].includes(e.dataset.area))info=[e.dataset.area==='price'?'Price effect':'Quantity effect',e.dataset.area];if(!info&&document.body.classList.contains('ew-government'))info={cs:['Consumer surplus','cs'],ps:['Producer surplus','ps'],dwl:['Deadweight loss','dots'],g:['Government '+(window.currentGovernmentModel?.fiscal||'transfer'),'policy'],tr:['Total Revenue/Expenditure','tr']}[e.dataset.area];if(!info&&e.id==='area-tax-rev')info=['Tax revenue','policy'];if(!info&&e.id==='ban-loss-area')info=['DWL under ban','social'];if(!info&&e.id==='ban-free-area')info=['Free-market DWL','other'];if(!info&&e.matches('.subsidy-rect'))info=['Subsidy expenditure','policy'];if(!info||entries.some(x=>x.label===info[0]))continue;entries.push({label:info[0],kind:info[1],colour:getComputedStyle(e).fill});}
   const key=JSON.stringify(entries);if(slot.dataset.entries===key)return;slot.dataset.entries=key;slot.replaceChildren();for(const e of entries){const item=document.createElement('span');item.className='ew-legend-entry';const colour=document.createElement('i'),pattern=document.createElement('i');colour.className='ew-legend-swatch';colour.style.background=e.colour;pattern.className='ew-legend-swatch ew-pattern-'+e.kind;colour.setAttribute('aria-hidden','true');pattern.setAttribute('aria-hidden','true');item.append(colour,pattern,document.createTextNode(e.label));slot.append(item);}
  }
  function refresh(){
@@ -130,11 +131,12 @@
   const nativeTitles=[...svg.querySelectorAll('text>title')].map(title=>({parent:title.parentElement,title}));nativeTitles.forEach(({title})=>title.remove());
   running=true;try{
    P.resetPresentation(svg);chrome();legacyCurveGeometry(svg);alignMeb(svg);policyCurveLengths(svg);
+   const scene=svg.querySelector('#ban-scene,#free-scene');if(scene&&!scene.querySelector('#ew-origin')){const zero=document.createElementNS(NS,'text');zero.id='ew-origin';zero.textContent='0';zero.classList.add('ew-fixed-label');zero.dataset.ewTextRole='small';zero.style.fill='#000';zero.setAttribute('text-anchor','end');scene.append(zero);position(svg,zero,88,446);}
    if(svg.querySelector('#diagram-plot')&&!document.body.classList.contains('ew-government')&&!document.body.classList.contains('ew-basic-externality')){
     svg.classList.add('ew-policy-context');
     for(const e of svg.querySelectorAll('.line-mpb,.line-mpc,.line-msb,.line-msc'))e.style.stroke='#374151';
     for(const e of svg.querySelectorAll('#label-mpb,#label-mpc,#label-msb,#label-msc,#free-scene text'))if(/^(?:MPB|MPC|MSB|MSC)/.test(e.textContent)&&!/^MPC\*/.test(e.textContent))e.style.fill='#374151';
-    for(const e of svg.querySelectorAll('#arrow-meb,.free-externality'))e.style.stroke='#67717e';
+    for(const e of svg.querySelectorAll('#arrow-meb,.free-externality,#ban-mec-arrow,#group-mec line'))e.style.stroke='#dc2626';
     for(const e of svg.querySelectorAll('#label-meb'))e.style.fill='#dc2626';
     for(const e of svg.querySelectorAll('#label-policy-curve,#label-policy-arrow'))e.style.fill='#4169e1';
     for(const e of svg.querySelectorAll('#free-scene text'))if(/^MPC\*/.test(e.textContent))e.style.fill='#4169e1';
@@ -167,7 +169,8 @@
       const box=e.getBoundingClientRect(),screen=new DOMPoint(x,y).matrixTransform(svg.getScreenCTM()),dy=(screen.y-6-box.bottom)*600/svg.getBoundingClientRect().width;position(svg,e,x,y+dy);fixed.push(e);continue;
      }
     }
-    if(e.dataset.axisKind){axis=e.dataset.axisKind==='q'?'quantity':'price';anchorUser=rootPoint(svg,e,+e.dataset.axisX,+e.dataset.axisY);}
+    if(e.dataset.axisKind){axis=e.dataset.axisKind==='q'?'quantity':'price';anchorUser=rootPoint(svg,e,+e.dataset.axisX,+e.dataset.axisY);e.style.fill='#000';}
+    if(/^[PQL](?:[0-9₀-₉]+|_?(?:quota|private|total|joint|sub|edu|pol|dd|ss|e|s|c|p|t|b|f|d))(?:[′']|\s|=|$)/i.test(plain)&&!e.classList.contains('ew-axis-title')&&!e.matches('.area-label,.welfare-label'))e.style.fill='#000';
     if(e.dataset.pointX!==undefined){anchorUser=rootPoint(svg,e,+e.dataset.pointX,+e.dataset.pointY);position(svg,e,anchorUser.x+14,anchorUser.y-13);e.setAttribute('text-anchor','start');}
     if(e.dataset.policyLabel||(document.body.classList.contains('ew-government')&&plain==='Quota')){
      curve=curves.find(n=>n.localName==='line'&&n.getAttribute('stroke')==='#dc2626'&&+n.getAttribute('stroke-width')===2.5);
@@ -187,14 +190,15 @@
     if(curve&&visible(curve)){
      if(document.body.classList.contains('ew-ne-policy'))e.style.fill=curve.matches('.line-tax,.line-qpoll,.line-rd,.line-edu')?'#4169e1':'#374151';
      const s=segment(curve);nearSegmentUser=s;const endpoint=s.x1>s.x2?{x:s.x1,y:s.y1}:{x:s.x2,y:s.y2};anchorUser=endpoint;kind='curve';role=gov&&!document.body.classList.contains('ew-government')?'longEquation':'curve';
-     P.styleText(e,role);e.setAttribute('text-anchor','start');const unit=600/svg.getBoundingClientRect().width,b=e.getBBox(),m=e.getScreenCTM(),w=b.width*Math.hypot(m.a,m.b)*unit;
+     P.styleText(e,role);e.setAttribute('text-anchor','start');if(svg.getBoundingClientRect().width<400&&/\((?:Pollutant Quota|Education)\)$/.test(plain)){const split=e.innerHTML.lastIndexOf(' (');if(split>0)P.wrapText(e,[e.innerHTML.slice(0,split),e.innerHTML.slice(split)]);}const unit=600/svg.getBoundingClientRect().width,b=e.getBBox(),m=e.getScreenCTM(),w=b.width*Math.hypot(m.a,m.b)*unit;
      position(svg,e,Math.max(108,Math.min(endpoint.x+12,592-w-2)),Math.max(66,Math.min(410,endpoint.y+4)));
+     if(e.hasAttribute('data-ew-wrapped'))for(const span of [...e.children].filter(n=>n.localName==='tspan'))span.setAttribute('x',e.getAttribute('x'));
      const slope=(s.y2-s.y1)/(s.x2-s.x1),key=(e.closest('#free-scene')?.id||'main')+':'+Math.round(slope*1e6);if(Number.isFinite(slope)){if(!families.has(key))families.set(key,[]);families.get(key).push({...s,id});}
     }else if(e.matches('.welfare-label,.area-label,#label-dwl-text,#label-subsidy-cost-text')){e.classList.add('ew-fixed-label');e.dataset.ewTextRole='small';fixed.push(e);continue;}
     else if(/(?:Under|Over)-(?:consumption|production)/i.test(plain)){position(svg,e,290,490);e.setAttribute('text-anchor','middle');role='small';if(e.id==='label-output-gap'&&svg.getBoundingClientRect().width<320&&plain.includes(' / ')){P.styleText(e,role);position(svg,e,450,300);const parts=plain.match(/^((?:Under|Over)-)(Consumption \/ )((?:Under|Over)-)(Production)$/i);if(parts)P.wrapText(e,parts.slice(1));}}
     else if(plain==='MEB'||plain==='MEC'){role='small';if(document.body.matches('.ew-ne-policy,.ew-pe-policy'))e.style.fill='#dc2626';}
     if(e.id==='label-policy-arrow'&&/^Government output \(Qg\)$/i.test(plain)&&svg.getBoundingClientRect().width<400){P.styleText(e,'small');const html=e.innerHTML,split=html.indexOf(' ');P.wrapText(e,[html.slice(0,split),html.slice(split)]);}
-    const mebLabel=gov&&/^(MEB|MEC)$/.test(plain),annotation=mebLabel?(e.closest('#free-scene,#ban-scene')||svg).querySelector(plain==='MEC'?'#mec-arrow,#group-mec line,line[stroke="#2563eb"]':'#arrow-meb,#meb-arrow,.free-externality'):e.id==='label-policy-arrow'?svg.querySelector('#arrow-policy'):null;
+    const mebLabel=gov&&document.body.matches('.ew-ne-policy,.ew-pe-policy')&&/^(MEB|MEC)$/.test(plain),annotation=mebLabel?(e.closest('#free-scene,#ban-scene')||svg).querySelector(plain==='MEC'?'#mec-arrow,#group-mec line,#ban-mec-arrow':'#arrow-meb,#meb-arrow,.free-externality'):e.id==='label-policy-arrow'?svg.querySelector('#arrow-policy'):null;
     if(annotation&&visible(annotation)){
      const a=segment(annotation);anchorUser={x:(a.x1+a.x2)/2,y:(a.y1+a.y2)/2};
      if(mebLabel||document.getElementById('policy-select')?.value==='direct_subsidy'){
@@ -204,7 +208,7 @@
     }
     if(!axis&&!anchorUser){const a=rootPoint(svg,e,+e.getAttribute('x'),+e.getAttribute('y'));anchorUser={x:a.x,y:a.y};}
     let candidates;if(e.id==='label-output-gap'&&e.hasAttribute('data-ew-wrapped')){const m=svg.getScreenCTM(),a=new DOMPoint(104,60).matrixTransform(m),b=new DOMPoint(592,502).matrixTransform(m),box=e.getBoundingClientRect(),xs=[b.x-box.width],ys=[b.y-box.height];for(let x=a.x;x+box.width<=b.x;x+=2)xs.push(x);for(let y=a.y;y+box.height<=b.y;y+=2)ys.push(y);candidates=[{x:box.x,y:box.y}];for(const x of xs)for(const y of ys)candidates.push({x,y});}
-    labels.push({id,element:e,kind,role,anchorUser,axis,nearSegmentUser,avoidSegmentsUser,candidates,maxDistancePx:kind==='curve'?(svg.getBoundingClientRect().width<C.gaps.compactCurveWidthPx?C.gaps.compactCurveProximityPx:C.gaps.curveProximityPx):nearSegmentUser?22:undefined,leader:kind==='curve'?false:axis||e.dataset.pointX!==undefined?undefined:false});
+    labels.push({id,element:e,kind,role,anchorUser,axis,nearSegmentUser,avoidSegmentsUser,candidates,maxDistancePx:kind==='curve'?(svg.getBoundingClientRect().width<C.gaps.compactCurveWidthPx?C.gaps.compactCurveProximityPx:C.gaps.curveProximityPx):mebLabel?80:nearSegmentUser?22:undefined,leader:kind==='curve'?false:mebLabel?true:axis||e.dataset.pointX!==undefined?undefined:false,annotationLeader:mebLabel});
    }
    for(const e of svg.querySelectorAll('circle'))if(visible(e)&&+e.getAttribute('r')<=6)fixed.push(e);
    for(const e of svg.querySelectorAll('#under-arrow,#over-arrow,#arrow-gap,.free-gap-arrow'))if(visible(e)){const p=new DOMPoint(0,470).matrixTransform(e.getScreenCTM().inverse().multiply(svg.getScreenCTM()));e.setAttribute('y1',p.y);e.setAttribute('y2',p.y);}

@@ -66,6 +66,7 @@ body.ew-page { margin:0; padding:16px; background:#fff; color:var(--ew-ink); fon
 .ew-help-dialog ul { margin:8px 0 0; padding-left:18px; }
 .ew-help-dialog li { margin:4px 0; }
 .ew-actions .ew-help-button { min-width:32px; font-weight:700; }
+.ew-pattern-tr { background:repeating-linear-gradient(90deg,#fff 0 3px,#777 3px 4px,#fff 4px 8px); }
 @media(max-height:360px) and (min-width:560px) { .ew-help-dialog { width:560px; padding:10px 12px; } .ew-help-dialog ul { display:grid; grid-template-columns:1fr 1fr; column-gap:20px; } }
 @media(max-width:359px) { .ew-help-dialog { padding:10px; font-size:12px; line-height:16px; } .ew-help-dialog li { margin:3px 0; } }
 @media(max-width:480px) { .ew-summary-strip { height:40px; white-space:normal; } }

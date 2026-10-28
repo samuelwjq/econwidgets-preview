@@ -67,7 +67,7 @@ const glossary=[
 glossary.forEach(([id,name,text])=>{const el=document.createElement('details');el.id='glossary-'+id;const title=document.createElement('summary');title.textContent=name;const p=document.createElement('p');p.innerHTML=formatNotation(text);el.append(title,p);$('glossary').append(el);});
 let current=calculate('none',0);
 function configure(){for(const id of ['show-cs','show-ps','show-g'])$(id).checked=false;const k=$('policy-select').value,p=policies[k];$('slider-card').hidden=k==='none';if(k!=='none'){Object.assign($('policy-slider'),{min:p.min,max:p.max,value:values[k]});$('slider-label').textContent=p.label;const taxSub=['specific','advalorem','indirect','direct'].includes(k);$('slider-min').textContent=taxSub?'None':'Lower';$('slider-max').textContent=taxSub?'High':'Higher';}$('tooltip').hidden=true;render();}
-const palette={cs:'#2563eb',ps:'#16a34a',g:'#8b5cf6',dwl:'#dc2626'};
+const palette={cs:'#2563eb',ps:'#16a34a',g:'#8b5cf6',dwl:'#dc2626',tr:'#4169e1'};
 const X=q=>112+3*q,Y=p=>432-p/120*360;
 function add(tag,attrs={},parent=$('diagram-plot')){const e=document.createElementNS(NS,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);parent.append(e);return e;}
 function text(x,y,str,attrs={},tip){str=str.replace(/\b([QL])(dd|ss|quota)\b/g,'$1_$2');const e=add('text',{x,y,...attrs});str.split(/([PWQLE]_[a-z]+)/g).forEach(part=>{const m=part.match(/^([PWQLE])_([a-z]+)$/);if(m){e.append(document.createTextNode(m[1]));const sub=add('tspan',{'baseline-shift':'sub','font-size':9},e);sub.textContent=m[2];}else e.append(document.createTextNode(part));});if(tip)target(e,tip);return e;}
@@ -77,11 +77,11 @@ function shade(kind,points,tip){const e=add('polygon',{points:points.map(([q,p])
 function labelAreas(parent){
  if(!$('show-tooltips').checked)return;
  for(const area of parent.querySelectorAll('.areas')){
-  const kind=area.dataset.area;if(!['cs','ps','dwl'].includes(kind))continue;
+  const kind=area.dataset.area;if(!['cs','ps','dwl','tr'].includes(kind))continue;
   const points=area.labelPoints;let twiceArea=0,cx=0,cy=0;
   for(let i=0;i<points.length;i++){const a=points[i],b=points[(i+1)%points.length],cross=a[0]*b[1]-b[0]*a[1];twiceArea+=cross;cx+=(a[0]+b[0])*cross;cy+=(a[1]+b[1])*cross;}
   if(Math.abs(twiceArea)<1e-8)continue;cx/=3*twiceArea;cy/=3*twiceArea;
-  const label=text(cx,cy,kind.toUpperCase(),{'text-anchor':'middle','dominant-baseline':'middle',fill:palette[kind],class:'area-label','data-area-label':kind,'aria-hidden':'true'});parent.append(label);
+  const label=text(cx,cy,kind==='tr'?'TR/TE':kind.toUpperCase(),{'text-anchor':'middle','dominant-baseline':'middle',fill:palette[kind],class:'area-label','data-area-label':kind,'aria-hidden':'true'});parent.append(label);
   // Keep every corner of the text box inside the shaded polygon, even for small DWL triangles.
   const inside=(x,y)=>{let sign=0;for(let i=0;i<points.length;i++){const a=points[i],b=points[(i+1)%points.length],cross=(b[0]-a[0])*(y-a[1])-(b[1]-a[1])*(x-a[0]);if(Math.abs(cross)<1e-7)continue;const next=Math.sign(cross);if(sign&&sign!==next)return false;sign=next;}return true;};
   let fits=false;for(let font=15;font>=15;font-=.5){EconDiagramPresentation.styleText(label,'small');const b=label.getBBox(),pad=font*.12;if([[b.x-pad,b.y-pad],[b.x+b.width+pad,b.y-pad],[b.x-pad,b.y+b.height+pad],[b.x+b.width+pad,b.y+b.height+pad]].every(([x,y])=>inside(x,y))){fits=true;break;}}if(!fits)label.remove();
@@ -117,6 +117,7 @@ function render(){EconDiagramPresentation.resetPresentation(document.getElementB
  if(taxSub)axisHelp.textContent+=' P₁ is the price at the intersection of the policy-adjusted curves. The consumer / producer prices toggle reveals the two sides of the price wedge.';
  }
  $('prices-toggle').hidden=!taxSub;
+ $('tr-control').hidden=!['ceiling','floor','wage'].includes(k);
  for(const id of ['cs-control','ps-control'])$(id).hidden=lab;
  $('adjustment-control').hidden=['ceiling','floor','wage'].includes(k);
  if(lab)for(const id of ['show-cs','show-ps','show-adjustment'])$(id).checked=false;
@@ -141,6 +142,7 @@ function render(){EconDiagramPresentation.resetPresentation(document.getElementB
  [...$('glossary').children].forEach(e=>{const relevant=glossaryRelevant(e.id.replace('glossary-',''),k);e.hidden=!relevant;if(!relevant)e.open=false;e.classList.toggle('glossary-highlight',e.id==='glossary-'+p.glossary);});if(p.glossary)$('glossary').prepend($('glossary-'+p.glossary));
  const svg=$('diagram-plot');svg.replaceChildren();const title=add('title',{id:'diagram-title'});title.textContent=p.name+' — '+(lab?'labour market':'demand and supply');const desc=add('desc',{id:'diagram-desc'});desc.textContent=note+' '+$('welfare-formula').textContent;defs();
  const clip=add('g',{'clip-path':'url(#plot-clip)'});const areaList=[];
+ if(['ceiling','floor','wage'].includes(k)&&$('show-tr').checked&&m.q>0&&m.pc>0){shade('tr',[[0,0],[m.q,0],[m.q,m.pc],[0,m.pc]],lab?'Total Revenue/Expenditure: total wage receipts of employed workers equal employers’ total wage expenditure. The rectangle is the actual wage × actual employment, not the quantity of labour supplied.':'Total Revenue/Expenditure: sellers’ receipts equal buyers’ expenditure. The rectangle is the actual transaction price × quantity actually traded, not unmet demand or unsold supply.');areaList.push('tr');}
  if(!lab&&$('show-cs').checked&&m.q>0){shade('cs',[[0,100],[m.q,D(m.q)],[m.q,m.pc],[0,m.pc]],'Consumer Surplus: willingness to pay minus the effective price paid, summed over the units actually traded. How to identify the area: below the original demand curve and above '+(taxSub?'P_c, the effective price paid by consumers':'P₁')+', from the quantity origin to Q₁.'+(k==='direct'?' The consumer price is net of the direct subsidy.':''));areaList.push('cs');}
  if(!lab&&$('show-ps').checked&&m.q>0){shade('ps',[[0,0],[m.q,S(m.q)],[m.q,m.pp],[0,m.pp]],'Producer Surplus: revenue received minus minimum acceptable revenue, summed over the units actually traded. How to identify the area: above the original supply curve and below '+(taxSub?'Pₚ, the price received by producers':'P₁')+', from the quantity origin to Q₁.'+(k==='indirect'?' The producer price includes the subsidy.':m.fiscal==='revenue'?' The producer price is after paying the tax.':'')+(k==='quota'?' This includes quota rent retained by producers.':''));areaList.push('ps');}
  if(m.fiscal&&$('show-g').checked&&Math.abs(m.g)>1e-7){shade('g',[[0,m.pc],[m.q,m.pc],[m.q,m.pp],[0,m.pp]],'Government '+m.fiscal+': '+(m.fiscal==='revenue'?'tax':'subsidy')+' per unit × quantity traded. '+(m.g>0?'Added to':'Subtracted from')+' CS + PS when calculating Total Welfare.'+(m.g<0?' The expenditure area overlaps parts of CS and PS; subtract it once.':''));areaList.push('g');}
@@ -203,7 +205,7 @@ function render(){EconDiagramPresentation.resetPresentation(document.getElementB
 }
 $('policy-select').addEventListener('change',configure);$('policy-slider').addEventListener('input',()=>{values[$('policy-select').value]=+$('policy-slider').value;$('tooltip').hidden=true;render();});
 document.querySelectorAll('.toggle-grid input').forEach(e=>e.addEventListener('change',()=>{$('tooltip').hidden=true;render();}));
-$('reset').onclick=()=>{Object.entries(policies).forEach(([k,p])=>values[k]=p.value??0);$('policy-select').value='none';for(const id of ['show-dwl','show-tooltips','show-prices'])$(id).checked=true;for(const id of ['show-cs','show-ps','show-g'])$(id).checked=false;$('show-adjustment').checked=false;configure();};
+$('reset').onclick=()=>{Object.entries(policies).forEach(([k,p])=>values[k]=p.value??0);$('policy-select').value='none';for(const id of ['show-dwl','show-tooltips'])$(id).checked=true;for(const id of ['show-cs','show-ps','show-g','show-prices','show-tr'])$(id).checked=false;$('show-adjustment').checked=false;configure();};
 function showTip(el){if(!$('show-tooltips').checked)return;$('tooltip-content').innerHTML=formatNotation(el.dataset.tip);$('tooltip').hidden=false;$('tooltip').style.display='block';const r=el.getBoundingClientRect();if(innerWidth>900){$('tooltip').style.left=Math.max(12,Math.min(innerWidth-350,r.x))+'px';$('tooltip').style.top=Math.max(12,Math.min(innerHeight-180,r.bottom+10))+'px';}}
 $('diagram').addEventListener('pointerover',e=>{const el=e.target.closest('[data-tip]');if(el)showTip(el);});$('diagram').addEventListener('click',e=>{const el=e.target.closest('[data-tip]');if(el)showTip(el);});$('diagram').addEventListener('focusin',e=>{const el=e.target.closest('[data-tip]');if(el)showTip(el);});$('diagram').addEventListener('keydown',e=>{if(['Enter',' '].includes(e.key)&&e.target.closest('[data-tip]')){e.preventDefault();showTip(e.target.closest('[data-tip]'));}});$('tooltip').querySelector('button').onclick=()=>$('tooltip').hidden=true;document.addEventListener('keydown',e=>{if(e.key==='Escape')$('tooltip').hidden=true;});document.addEventListener('click',e=>{if(!e.target.closest('[data-tip],#tooltip'))$('tooltip').hidden=true;});
 configure();

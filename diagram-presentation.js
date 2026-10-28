@@ -169,7 +169,7 @@
    if(entry.kind!=='curve'&&entry.leader!==false&&entry.anchor){
     const end=leaderEndpoint(entry.anchor,b),distance=Math.hypot(end.x-entry.anchor.x,end.y-entry.anchor.y);
     const moved=entry.axis==='quantity'?Math.abs(b.x+b.width/2-entry.anchor.x)>2:entry.axis==='price'?Math.abs(b.y+b.height/2-entry.anchor.y)>2:Math.hypot(b.x-entry.originalBox.x,b.y-entry.originalBox.y)>2;
-    if((entry.axis&&moved)||(!entry.axis&&distance>config.gaps.leaderThresholdPx)){
+    if((entry.axis&&moved)||(entry.annotationLeader&&moved)||(!entry.axis&&distance>config.gaps.leaderThresholdPx)){
      const p=svg.createSVGPoint(),q=svg.createSVGPoint();p.x=entry.anchor.x;p.y=entry.anchor.y;q.x=end.x;q.y=end.y;const u=p.matrixTransform(inverse),v=q.matrixTransform(inverse),l=document.createElementNS(svg.namespaceURI,'line');
      for(const [k,val] of Object.entries({x1:u.x,y1:u.y,x2:v.x,y2:v.y,class:'ew-displacement-leader','data-ew-label-for':entry.id}))l.setAttribute(k,val);layer.append(l);
     }
