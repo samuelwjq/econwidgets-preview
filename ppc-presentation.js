@@ -22,7 +22,11 @@
   // Point rings keep their original hit geometry; markers remain obstacles.
   for(const group of [document.getElementById('active-point'),$('start-point'),...$('capacity-handles').children])if(visible(group))for(const circle of group.querySelectorAll('circle:not(.point-ring)'))fixed.push(circle);
   let index=0;for(const e of drawing.querySelectorAll('text')){const plain=e.textContent.trim(),x=+e.getAttribute('x'),y=+e.getAttribute('y');e.classList.remove('ew-axis-title','ew-fixed-label');
-   if(/^Quantity of Good/.test(plain)||/^Qty of Good/.test(plain)){const vertical=plain.endsWith('Y');e.textContent=plain.replace('Quantity','Qty');e.classList.add('ew-axis-title');e.dataset.ewTextRole='main';e.removeAttribute('transform');move(e,vertical?24:290,vertical?240:window.innerWidth<=480?496:490);e.setAttribute('text-anchor','middle');if(vertical)e.setAttribute('transform','rotate(-90 '+e.getAttribute('x')+' '+e.getAttribute('y')+')');fixed.push(e);continue;}
+   if(/^Quantity of Good/.test(plain)||/^Qty of Good/.test(plain)||/^(Capital Goods|Consumer Goods)$/.test(plain)){
+    const vertical=plain.endsWith('Y')||plain==='Capital Goods';e.textContent=vertical?'Capital Goods':'Consumer Goods';e.classList.add('ew-axis-title');e.removeAttribute('transform');move(e,vertical?100:488,vertical?30:447);e.setAttribute('text-anchor',vertical?'middle':'start');
+    const fits=()=>{const b=e.getBoundingClientRect(),a=new DOMPoint(8,8).matrixTransform(svg.getScreenCTM()),z=new DOMPoint(592,502).matrixTransform(svg.getScreenCTM());return b.left>=a.x&&b.right<=z.x&&b.top>=a.y&&b.bottom<=z.y;};
+    let role='main';P.styleText(e,role,false);if(!fits()){role='compactAxis';P.styleText(e,role,false);}if(!fits())P.wrapText(e,vertical?['Capital ','Goods']:['Consumer ','Goods']);e.dataset.ewTextRole=role;fixed.push(e);continue;
+   }
    if(plain==='0'&&((x===78&&y===434)||e.dataset.ppcOrigin==='true')){e.dataset.ppcOrigin='true';e.classList.add('ew-fixed-label');e.dataset.ewTextRole='main';e.style.fill='#000';move(e,88,452);e.setAttribute('text-anchor','end');fixed.push(e);continue;}
    const id='ppc-label-'+index++;let kind='point',axis,anchorUser,nearSegmentUser,role='main',candidates;
    if(curves.has(plain)){const c=curves.get(plain);kind='curve';role='curve';const fraction=plain==='PPC₁'?.6:.82,j=Math.min(c.points.length-2,Math.round((c.points.length-1)*fraction)),a=c.points[j],b=c.points[j+1];nearSegmentUser={x1:a.x,y1:a.y,x2:b.x,y2:b.y};anchorUser=a;e.setAttribute('text-anchor','start');move(e,Math.min(500,a.x+10),Math.max(70,a.y-12));}

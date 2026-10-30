@@ -190,7 +190,7 @@
     }
     if(curve&&visible(curve)){
      if(document.body.classList.contains('ew-ne-policy'))e.style.fill=curve.matches('.line-tax,.line-qpoll,.line-rd,.line-edu')?'#4169e1':'#374151';
-     const s=segment(curve);nearSegmentUser=s;const endpoint=s.x1>s.x2?{x:s.x1,y:s.y1}:{x:s.x2,y:s.y2};anchorUser=endpoint;kind='curve';role=gov&&!document.body.classList.contains('ew-government')?'longEquation':'curve';
+     const s=segment(curve);nearSegmentUser=s;const endpoint=s.x1>s.x2?{x:s.x1,y:s.y1}:{x:s.x2,y:s.y2};anchorUser=endpoint;kind='curve';role=gov&&!document.body.classList.contains('ew-government')?'longEquation':'curve';if(document.body.classList.contains('ew-government')&&e.dataset.policyLabel&&/^(Price Ceiling|Price Floor|Minimum Wage)$/i.test(plain))role='longEquation';
      P.styleText(e,role);e.setAttribute('text-anchor','start');if(svg.getBoundingClientRect().width<400&&/\((?:Pollutant Quota|Education)\)$/.test(plain)){const split=e.innerHTML.lastIndexOf(' (');if(split>0)P.wrapText(e,[e.innerHTML.slice(0,split),e.innerHTML.slice(split)]);}const unit=600/svg.getBoundingClientRect().width,b=e.getBBox(),m=e.getScreenCTM(),w=b.width*Math.hypot(m.a,m.b)*unit;
      position(svg,e,Math.max(108,Math.min(endpoint.x+12,592-w-2)),Math.max(66,Math.min(410,endpoint.y+4)));
      if(plain==='Quota'&&document.body.matches('.ew-government,.ew-ne-policy')){const matrix=svg.getScreenCTM(),top=new DOMPoint(s.x1,Math.min(s.y1,s.y2)).matrixTransform(matrix),box=e.getBoundingClientRect();candidates=[];for(const y of[0,8,16,24,32])for(const gap of[8,16,24])for(const x of[top.x+gap,top.x-box.width-gap])candidates.push({x,y:top.y+y});}
