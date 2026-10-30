@@ -325,3 +325,28 @@ body.ew-page { margin:0; padding:16px; background:#fff; color:var(--ew-ink); fon
 }
 
 @media(max-width:600px) { .ew-elasticity .elastic-readout { flex-basis:100%; width:100%; } }
+
+/* PPC-specific layouts and original drag affordances; shared tokens unchanged. */
+.ew-ppc .ppc-control-content { display:contents; }
+.ew-ppc .tabs { flex-basis:100%; }
+.ew-ppc .tabs button,.ew-ppc .shift-choice button { flex:1; min-width:0; }
+.ew-ppc .slider-card label { font-size:13px; font-weight:600; }
+.ew-ppc .tab-panel { flex-basis:100%; }
+.ew-ppc .shift-choice { display:flex; flex-wrap:wrap; gap:4px 8px; }
+.ew-ppc .controls p { font-size:12px; color:var(--ew-muted); margin:4px 0; }
+.ew-ppc .curve-key { display:flex; flex-wrap:wrap; gap:4px 12px; margin:6px 0; font-size:12px; color:var(--ew-muted); }
+.ew-ppc .curve-key span { display:inline-flex; align-items:center; gap:6px; }
+.ew-ppc .curve-key i { width:20px; border-top:2px solid; }
+.ew-ppc .draggable { cursor:grab; touch-action:none; }
+.ew-ppc .draggable:active { cursor:grabbing; }
+.ew-ppc .point-ring { fill:transparent; stroke:transparent; pointer-events:all; }
+.ew-ppc .draggable:focus .point-ring { stroke:var(--ew-accent); stroke-width:3; }
+.ew-ppc .ew-diagram { touch-action:pan-y; }
+.ew-ppc .diagram-frame.zoomed { overflow:auto; }
+.ew-ppc .diagram-frame.zoomed svg { min-width:950px; }
+.ew-ppc .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+.ew-ppc .model-note { font-size:13px; line-height:1.55; margin:8px 0; }
+.ew-ppc .diagram-assumptions summary { display:flex; justify-content:space-between; align-items:center; gap:10px; min-height:44px; font-size:13px; font-weight:600; }
+.ew-ppc .diagram-assumptions p { font-size:13px; }
+.ew-ppc .glossary-intro { font-size:12px; color:var(--ew-muted); }
+.ew-ppc .ew-summary-strip { line-height:14px; }
