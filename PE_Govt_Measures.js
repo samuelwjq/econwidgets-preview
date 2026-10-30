@@ -642,7 +642,7 @@
     line(0,cost(0),190,cost(190),{class:'line-mpc'});txt(x(190)+6,y(cost(190))+4,'MPC = MSC',{fill:'#16a34a'});
     const socialEnd=Math.min(190,100+meb);line(0,social(0),socialEnd,social(socialEnd),{class:'line-msb'});txt(x(socialEnd)+6,y(social(socialEnd))+4,meb>epsilon?'MSB':'MPB = MSB',{fill:'#dc2626'});
     line(qf,0,190,cost(190)-pp,{class:'line-policy',style:'stroke-dasharray:none'});txt(x(190)+6,y(cost(190)-pp)+4,'MPC*',{fill:'#4169e1'});
-    line(qf,0,qf,pp,{class:'guide-line'});line(0,pp,qf,pp,{class:'guide-line'});txt(60,y(pp)+4,'Pp',{'text-anchor':'end',fill:'#4169e1'});txt(60,379,'Pc (free)',{'data-axis-kind':'p','data-axis-x':70,'data-axis-y':380,'data-model-anchor':'true','text-anchor':'end',fill:'#4169e1',style:'font-size:11px'});
+    line(qf,0,qf,pp,{class:'guide-line'});
     const point=(q,p,t,color,label)=>{const e=add('circle',{cx:x(q),cy:y(p),r:4.5,fill:color});txt(x(q)+8,y(p)-9,t,{fill:color,'data-point-x':x(q),'data-point-y':y(p)});tooltip(e,label,'Explain '+t);};
     line(qe,0,qe,cost(qe),{class:'guide-line'});line(0,cost(qe),qe,cost(qe),{class:'guide-line'});txt(60,y(cost(qe))+4,'Pe',{'text-anchor':'end'});txt(x(qe),402,meb<epsilon?'Qe = Qs':'Qe',{'text-anchor':'middle'});point(qe,cost(qe),meb<epsilon?'Ee = Es':'Ee','#1f2937','<strong>Free-market equilibrium</strong><br>MPB = MPC. Private curves and this output remain fixed as MEB changes.');
     line(qs,0,qs,cost(qs),{class:'guide-line'});if(meb>epsilon)txt(x(qs),402,Math.abs(qs-qf)<epsilon?'Qs = Qf':'Qs',{'text-anchor':'middle',fill:'#dc2626'});if(meb>epsilon)point(qs,cost(qs),'Es','#dc2626','<strong>Social optimum</strong><br>MSB = MSC. The socially optimal output rises as MEB increases.');

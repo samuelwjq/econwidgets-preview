@@ -97,7 +97,7 @@
  function summaryText(svg){
   const dir=(v,label)=>label+' '+(Math.abs(v)<1e-7?'Unchanged':v>0?'Increases':'Decreases');
   if(document.body.classList.contains('ew-government')){const m=window.currentGovernmentModel;if(!m)return '';if(m.policy==='quota'&&m.q<1e-7)return 'Price Not Applicable · Qty Decreases';return dir((m.policy==='direct'?m.pp:m.pc)-50,m.policy==='wage'?'Wage':'Price')+' · '+dir(m.q-50,m.policy==='wage'?'Employment':'Qty');}
-  if(document.body.classList.contains('ew-basic-externality')){const positive=!!document.getElementById('meb-slider'),magnitude=Number(document.getElementById(positive?'meb-slider':'mec-slider').value),prefix=(positive?'MEB':'MEC')+(Math.abs(magnitude)<1e-7?' = 0':' > 0');return prefix+' · '+(Math.abs(magnitude)<1e-7?'Qe = Qs · No Output Gap':positive?'Qe < Qs · Under-consumption/production':'Qe > Qs · Over-consumption/production');}
+  if(document.body.classList.contains('ew-basic-externality')){const positive=!!document.getElementById('meb-slider'),magnitude=Number(document.getElementById(positive?'meb-slider':'mec-slider').value);return EconTopic5Summary.externality({positive,magnitude});}
   if(document.body.matches('.ew-ne-policy,.ew-pe-policy'))return policySummary(svg,dir);
   if(!svg.querySelector('#diagram-plot')){
    const direction=(v,label)=>v==='Increases'?label+' Increases':v==='Decreases'?label+' Decreases':label+' Unchanged';
@@ -151,7 +151,7 @@
    for(const e of curves)segments.push(segment(e));segments.push({x1:100,y1:50,x2:100,y2:430},{x1:100,y1:430,x2:480,y2:430});
    const gov=!!svg.querySelector('#diagram-plot');
    for(const [i,e]of texts.entries()){
-    const plain=e.textContent.trim(),id=e.id||'ew-text-'+i;let role=(['10','11','12'].includes(e.getAttribute('font-size'))?'small':'main'),kind='point',anchorUser,axis,curve,nearSegmentUser,avoidSegmentsUser;
+    const plain=e.textContent.trim(),id=e.id||'ew-text-'+i;let role=(['10','11','12'].includes(e.getAttribute('font-size'))?'small':'main'),kind='point',anchorUser,axis,curve,nearSegmentUser,avoidSegmentsUser,candidates;
     e.classList.remove('ew-axis-title');
     if(e.matches('.axis-title')||plain==='Price'||(plain==='Quantity'||plain==='Qty')){
      e.classList.add('ew-axis-title');
@@ -193,6 +193,7 @@
      const s=segment(curve);nearSegmentUser=s;const endpoint=s.x1>s.x2?{x:s.x1,y:s.y1}:{x:s.x2,y:s.y2};anchorUser=endpoint;kind='curve';role=gov&&!document.body.classList.contains('ew-government')?'longEquation':'curve';
      P.styleText(e,role);e.setAttribute('text-anchor','start');if(svg.getBoundingClientRect().width<400&&/\((?:Pollutant Quota|Education)\)$/.test(plain)){const split=e.innerHTML.lastIndexOf(' (');if(split>0)P.wrapText(e,[e.innerHTML.slice(0,split),e.innerHTML.slice(split)]);}const unit=600/svg.getBoundingClientRect().width,b=e.getBBox(),m=e.getScreenCTM(),w=b.width*Math.hypot(m.a,m.b)*unit;
      position(svg,e,Math.max(108,Math.min(endpoint.x+12,592-w-2)),Math.max(66,Math.min(410,endpoint.y+4)));
+     if(plain==='Quota'&&document.body.matches('.ew-government,.ew-ne-policy')){const matrix=svg.getScreenCTM(),top=new DOMPoint(s.x1,Math.min(s.y1,s.y2)).matrixTransform(matrix),box=e.getBoundingClientRect();candidates=[];for(const y of[0,8,16,24,32])for(const gap of[8,16,24])for(const x of[top.x+gap,top.x-box.width-gap])candidates.push({x,y:top.y+y});}
      if(e.hasAttribute('data-ew-wrapped'))for(const span of [...e.children].filter(n=>n.localName==='tspan'))span.setAttribute('x',e.getAttribute('x'));
      const slope=(s.y2-s.y1)/(s.x2-s.x1),key=(e.closest('#free-scene')?.id||'main')+':'+Math.round(slope*1e6);if(Number.isFinite(slope)){if(!families.has(key))families.set(key,[]);families.get(key).push({...s,id});}
     }else if(e.matches('.welfare-label,.area-label,#label-dwl-text,#label-subsidy-cost-text')){e.classList.add('ew-fixed-label');e.dataset.ewTextRole='small';fixed.push(e);continue;}
@@ -208,7 +209,7 @@
      if(mebLabel||/^(?:Subsidy)$/i.test(plain)){nearSegmentUser=a;avoidSegmentsUser=[a];}
     }
     if(!axis&&!anchorUser){const a=rootPoint(svg,e,+e.getAttribute('x'),+e.getAttribute('y'));anchorUser={x:a.x,y:a.y};}
-    let candidates;if(e.id==='label-output-gap'&&e.hasAttribute('data-ew-wrapped')){const m=svg.getScreenCTM(),a=new DOMPoint(104,60).matrixTransform(m),b=new DOMPoint(592,502).matrixTransform(m),box=e.getBoundingClientRect(),xs=[b.x-box.width],ys=[b.y-box.height];for(let x=a.x;x+box.width<=b.x;x+=2)xs.push(x);for(let y=a.y;y+box.height<=b.y;y+=2)ys.push(y);candidates=[{x:box.x,y:box.y}];for(const x of xs)for(const y of ys)candidates.push({x,y});}
+    if(e.id==='label-output-gap'&&e.hasAttribute('data-ew-wrapped')){const m=svg.getScreenCTM(),a=new DOMPoint(104,60).matrixTransform(m),b=new DOMPoint(592,502).matrixTransform(m),box=e.getBoundingClientRect(),xs=[b.x-box.width],ys=[b.y-box.height];for(let x=a.x;x+box.width<=b.x;x+=2)xs.push(x);for(let y=a.y;y+box.height<=b.y;y+=2)ys.push(y);candidates=[{x:box.x,y:box.y}];for(const x of xs)for(const y of ys)candidates.push({x,y});}
     labels.push({id,element:e,kind,role,anchorUser,axis,nearSegmentUser,avoidSegmentsUser,candidates,maxDistancePx:kind==='curve'?(svg.getBoundingClientRect().width<C.gaps.compactCurveWidthPx?C.gaps.compactCurveProximityPx:C.gaps.curveProximityPx):mebLabel?80:nearSegmentUser?22:undefined,leader:kind==='curve'?false:mebLabel?true:axis||e.dataset.pointX!==undefined?undefined:false,annotationLeader:mebLabel});
    }
    for(const e of svg.querySelectorAll('circle'))if(visible(e)&&+e.getAttribute('r')<=6)fixed.push(e);

@@ -51,10 +51,6 @@ function render(){EconDiagramPresentation.resetPresentation($('diagram'));
  closeTip();$('drawing').replaceChildren();segments=[];occupied=[];const m=model(selectedType,+$('magnitude').value);window.currentModel=m;
  $('magnitude').setAttribute('aria-valuetext',m.zero?'No Mis-estimation':m.caseTitle+' — '+(m.magnitude<27?'Small':m.magnitude<54?'Moderate':'Large'));
  $('svg-description').textContent=`${m.caseTitle}. ${m.zero?'No information error; market and efficient outcomes coincide.':(m.over?'Overconsumption':'Underconsumption')+' relative to socially efficient output.'}`;
- // PPC-style case readout inside the diagram, above the plot.
- el('rect',{x:190,y:4,width:310,height:28,rx:6,fill:'#f0f4ff',stroke:'#cbd7fa','stroke-width':1});
- const caseReadout=text(345,24,[m.caseTitle],'','middle');caseReadout.setAttribute('font-weight','650');
- occupied.push({x:190,y:4,width:310,height:28});
  line(100,420,488,420,{stroke:'#374151','stroke-width':2,'marker-end':'url(#axis-arrow)'});line(100,420,100,32,{stroke:'#374151','stroke-width':2,'marker-end':'url(#axis-arrow)'});
  text(83,20,['Price /'],'small-label','end');text(83,36,['Costs /'],'small-label','end');text(83,52,['Benefits'],'small-label','end');text(488,446,['Qty'],'','start');text(92,438,['O'],'small-label','end');
  const showDwl=$('dwl').checked&&!m.zero;

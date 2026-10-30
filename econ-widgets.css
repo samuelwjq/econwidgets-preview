@@ -60,7 +60,7 @@ body.ew-page { margin:0; padding:16px; background:#fff; color:var(--ew-ink); fon
 .ew-summary-strip { box-sizing:border-box; height:28px; display:flex; align-items:center; padding:0 12px; border-bottom:1px solid var(--ew-border); background:#fff9db; color:var(--ew-ink); font-size:12px; line-height:14px; font-weight:600; }
 .ew-help-dialog { box-sizing:border-box; width:400px; max-width:calc(100vw - 24px); padding:14px; border:1px solid var(--ew-border); border-radius:4px; background:white; color:var(--ew-ink); font:13px/1.4 var(--ew-font); }
 .ew-help-dialog::backdrop { background:#202a3559; }
-.ew-batch4 .explanation { border:1px solid #cbd7fa; background:#eef4ff; padding:12px; border-radius:4px; margin-bottom:14px; }
+.ew-guided-explanation { border:1px solid #cbd7fa; background:#eef4ff; padding:12px; border-radius:4px; margin-bottom:14px; }
 .ew-batch4 .explanation h2 { margin:0 0 8px; font-size:15px; }
 .ew-batch4 .explanation p { margin:0 0 10px; }
 .ew-batch4 .explanation em { display:block; font-size:12px; margin-top:8px; }
@@ -280,9 +280,9 @@ body.ew-page { margin:0; padding:16px; background:#fff; color:var(--ew-ink); fon
 .ew-walk-panel .walkthrough-copy { font-size:14px; line-height:1.6; }
 .ew-walk-panel .walkthrough-copy p { margin:0 0 10px; font-size:inherit; line-height:inherit; }
 .ew-walk-panel strong { color:var(--ew-red); }
-.ew-walk-panel .thinking { margin-top:10px; padding:8px 10px; background:var(--ew-surface); border-left:2px solid var(--ew-accent); font-size:13px; }
+.ew-walk-panel .thinking { margin-top:10px; padding:8px 10px; background:transparent; border-left:2px solid var(--ew-accent); font-size:13px; }
 .ew-glossary .sidebar-divider { height:0; margin:14px 0; border:0; border-top:1px solid var(--ew-border); }
-@media(max-width:900px) { .ew-walk-panel { padding:8px 0; } .ew-glossary .sidebar-divider { display:none; } }
+@media(max-width:900px) { .ew-glossary .sidebar-divider { display:none; } }
 @media(max-width:480px) { .ew-step-navigation { margin-left:0; } }
 .ew-diagram .ban-free-area { fill:rgba(167,139,250,.25); stroke:#a78bfa; stroke-width:1; }
 .ew-diagram.ew-policy-context #arrow-meb { stroke:#dc2626; }

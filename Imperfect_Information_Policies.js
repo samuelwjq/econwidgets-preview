@@ -64,7 +64,7 @@ function drawLegend(){
 }
 function render(){EconDiagramPresentation.resetPresentation($('diagram'));
  closeTip();$('drawing').replaceChildren();segments=[];occupied=[];legendEntries=[];
- for(const type of CASES)$('case-'+type).setAttribute('aria-pressed',String(type===selectedCase));
+ $('case-select').value=selectedCase;
  const allowed=selectedCase==='over-mpc'||selectedCase==='under-mpb';$('compulsory-option').disabled=!allowed;
  if(!allowed&&$('policy').value==='compulsory')$('policy').value='education';
  const policy=$('policy').value,m=model(selectedCase,policy,+$('correction').value,+$('fiscal').value);window.currentModel=m;
@@ -72,7 +72,6 @@ function render(){EconDiagramPresentation.resetPresentation($('diagram'));
  $('correction').setAttribute('aria-valuetext',m.correction===0?'No Correction':m.correction===100?'Full Correction':'Partial Correction');
  $('fiscal').setAttribute('aria-valuetext',m.fiscal===0?'No Intervention':(m.fiscal>0?'Tax':'Subsidy')+' — '+(m.fiscal*(m.qe>50?1:-1)<0?'Worsens The Initial Failure':Math.abs(m.fiscal)===40?'Corrective Size':Math.abs(m.fiscal)<40?'Smaller Than Corrective Size':'Larger Than Corrective Size'));
  $('svg-description').textContent=`${m.caseTitle}. ${m.compulsory?'Required consumption at the social optimum.':m.efficient?'Consumption at the social optimum.':m.over?'Overconsumption remains.':'Underconsumption remains.'}`;
- el('rect',{x:190,y:4,width:310,height:28,rx:6,fill:'#f0f4ff',stroke:'#cbd7fa','stroke-width':1});const readout=text(345,24,[m.caseTitle],'','middle');readout.setAttribute('font-weight','650');occupied.push({x:190,y:4,width:310,height:28});
  line(100,420,488,420,{stroke:'#374151','stroke-width':2,'marker-end':'url(#axis-arrow)'});line(100,420,100,32,{stroke:'#374151','stroke-width':2,'marker-end':'url(#axis-arrow)'});
  text(83,20,['Price /'],'small-label','end');text(83,36,['Costs /'],'small-label','end');text(83,52,['Benefits'],'small-label','end');text(488,446,['Qty']);text(92,438,['O'],'small-label','end');
  const fiscalVisible=policy==='fiscal'&&$('fiscal-area').checked&&m.transfer>1e-7;
@@ -105,7 +104,7 @@ function render(){EconDiagramPresentation.resetPresentation($('diagram'));
  let explanation;
  if(m.information)explanation=`<p>${policy==='education'?'Education & campaigns improve consumers’ understanding.':'Legislation requires accurate disclosure, labels or warnings; the slider represents how far consumers incorporate this information.'} Perceived ${own} moves towards actual ${own}.</p><p>The initial perceived curve and E<sub>e</sub> remain as references. As the error is corrected, consumption approaches Q<sub>s</sub> and <strong>DWL decreases</strong>. Full correction makes perceived and actual values coincide.</p>`;
  else if(m.compulsory)explanation='<p><strong>Compulsory consumption</strong> requires the socially efficient quantity Q<sub>s</sub>. The arrow starts at voluntary consumption Q<sub>e</sub> and ends at Q<sub>s</sub>.</p><p>Perceptions remain unchanged, so the original perceived curves and E<sub>e</sub> remain. The outline shows the <strong>DWL eliminated</strong>. Q<sub>s</sub> is a required quantity, not a new voluntary market equilibrium. Full compliance is assumed.</p>';
- else explanation=`<p>A <strong>tax discourages consumption</strong>; a <strong>subsidy encourages consumption</strong>. In this ${own} case, the policy ${m.cost?'adds to or subtracts from perceived private cost':'subtracts from or adds to perceived private benefit'}.</p><p>The original perceived curve stays fixed. The red effective private curve includes the tax or subsidy; <strong>beliefs and actual MSB/MSC remain unchanged</strong>. The corrective intervention is a <strong>${m.qe>50?'tax':'subsidy'}</strong>. Too much correction can move consumption past Q<sub>s</sub>, creating DWL on the other side; the wrong intervention makes the initial failure worse.</p><p>Tax revenue and subsidy expenditure are optional transfer areas, hidden by default. They are not included in the DWL calculation.</p>`;
+ else explanation=`<p>A <strong>tax discourages consumption</strong>; a <strong>subsidy encourages consumption</strong>. In this ${own} case, the policy ${m.cost?'adds to or subtracts from perceived private cost':'subtracts from or adds to perceived private benefit'}.</p><p>The original perceived curve stays fixed. The green effective private curve includes the tax or subsidy; <strong>beliefs and actual MSB/MSC remain unchanged</strong>. The corrective intervention is a <strong>${m.qe>50?'tax':'subsidy'}</strong>. Too much correction can move consumption past Q<sub>s</sub>, creating DWL on the other side; the wrong intervention makes the initial failure worse.</p><p>Tax revenue and subsidy expenditure are optional transfer areas, hidden by default. They are not included in the DWL calculation.</p>`;
  $('explanation').innerHTML=explanation;
  window.batch4State=m;Batch4Presentation.rendered();
 }
@@ -124,7 +123,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeTip();});docume
 for(const id of ['dwl','gap','fiscal-area'])$(id).addEventListener('change',render);
 for(const id of ['correction','fiscal'])$(id).addEventListener('input',render);
 $('policy').addEventListener('change',()=>{$('correction').value=0;$('fiscal').value=0;$('fiscal-area').checked=false;render();});
-for(const type of CASES)$('case-'+type).addEventListener('click',()=>{selectedCase=type;$('correction').value=0;$('fiscal').value=0;$('fiscal-area').checked=false;render();});
+$('case-select').addEventListener('change',()=>{selectedCase=$('case-select').value;$('correction').value=0;$('fiscal').value=0;$('fiscal-area').checked=false;render();});
 $('reset').addEventListener('click',()=>{selectedCase='under-mpc';$('policy').value='education';$('correction').value=0;$('fiscal').value=0;$('dwl').checked=true;$('gap').checked=true;$('fiscal-area').checked=false;$('status').textContent='';render();});
 render();
 

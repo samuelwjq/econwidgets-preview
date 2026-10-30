@@ -388,7 +388,7 @@
       if (activePolicy === 'edu') color = '#4169e1';
 
       let pLabel = activePolicy === 'tax' ? "Qt" : (activePolicy === 'quota' ? "Q_quota" : (activePolicy === 'edu' ? "Qe'" : "Qe"));
-      rawQPoints.push({ val: currentQ, pVal: pc, label: pLabel, color: color, tooltip: TOOLTIP_DICT.qt });
+      if(activePolicy!=='quota'||quotaVal<=qe)rawQPoints.push({ val: currentQ, pVal: pc, label: pLabel, color: color, tooltip: TOOLTIP_DICT.qt });
     }
 
     rawQPoints.sort((a, b) => a.val - b.val);
@@ -411,6 +411,7 @@
       const topY = toSvgY(maxP);
 
       const uniqueLabels = [...new Set(g.items.map(i => i.label))];
+      if(activePolicy==='quota'&&uniqueLabels.includes('Q_quota'))uniqueLabels.unshift(uniqueLabels.splice(uniqueLabels.indexOf('Q_quota'),1)[0]);
       const combinedText = uniqueLabels.join(' = ');
       const topColor = g.items[g.items.length - 1].color;
 
@@ -446,19 +447,16 @@
       rawPPoints.push({ val: activePs, qVal: activeQs, label: "Ps'", color: color });
     }
 
-    if (activePolicy !== 'none') {
+    if (activePolicy === 'quota') {
       let color = '#4169e1';
       if (activePolicy === 'quota') color = '#4169e1';
       if (activePolicy === 'qpoll') color = '#4169e1';
       if (activePolicy === 'rd') color = '#4169e1';
       if (activePolicy === 'edu') color = '#4169e1';
 
-      let priceLabel = (activePolicy === 'quota') ? 'P_quota' : 'Pc';
+      let priceLabel = 'P_quota';
       rawPPoints.push({ val: pc, qVal: currentQ, label: priceLabel, color: color });
 
-      if (activePolicy === 'tax' && taxVal > 0) {
-        rawPPoints.push({ val: pp, qVal: currentQ, label: 'Pp', color: '#16a34a' });
-      }
     }
 
     rawPPoints.sort((a, b) => a.val - b.val);
@@ -764,6 +762,7 @@
    const svg=document.getElementById('diagram');
    for(const e of svg.querySelectorAll('text')){
     const name=e.textContent.trim(),x=+e.getAttribute('x'),y=+e.getAttribute('y');
+    if(name==='Quota')continue; // Policy caption, never a quantity-axis value.
     if(!e.dataset.axisKind&&/^[QP](?:[0-9_₀₁₂]|[a-z])/.test(name)){e.dataset.axisKind=name[0]==='Q'?'q':'p';e.dataset.axisX=name[0]==='Q'?x:70;e.dataset.axisY=name[0]==='Q'?380:y-4;}
     else if(e.dataset.axisKind&&!e.dataset.modelAnchor){e.dataset.axisX=e.dataset.axisKind==='q'?x:70;e.dataset.axisY=e.dataset.axisKind==='q'?380:y-4;}
     const axisGuide={'label-pe':'line-pe','label-ps':'line-ps','label-ppol':'line-ppol','label-qe':'line-qe','label-qs':'line-qs','label-qpol':'line-qpol'}[e.id],guide=axisGuide&&document.getElementById(axisGuide);
@@ -872,7 +871,7 @@
   function snapshotLabels(){labelSnapshots=[...widgetSvg.querySelectorAll('text')].map(el=>({el,html:el.innerHTML,x:el.getAttribute('x'),y:el.getAttribute('y'),display:el.style.display}));}
   function mergeExactLabels(){
     snapshotLabels();
-    const labels=[...widgetSvg.querySelectorAll('text')].filter(e=>visible(e)&&/^[QP][a-z]+$/.test(e.textContent.trim()));
+    const labels=[...widgetSvg.querySelectorAll('text')].filter(e=>visible(e)&&e.textContent.trim()!=='Quota'&&/^[QP][a-z]+$/.test(e.textContent.trim()));
     const used=new Set();
     labels.forEach(a=>{if(used.has(a))return;const name=a.textContent.trim(),x=+a.getAttribute('x'),y=+a.getAttribute('y');const group=labels.filter(b=>!used.has(b)&&b.textContent.trim()[0]===name[0]&&(name[0]==='Q'?Math.abs(+b.getAttribute('x')-x)<1e-7:Math.abs(+b.getAttribute('y')-y)<1e-7));if(group.length>1){a.textContent=[...new Set(group.map(b=>b.textContent.trim()))].join(' = ');group.slice(1).forEach(b=>b.style.display='none');group.forEach(b=>used.add(b));}});
     const pairs=[['label-ee','dot-ee'],['label-es','dot-es'],['label-pol','dot-pol']].map(([l,d])=>({l:document.getElementById(l),d:document.getElementById(d)})).filter(o=>visible(o.l)&&visible(o.d));
