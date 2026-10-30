@@ -119,12 +119,12 @@
  }
  function styleText(e,role='main',halo=true){
   const m=e.getScreenCTM();if(!m)throw Error('Unmeasurable text');
-  const scale=Math.hypot(m.a,m.b),px=config.text[role+'Px'];
+  const scale=Math.hypot(m.a,m.b),svg=e.closest('svg'),projection=svg?.closest('.ew-fullscreen-stage')?Math.max(1,Math.min(config.fullscreen?.maxTextScale||1,Number(svg.dataset.ewPresentationScale)||1)):1,px=config.text[role+'Px']*projection;
   if(!(scale>0)||Math.abs(Math.hypot(m.c,m.d)-scale)>1e-5||Math.abs(m.a*m.c+m.b*m.d)>1e-5)throw Error('Invalid text coordinate transform');
   if(!px)throw Error('Unknown shared text role: '+role);
   e.dataset.ewTextRole=role;e.style.fontSize=px/scale+'px';e.style.fontWeight=(role==='curve'||role==='longEquation')?String(config.text.curveWeight):'400';
-  if(halo){e.classList.add('ew-label');e.style.strokeWidth=config.text.haloPx/scale+'px';}
-  for(const sub of e.querySelectorAll('tspan[baseline-shift="sub"]'))sub.style.fontSize=config.text.subscriptPx/scale+'px';
+  if(halo){e.classList.add('ew-label');e.style.strokeWidth=config.text.haloPx*projection/scale+'px';}
+  for(const sub of e.querySelectorAll('tspan[baseline-shift="sub"]'))sub.style.fontSize=config.text.subscriptPx*projection/scale+'px';
  }
  function layoutSvg(svg,registration){
   if(!config)throw Error('Load diagram-config.js before presentation helpers');

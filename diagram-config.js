@@ -18,6 +18,7 @@
   legend:{heightPx:28,fontPx:12,swatchWidthPx:14,swatchHeightPx:10,itemGapPx:16},
   summary:{background:'#fff9db',heightPx:28,compactHeightPx:40,elasticityCompactHeightPx:56,policyCompactHeightPx:56,fontPx:12},
   export:{pixelRatio:2,background:'#ffffff'},
+  fullscreen:{padding:8,gap:8,summaryHeight:40,referenceWidth:560,maxTextScale:1.5},
   breakpoints:{stack:900,controls:600,phone:480,caseButtons:560,narrowSlider:359}
  });
  root.EconDiagramConfig=config;

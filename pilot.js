@@ -8,7 +8,7 @@
  function chrome(){
   const mapping={'.widget-header':'ew-header','.layout':'ew-layout','.main-content':'ew-main','.sidebar':'ew-glossary','.controls':'ew-controls','.diagram-frame':'ew-diagram-frame','.control-row,.control-group,.policy-selector,.slider-card,.shift-choice':'ew-control-group','.scale-label':'ew-scale-label','.toggle-grid,.option-row,.checkbox-group':'ew-options','.ui-teaching-disclosure':'ew-disclosure','.ui-expand-hint':'ew-expand-hint','.summary-table,.outcomes':'ew-table','.summary-wrap':'ew-table-wrap','.mechanism,.policy-note,.model-note':'ew-explanation','.diagram-help':'ew-help','.related-widget':'ew-nav'};
   for(const [q,c]of Object.entries(mapping))document.querySelectorAll(q).forEach(e=>e.classList.add(c));
-  const controls=document.querySelector('.controls'),layout=document.querySelector('.layout');if(controls&&layout&&controls.parentNode!==layout.parentNode)layout.before(controls);
+  const controls=document.querySelector('.controls'),layout=document.querySelector('.layout');if(controls&&layout&&!controls.closest('.ew-fullscreen-stage')&&controls.parentNode!==layout.parentNode)layout.before(controls);
   const banControls=document.getElementById('ban-controls');if(document.body.classList.contains('ew-ne-policy')&&controls&&banControls&&banControls.parentElement!==controls)controls.append(banControls);
   for(const output of document.querySelectorAll('.controls .shift-output')){if(!output.hidden)output.hidden=true;output.setAttribute('aria-hidden','true');}
  }
