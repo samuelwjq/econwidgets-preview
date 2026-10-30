@@ -88,10 +88,10 @@ function render(){EconDiagramPresentation.resetPresentation($('diagram'));
  const merged=m.changed&&m.efficient&&!m.compulsory;
  for(const pt of points){const c=el('circle',{cx:X(pt.q),cy:Y(pt.p),r:4,fill:pt.sub==='e'?'#9b6666':pt.sub.includes('1')?RED:'#1f2937'});tip(c,'point-'+pt.sub,pt.description.replace(/Qe:/g,'Ee:').replace(/Qs:/g,'Es:').replace(/Q1:/g,'E1:'));occupied.push({x:X(pt.q)-7,y:Y(pt.p)-7,width:14,height:14});}
  const own=m.cost?'MPC':'MPB';
- const adjustedParts=policy==='fiscal'?[own,{sub:'PERCEIVED'},m.fiscal>0?(m.cost?' + Tax':' − Tax'):(m.cost?' − Subsidy':' + Subsidy')]:[own,{sub:'PERCEIVED 1'}];
+ const adjustedParts=policy==='fiscal'?[own+'*',{sub:'PERCEIVED'},m.fiscal>0?(m.cost?' + Tax':' − Tax'):(m.cost?' − Subsidy':' + Subsidy')]:[own+'*',{sub:'PERCEIVED'}];
  let supplyParts=m.cost?['MPC',{sub:'ACTUAL'},' = MSC']:['MPC = MSC'];let demandParts=!m.cost?['MPB',{sub:'ACTUAL'},' = MSB']:['MPB = MSB'];
 
- curveLabel(supply,supplyParts,'');curveLabel(demand,demandParts,'');curveLabel(initial,[own,{sub:m.changed&&!m.compulsory?'PERCEIVED 0':'PERCEIVED'}],'');if(current)curveLabel(current,adjustedParts,'');
+ curveLabel(supply,supplyParts,'');curveLabel(demand,demandParts,'');curveLabel(initial,[own,{sub:'PERCEIVED'}],'');if(current)curveLabel(current,adjustedParts,'');
  for(const pt of points){const ax=X(pt.q),ay=Y(pt.p),candidates=[];for(const [dx,dy] of [[12,-12],[12,25],[-40,-14],[-40,28],[25,-36],[-55,-36],[32,42],[-60,48]])candidates.push({x:ax+dx,y:ay+dy,anchor:{x:ax,y:ay}});label(['E',{sub:pt.sub}],candidates,'',tips['point-'+pt.sub],'label-point-'+pt.sub);}
  if($('dwl').checked&&!m.compulsory&&!m.efficient)dwlText(m.q);
  if(m.compulsory){line(X(50),420,X(50),Y(112),{stroke:GREEN,'stroke-width':1.5,'data-policy':'required-consumption'});const compulsoryLabel=text(X(50),Y(112)-10,['Compulsory Consumption Level'],'curve-label','middle');compulsoryLabel.setAttribute('data-policy-label','compulsory-level');line(X(m.qe),467,X(50),467,{stroke:RED,'stroke-width':1.8,'marker-end':'url(#gap-arrow)','data-policy':'compulsory-arrow'});text((X(m.qe)+X(50))/2,490,['Compulsory Consumption'],'small-label','middle');}
