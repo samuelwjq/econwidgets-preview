@@ -369,3 +369,15 @@ body.ew-fullscreen-active { overflow:hidden; }
 .ew-fullscreen-stage .ew-tooltip { z-index:1010; }
 .ew-fullscreen-status { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
 @media(max-width:600px) { .ew-fullscreen-controls { flex-wrap:wrap; } .ew-fullscreen-exit { order:-1; margin-left:auto; } .ew-fullscreen-controls>.ew-controls { flex-basis:100%; } }
+
+/* Suite rollout: strong glossary terms, clear fullscreen option separation. */
+.ew-glossary .glossary-title,.ew-glossary .ew-glossary-title { font-weight:700; }
+.ew-page .ew-glossary details>summary { font-weight:700; }
+.ew-fullscreen-stage .ew-controls .ew-settings[open] { padding-left:0; }
+.ew-fullscreen-stage .ew-controls .ew-settings[open]>summary { position:static; padding:4px 8px; gap:12px; }
+.ew-fullscreen-stage .ew-controls .ew-settings[open] .ew-options { padding:8px 8px 4px; gap:6px 16px; }
+.ew-fullscreen-stage .ew-controls .ew-settings .ew-options>label { font-size:14px; }
+.ew-fullscreen-stage .ew-controls .steps { flex-basis:100%; display:flex; gap:6px; margin:4px 0; }
+.ew-fullscreen-stage .ew-controls .steps button { flex:1; }
+.ew-fullscreen-stage .ew-summary-strip { height:auto; flex:none; padding-block:4px; overflow-wrap:anywhere; }
+.ew-fullscreen-diagram { align-items:safe center; justify-content:safe center; }
